@@ -151,8 +151,7 @@ const Waitlist = () => {
             marginBottom: "2rem",
           }}
         >
-          Share your details and be the first to hear when the NevUp extension
-          is ready. No spam, just updates.
+          Share your details and be the first to hear and access when the NevUp is ready. 
         </motion.p>
 
         {/* Glass Card Form */}
