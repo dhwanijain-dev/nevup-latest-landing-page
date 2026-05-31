@@ -12,7 +12,7 @@ type LayerKind = "insight" | "awareness" | "execution";
 
 const navLinks = [
   { label: "How it works", href: "/how" },
-  { label: "For Brokerages", href: "/brokerage" },
+  { label: "For Partners", href: "/brokerage" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -60,7 +60,7 @@ const layers: {
     title: "Awareness",
     eyebrow: "Through real-time AI behavioural monitoring.",
     copy:
-      "NevUp observes trading behavior in real time to help identify patterns like impulsive entries, overexposure, or emotionally driven decisions before they escalate.",
+      "NevUp observes trading behavior to help identify patterns like impulsive entries, overexposure, or emotionally driven decisions before they escalate.",
     kind: "awareness",
   },
   {
@@ -350,7 +350,7 @@ export default function LandingPage() {
                   <span key={pill} style={{ fontFamily: "Funnel Display, sans-serif", fontSize: 22, color: "#fffaf2", fontWeight: 500, letterSpacing: "-0.01em" }}>{pill}</span>
                 ))}
               </div>
-              <p style={{ fontFamily: "var(--font-geist-mono)", fontSize: 13, color: "#fffaf2", padding: "8px 14px", border: "1px solid rgba(255,250,226,0.2)", borderRadius: 999 }}>20,000+ on the waitlist</p>
+              <p style={{ fontFamily: "var(--font-geist-mono)", fontSize: 13, color: "#fffaf2", padding: "8px 14px", border: "1px solid rgba(255,250,226,0.2)", borderRadius: 999 }}>800+ waitlist signups</p>
             </div>
           </div>
         </section>
@@ -374,9 +374,9 @@ export default function LandingPage() {
  {/* <strong style={{ color: vars.fg }}>But they show up after.</strong> They help you learn from the last mistake. They don&apos;t stop the next one. */}
 
                 </p>
-                <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, marginTop: 22 }}>
+                {/* <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, marginTop: 22 }}>
                   That gap between the moment discipline breaks and the moment damage is done is what NevUp was built for.
-                </p>
+                </p> */}
               </div>
             </div>
 
@@ -429,11 +429,11 @@ is just expensive hindsight
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.1fr 1fr", gap: 80, alignItems: "end", marginBottom: 80 }}>
               <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: vars.fg, margin: 0, textWrap: "balance" as const }}>
                 Every trader knows their patterns. <br />
-                <span style={{ color: vars.fgFaint }}>Acts before it costs you.</span>
+                <span style={{ color: vars.fgFaint }}>The hard part is seeing them in the moment they matter. That's what NevUp is built for.</span>
               </h2>
-              <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, margin: 0, maxWidth: 460 }}>
+              {/* <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, margin: 0, maxWidth: 460 }}>
                 Three layers, one system. Each one builds on the last so by the time you click a position size, NevUp has already done the math you couldn&apos;t do in the moment.
-              </p>
+              </p> */}
             </div>
 
             {layers.map((layer, index) => (
@@ -454,6 +454,137 @@ is just expensive hindsight
             ))}
           </div>
         </section>
+
+        <section
+  aria-label="How cards"
+  style={{
+    background: "#F7F3ED",
+    padding: isMobile ? "40px 20px" : "80px 40px",
+    color: "#0a0a0a",
+    width: "100%",
+    boxSizing: "border-box",
+  }}
+>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+      gap: 24,
+      alignItems: "stretch",
+      width: "100%",
+    }}
+  >
+    <div
+      style={{
+        background: "#ffffff",
+        padding: 32,
+        borderRadius: 16,
+        border: "1px solid rgba(10,10,10,0.08)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+      }}
+    >
+      <h3
+  style={{
+    fontFamily: "Funnel Display, sans-serif",
+    fontWeight: 700,
+    fontSize: 24,
+    color: "#f34301",
+    margin: 0,
+  }}
+>
+        Your behavioral profile
+      </h3>
+      <p
+        style={{
+          fontFamily: "Satoshi, sans-serif",
+          fontSize: 15,
+          lineHeight: 1.6,
+          color: "#0a0a0a",
+          margin: 0,
+        }}
+      >
+        NevUp analyzes trading behavior in real time to help identify patterns
+        in decision-making, emotional responses, and trading habits unique to
+        you.
+      </p>
+    </div>
+
+    <div
+      style={{
+        background: "#ffffff",
+        padding: 32,
+        borderRadius: 16,
+        border: "1px solid rgba(10,10,10,0.08)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+      }}
+    >
+      <h3
+  style={{
+    fontFamily: "Funnel Display, sans-serif",
+    fontWeight: 700,
+    fontSize: 24,
+    color: "#f34301",
+    margin: 0,
+  }}
+>
+        Real time AI monitoring
+      </h3>
+      <p
+        style={{
+          fontFamily: "Satoshi, sans-serif",
+          fontSize: 15,
+          lineHeight: 1.6,
+          color: "#0a0a0a",
+          margin: 0,
+        }}
+      >
+        NevUp observes trading behavior in real time to help identify patterns
+        like impulsive entries, overexposure, or emotionally driven decisions
+        before they escalate.
+      </p>
+    </div>
+
+    <div
+      style={{
+        background: "#ffffff",
+        padding: 32,
+        borderRadius: 16,
+        border: "1px solid rgba(10,10,10,0.08)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+      }}
+    >
+      <h3
+  style={{
+    fontFamily: "Funnel Display, sans-serif",
+    fontWeight: 700,
+    fontSize: 24,
+    color: "#f34301",
+    margin: 0,
+  }}
+>
+        Personalized intervention
+      </h3>
+      <p
+        style={{
+          fontFamily: "Satoshi, sans-serif",
+          fontSize: 15,
+          lineHeight: 1.6,
+          color: "#0a0a0a",
+          margin: 0,
+        }}
+      >
+        Personalized, context-aware interventions that help bring attention to
+        moments where emotion may begin influencing execution while trading.
+      </p>
+    </div>
+  </div>
+</section>
 
         <section id="brokerages" style={{ padding: isMobile ? "90px 20px" : "120px 40px", background: vars.bgPage, color: vars.fg }}>
           <div style={{ maxWidth: 920, margin: "0 auto", textAlign: "center" }}>
