@@ -47,7 +47,7 @@ const layers: {
 }[] = [
   {
     number: "01",
-    label: "Knows",
+    label: " ",
     title: "Insight",
     eyebrow: "Into your behavioural trading profile.",
     copy:
@@ -56,7 +56,7 @@ const layers: {
   },
   {
     number: "02",
-    label: "Sees",
+    label: " ",
     title: "Awareness",
     eyebrow: "Through real-time AI behavioural monitoring.",
     copy:
@@ -65,7 +65,7 @@ const layers: {
   },
   {
     number: "03",
-    label: "Does",
+    label: " ",
     title: "Execution",
     eyebrow:
       "With personalised interventions designed to reduce emotionally driven decisions.",

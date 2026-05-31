@@ -265,7 +265,7 @@ export default function Page() {
 			</header>
 
 			<div className="page-fade">
-				<section style={{ position: "relative", padding: "180px 40px 100px", background: "var(--card-bg)", borderBottom: "1px solid var(--card-border)" }}>
+				<section style={{ position: "relative", padding: "180px 40px 20px", background: "var(--card-bg)", borderBottom: "1px solid var(--card-border)" }}>
 					<div style={containerStyles}>
 						<div style={{ maxWidth: 880 }}>
 							<div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>Get in touch</div>
@@ -280,7 +280,7 @@ export default function Page() {
 
 				<section style={{ ...sectionStyles, padding: "100px 40px 120px", position: "relative", background: "var(--bg-soft)", color: "var(--fg)" }}>
 					<div style={containerStyles}>
-						<div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 18 }}>
+						<div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 18 }}>
 							<div style={{ background: "linear-gradient(160deg, rgb(243, 67, 1) 0%, rgb(190, 95, 35) 100%)", color: "rgb(255,250,226)", borderRadius: 16, padding: 36, display: "flex", flexDirection: "column", minHeight: 480, position: "relative", overflow: "hidden" }}>
 								<div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, opacity: 0.18, pointerEvents: "none" }}>
 									<Image src="/logo.png" width={200} height={200} alt="NevUp" style={{ display: "inline-block", width: "100%", height: "100%", objectFit: "contain" }} />
@@ -296,7 +296,7 @@ export default function Page() {
 										<button type="button" style={{ background: "rgb(10,10,10)", color: "rgb(255,250,226)", border: 0, borderRadius: 10, padding: "14px 18px", fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 14, cursor: "pointer", width: "100%" }}>
 											Join the Waitlist →
 										</button>
-										<div style={{ ...bodyFont, fontSize: 11, color: "rgba(255,250,226,0.7)", marginTop: 4 }}>20,000+ traders are already in line.</div>
+										<div style={{ ...bodyFont, fontSize: 11, color: "rgba(255,250,226,0.7)", marginTop: 4 }}>800+ traders are already in line.</div>
 									</form>
 								</div>
 							</div>
@@ -313,7 +313,7 @@ export default function Page() {
 								actionBackground="linear-gradient(rgb(59, 130, 246), rgb(30, 58, 138))"
 							/>
 
-							<div style={{ background: "var(--card-bg)", borderRadius: 16, padding: 36, minHeight: 480, display: "flex", flexDirection: "column", border: "1px solid var(--card-border)" }}>
+							{/* <div style={{ background: "var(--card-bg)", borderRadius: 16, padding: 36, minHeight: 480, display: "flex", flexDirection: "column", border: "1px solid var(--card-border)" }}>
 								<div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>For everyone else</div>
 								<div style={{ ...headingFont, fontSize: 36, color: "var(--fg)", fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.05, marginTop: 16 }}>Say hello.</div>
 								<p style={{ ...bodyFont, fontSize: 15, lineHeight: 1.6, color: "var(--fg-faint)", margin: "16px 0 0", textWrap: "pretty" }}>
@@ -335,10 +335,12 @@ export default function Page() {
 								</div>
 
 								<div style={{ marginTop: "auto", paddingTop: 24, borderTop: "1px solid var(--card-border)" }}>
-									{/* <div style={{ ...bodyFont, fontSize: 11, color: "var(--fg-ghost)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>Office</div> */}
 									<div style={{ ...bodyFont, fontSize: 14, color: "var(--fg)", marginTop: 8, lineHeight: 1.5 }} />
 								</div>
-							</div>
+							</div> */}
+						</div>
+						<div>
+							
 						</div>
 					</div>
 				</section>
