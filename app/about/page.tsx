@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 
 const navLinks = [
      { label: "How it works", href: "/how" },
-     { label: "For Brokerages", href: "/brokerage" },
+     { label: "For Partners", href: "/brokerage" },
      { label: "About", href: "/about", active: true },
      { label: "Contact", href: "/contact" },
 ];
@@ -13,8 +13,9 @@ const team = [
      {
           name: "Anshh Tiwari",
           role: "Founder & CEO",
-          blurb: "Trader turned founder. Built NevUp out of the moments he kept losing money to not the strategy, but the click.",
+          blurb: "Anshh began trading early and spent years studying the psychology behind decision-making, risk, and discipline in the markets. His experience navigating volatility, refining systems, and understanding trader behavior became the foundation for NevUp AI : a product designed to help traders stay consistent under pressure.",
           initials: "AT",
+          image: "/ansh.png",
           gradient: "linear-gradient(135deg, rgba(243,67,1,0.28), rgba(10,10,10,0.92))",
           border: "rgba(255,250,226,0.15)",
           link: "https://linkedin.com/in/anshhtiwari",
@@ -22,8 +23,9 @@ const team = [
      {
           name: "Yashasvi Gupta",
           role: "Co-founder & COO",
-          blurb: "Operator, economist, behaviorist. Builds the half of trading nobody has built for: people, pressure, and the patterns they keep repeating.",
+          blurb: "Yashasvi Gupta grew up around business operations and community-driven environments, shaping her understanding of people, execution and decision making from an early stage. With a background spanning psychology and economics, she combines operation rigour with deep insight into human psychology, crucial to building NevUp.",
           initials: "YG",
+          image: "/yashasvi.png",
           gradient: "linear-gradient(135deg, rgba(242,105,63,0.28), rgba(10,10,10,0.92))",
           border: "rgba(255,250,226,0.15)",
           link: "https://www.linkedin.com/in/yashasvisgupta/",
@@ -104,7 +106,7 @@ function LinkedInMark() {
      );
 }
 
-function TeamCard({ name, role, blurb, initials, gradient, border, link }: (typeof team)[number]) {
+function TeamCard({ name, role, blurb, initials, gradient, border, link, image }: (typeof team)[number]) {
      return (
           <div
                style={{
@@ -116,25 +118,8 @@ function TeamCard({ name, role, blurb, initials, gradient, border, link }: (type
                }}
           >
                <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-                    <div
-                         aria-hidden="true"
-                         style={{
-                              width: 96,
-                              height: 96,
-                              borderRadius: "50%",
-                              background: `${gradient}`,
-                              border: `1px solid ${border}`,
-                              flexShrink: 0,
-                              display: "grid",
-                              placeItems: "center",
-                              color: "rgb(255,250,226)",
-                              fontFamily: "Funnel Display, sans-serif",
-                              fontSize: 30,
-                              fontWeight: 600,
-                              letterSpacing: "-0.04em",
-                         }}
-                    >
-                         {initials}
+                    <div style={{ width: 96, height: 96, flexShrink: 0, borderRadius: "50%", overflow: "hidden", display: "block" }}>
+                         <Image src={image} width={96} height={96} alt={name} style={{ width: 96, height: 96, objectFit: "cover", borderRadius: "50%", border: `1px solid ${border}` }} />
                     </div>
                     <div style={{ paddingTop: 8 }}>
                          <div style={{ ...headingFont, fontSize: 32, color: "var(--fg)", fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.1 }}>{name}</div>
@@ -277,7 +262,7 @@ export default function Page() {
                               </div>
                          </section>
 
-                         <section style={{ ...sectionStyles, padding: "140px 40px", position: "relative", background: "var(--bg-page)", color: "var(--fg)" }}>
+                         {/* <section style={{ ...sectionStyles, padding: "140px 40px", position: "relative", background: "var(--bg-page)", color: "var(--fg)" }}>
                               <div style={containerStyles}>
                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
                                         <div>
@@ -303,7 +288,7 @@ export default function Page() {
                                         </div>
                                    </div>
                               </div>
-                         </section>
+                         </section> */}
 
                          <section id="team" style={{ ...sectionStyles, padding: "120px 40px 140px", position: "relative", background: "var(--bg-warm)", color: "var(--fg)" }}>
                               <div style={containerStyles}>
@@ -315,7 +300,7 @@ export default function Page() {
                                              Built by traders, researchers and systems thinkers.
                                         </h2>
                                         <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-muted)", margin: "28px 0 0", textWrap: "pretty", maxWidth: 760 }}>
-                                             NevUp is being built by a team working at the intersection of <strong>markets, behavioral science, AI, and systems engineering</strong> with contributors, collaborators, and advisors from IITs, Ivy League institutions, and high-performance trading environments.
+                                             NevUp is being built by a team with experience across <strong>financial markets, behavioral science, artificial intelligence, </strong> and <strong>systems engineering</strong>, supported by contributors, collaborators, and advisors from <strong> leading academic institutions </strong>and <strong>trading ecosystems.</strong>
                                         </p>
                                    </div>
 

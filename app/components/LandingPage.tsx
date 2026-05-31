@@ -12,7 +12,7 @@ type LayerKind = "insight" | "awareness" | "execution";
 
 const navLinks = [
   { label: "How it works", href: "/how" },
-  { label: "For Brokerages", href: "/brokerages" },
+  { label: "For Brokerages", href: "/brokerage" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -27,13 +27,13 @@ const problemStats = [
   },
   {
     value: "1%",
-    label: "Maintain profitability over 5 years",
-    note: "The structural failure rate",
+    label: "Only 1% maintain profitability over 5 years",
+    note: "(Barber et al., University of California, Davis (2010)",
   },
   {
-    value: "2000+",
-    label: "In the NevUp ecosystem",
-    note: "Waitlist · crypto, forex, equities",
+    value: "80%",
+    label: "Of traders quit within two years",
+    note: "(Barber et al., University of California)",
   },
 ];
 
@@ -307,7 +307,7 @@ export default function LandingPage() {
 
           <div style={{ ...container, position: "relative", zIndex: 2 }}>
             <div style={{ maxWidth: isMobile ? "100%" : 880 }}>
-              <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#fffaf2", opacity: 0.85 }}>NevUp · The intervention layer</p>
+              <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#fffaf2", opacity: 0.85 }}>NevUp · AI Behavioral Intelligence</p>
               <h1 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 52 : 104, lineHeight: 0.96, letterSpacing: "-0.035em", color: "#fffaf2", marginTop: 28, textWrap: "balance" as const }}>
                 Built for clear decisions in noisy markets.
               </h1>
@@ -359,17 +359,20 @@ export default function LandingPage() {
           <div style={container}>
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 36 : 80, alignItems: "start" }}>
               <div>
-                <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: vars.fg, opacity: 0.6 }}>The problem</p>
+                <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: vars.fg, opacity: 0.6 }}></p>
                 <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: vars.fg, marginTop: 20, textWrap: "balance" as const }}>
-                  You already know what to do.<br />
-                  <span style={{ color: vars.fgFaint }}>The problem is the moment you don&apos;t do it.</span>
+                  The missing layer in every <br />
+                  <span style={{ color: vars.fgFaint }}>trader&apos;s setup.</span>
                 </h2>
               </div>
 
               <div style={{ paddingTop: isMobile ? 0 : 12 }}>
-                <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 20, lineHeight: 1.6, color: vars.fgFaint }}>A loss hits. Pressure builds. Judgment tilts.</p>
+                <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 20, lineHeight: 1.6, color: vars.fgFaint }}>NevUp sits alongside every session and learns how you specifically trade.</p>
                 <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, marginTop: 22 }}>
-                  Every journal, every analytics tool, every post-session review helps you understand what went wrong. <strong style={{ color: vars.fg }}>But they show up after.</strong> They help you learn from the last mistake. They don&apos;t stop the next one.
+                  It learns your patterns, tracks them live, and puts your own data in front of you, bringing awareness to self-sabotaging behaviors in the moments they emerge. The longer you trade with it, the sharper it gets.
+
+ {/* <strong style={{ color: vars.fg }}>But they show up after.</strong> They help you learn from the last mistake. They don&apos;t stop the next one. */}
+
                 </p>
                 <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, marginTop: 22 }}>
                   That gap between the moment discipline breaks and the moment damage is done is what NevUp was built for.
@@ -388,9 +391,11 @@ export default function LandingPage() {
             </div>
 
             <div style={{ margin: "96px auto 0", textAlign: "center", maxWidth: 880 }}>
-              <p style={{ fontFamily: "Funnel Display, sans-serif", fontStyle: "italic", fontWeight: 500, fontSize: isMobile ? 38 : 56, lineHeight: 1.1, letterSpacing: "-0.02em", color: vars.fg }}>&quot;That was me last Tuesday.&quot;</p>
+              <p style={{ fontFamily: "Funnel Display, sans-serif", fontStyle: "italic", fontWeight: 500, fontSize: isMobile ? 38 : 56, lineHeight: 1.1, letterSpacing: "-0.02em", color: vars.fg }}>&quot;Awareness after the trade
+is just expensive hindsight
+&quot;</p>
               <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 16, lineHeight: 1.6, color: vars.fgFaint, marginTop: 24, textWrap: "pretty" as const }}>
-                What traders consistently say after seeing the NevUp demo.
+                That is why we work in real time. 
               </p>
             </div>
           </div>
@@ -404,7 +409,7 @@ export default function LandingPage() {
                 <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: "#fffaf2", marginTop: 18, textWrap: "balance" as const }}>Your portfolio, your behavior, one view.</h2>
               </div>
               <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", maxWidth: 380, margin: 0 }}>
-                The Home screen is where you start every session positions, P&amp;L, allocation, and the live behavioral layer underneath it all.
+                {/* The Home screen is where you start every session positions, P&amp;L, allocation, and the live behavioral layer underneath it all. */}
               </p>
             </div>
 
@@ -423,7 +428,7 @@ export default function LandingPage() {
           <div style={container}>
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.1fr 1fr", gap: 80, alignItems: "end", marginBottom: 80 }}>
               <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: vars.fg, margin: 0, textWrap: "balance" as const }}>
-                Knows you. Sees the moment.<br />
+                Every trader knows their patterns. <br />
                 <span style={{ color: vars.fgFaint }}>Acts before it costs you.</span>
               </h2>
               <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, margin: 0, maxWidth: 460 }}>
@@ -455,7 +460,7 @@ export default function LandingPage() {
             <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: vars.fg, opacity: 0.6 }}>Trade Smarter, Not Emotional.</p>
             <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: vars.fg, marginTop: 22 }}>Get early access before it opens.</h2>
             <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 19, lineHeight: 1.6, color: vars.fgFaint, margin: "24px auto 0", maxWidth: 600 }}>
-              Share your details and be the first to hear and access when NevUp is ready.
+              Join NevUp's first user cohort and get access before public launch.
             </p>
             <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 44, flexWrap: "wrap" }}>
               <Link href="/waitlist" style={{ background: "#f34301", color: "#fffaf2", border: 0, borderRadius: 10, padding: "17px 30px", fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 16, textDecoration: "none", display: "inline-flex", gap: 8, alignItems: "center" }}>

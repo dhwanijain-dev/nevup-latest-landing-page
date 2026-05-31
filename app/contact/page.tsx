@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 
 const navLinks = [
 	{ label: "How it works", href: "/how" },
-	{ label: "For Brokerages", href: "/brokerage" },
+	{ label: "For Partners", href: "/brokerage" },
 	{ label: "About", href: "/about" },
 	{ label: "Contact", href: "/contact", active: true },
 ];
@@ -43,7 +43,7 @@ const footerColumns = [
 			{ label: "LinkedIn", href: "https://www.linkedin.com/company/nevup/", external: true },
 			{ label: "Twitter / X", href: "https://twitter.com/nevup", external: true },
 			{ label: "Press kit", href: "/contact" },
-			{ label: "hello@nevup.in", href: "mailto:connect@nevup.in", external: true },
+						{ label: "connect@nevup", href: "mailto:connect@nevup", external: true },
 		],
 	},
 ];
@@ -269,9 +269,10 @@ export default function Page() {
 					<div style={containerStyles}>
 						<div style={{ maxWidth: 880 }}>
 							<div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>Get in touch</div>
-							<h1 style={{ ...headingFont, fontWeight: 500, fontSize: 84, lineHeight: 0.96, letterSpacing: "-0.03em", color: "var(--fg)", margin: "22px 0 0", textWrap: "balance" }}>Three ways in.</h1>
+							<h1 style={{ ...headingFont, fontWeight: 500, fontSize: 84, lineHeight: 0.96, letterSpacing: "-0.03em", color: "var(--fg)", margin: "22px 0 0", textWrap: "balance" }}>Connect with NevUp.</h1>
 							<p style={{ ...bodyFont, fontSize: 20, lineHeight: 1.6, color: "var(--fg-faint)", margin: "28px 0 0", textWrap: "pretty", maxWidth: 660 }}>
-								Trader, partner, or just curious pick the lane below. We read everything that comes through.
+								Trader, partner, or just curious. We'd love to hear from you.
+
 							</p>
 						</div>
 					</div>
@@ -307,9 +308,8 @@ export default function Page() {
 								accent="rgb(255,250,226)"
 								background="rgb(10,10,10)"
 								border="1px solid rgb(31,31,31)"
-								footer="partnerships@nevup.in"
 								actionLabel="Book a Partnership Call"
-								actionHref="mailto:partnerships@nevup.in"
+								actionHref="https://cal.com/nevup-ai/nevup-for-partners"
 								actionBackground="linear-gradient(rgb(59, 130, 246), rgb(30, 58, 138))"
 							/>
 
@@ -322,10 +322,10 @@ export default function Page() {
 
 								<div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 14 }}>
 									{[
-										["General", "hello@nevup.in"],
-										["Press", "press@nevup.in"],
-										["Careers", "careers@nevup.in"],
-										["Security", "security@nevup.in"],
+										["General", "connect@nevup"],
+										["Press", "connect@nevup"],
+										["Careers", "connect@nevup"],
+										["Security", "connect@nevup"],
 									].map(([label, value]) => (
 										<div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20 }}>
 											<span style={{ ...bodyFont, fontSize: 12, color: "var(--fg-ghost)", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600 }}>{label}</span>
@@ -336,11 +336,7 @@ export default function Page() {
 
 								<div style={{ marginTop: "auto", paddingTop: 24, borderTop: "1px solid var(--card-border)" }}>
 									<div style={{ ...bodyFont, fontSize: 11, color: "var(--fg-ghost)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>Office</div>
-									<div style={{ ...bodyFont, fontSize: 14, color: "var(--fg)", marginTop: 8, lineHeight: 1.5 }}>
-										NevUp AI, Inc.
-										<br />
-										Operating remotely · entities in Delaware, USA &amp; Bengaluru, India
-									</div>
+									<div style={{ ...bodyFont, fontSize: 14, color: "var(--fg)", marginTop: 8, lineHeight: 1.5 }} />
 								</div>
 							</div>
 						</div>

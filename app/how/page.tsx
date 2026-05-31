@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const navLinks = [
   { label: "How it works", href: "/how" },
-  { label: "For Brokerages", href: "/brokerage" },
+  { label: "For Partners", href: "/brokerage" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -29,7 +29,7 @@ const behaviorPatterns = [
   { title: "Euphoric Sizing", copy: "Adding size after wins, breaking your risk rules.", dot: "#f59e0b" },
   { title: "Social Influence", copy: "Trading what you saw in the group chat.", dot: "#facc15" },
   { title: "Loss Spiral", copy: "Three losses in, you can't stop pulling the trigger.", dot: "#ef4444" },
-  { title: "Averaging Down", copy: "Adding to a losing position instead of cutting.", dot: "#ec4899" },
+  { title: "Averaging Down", copy: "Adding to a losing position when your plan says otherwise.", dot: "#ec4899" },
 ];
 
 const steps = [
@@ -198,10 +198,10 @@ export default function Page() {
           <div style={{ ...containerStyles }}>
             <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#0f1115", opacity: 0.6 }}>How it works</div>
             <h1 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3.5rem, 7vw, 5rem)", lineHeight: 0.96, letterSpacing: "-0.03em", color: "#0f1115", margin: "20px 0 0", maxWidth: 980, textWrap: "balance" }}>
-              Three layers between you and the next bad click.
+              Every session is a chance to trade your best. NevUp makes sure you don't get in the way
             </h1>
             <p style={{ ...bodyFont, fontSize: 20, lineHeight: 1.6, color: "#5f646c", margin: "28px 0 0", maxWidth: 720, textWrap: "pretty" }}>
-              NevUp is not a journal or a coach. It is an intervention layer that sits in your trading flow, learns your behavior, and acts in the moment before the cost is paid.
+              NevUp learns how you trade, watches every session live, and steps in just before a behaviorally driven decision has the chance to become an expensive one.
             </p>
           </div>
         </section>
@@ -210,12 +210,12 @@ export default function Page() {
           <div style={{ ...containerStyles, marginBottom: 64 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "end" }}>
               <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "#0f1115", margin: 0, textWrap: "balance" }}>
-                Name the moment.
+                The eight patterns 
                 <br />
-                <span style={{ color: "#8b8b8b" }}>That's how you stop it.</span>
+                <span style={{ color: "#8b8b8b" }}> behind most blown accounts.</span>
               </h2>
               <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "#6b7280", margin: 0, maxWidth: 480, paddingBottom: 8, textWrap: "pretty" }}>
-                NevUp tracks behavioral patterns with the same vocabulary across your product, your debriefs, and your dashboard. The more you see them named, the faster you recognize them yourself.
+               Every trader has a handful of patterns they keep falling back into, usually under pressure and without realising it. The eight below account for most of the damage. Knowing which ones are yours is where real improvement begins.
               </p>
             </div>
           </div>
@@ -232,7 +232,7 @@ export default function Page() {
             ))}
           </div>
 
-          <div style={{ ...containerStyles, marginTop: 96, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0, borderTop: "1px solid rgba(0,0,0,0.08)", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
+          {/* <div style={{ ...containerStyles, marginTop: 96, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0, borderTop: "1px solid rgba(0,0,0,0.08)", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
             {steps.map((step, index) => (
               <div key={step.number} style={{ padding: "40px 32px", borderLeft: index === 0 ? "none" : "1px solid rgba(0,0,0,0.08)" }}>
                 <span style={{ ...bodyFont, color: accent, fontSize: 13, letterSpacing: "0.06em" }}>{step.number}</span>
@@ -240,7 +240,7 @@ export default function Page() {
                 <p style={{ ...bodyFont, fontSize: 15, lineHeight: 1.6, color: "#6b7280", margin: "16px 0 0", maxWidth: 300 }}>{step.copy}</p>
               </div>
             ))}
-          </div>
+          </div> */}
         </section>
 
         <section style={{ padding: "140px 40px", background: "#0a0a0a", color: "rgb(255,250,226)" }}>
@@ -248,11 +248,11 @@ export default function Page() {
             <div style={{ textAlign: "center", maxWidth: 800, margin: "0 auto 56px" }}>
               <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgb(255,250,226)", opacity: 0.6 }}>See it work</div>
               <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(2.75rem, 5vw, 4rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>
-                Watch a <span style={{ color: "#f5a80b", fontStyle: "italic", display: "inline-block", minWidth: 220, textAlign: "center" }}>FOMO</span> trade get intervened in real time before execution.
+                Watch a <span style={{ color: "#f5a80b", fontStyle: "italic", display: "inline-block", minWidth: 220, textAlign: "center" }}>FOMO</span>  trade get nudged in real time right before execution 
               </h2>
-              <p style={{ ...bodyFont, fontSize: 19, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: "22px auto 0", maxWidth: 640, textWrap: "pretty" }}>
+              {/* <p style={{ ...bodyFont, fontSize: 19, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: "22px auto 0", maxWidth: 640, textWrap: "pretty" }}>
                 The Home screen is your portfolio. The Agent overlays a behavioral layer on top of it. When patterns are detected, the intervention surfaces inline.
-              </p>
+              </p> */}
             </div>
 
             <div style={{ width: "100%", background: "#0a0a0a", border: "1px solid rgb(31,31,31)", borderRadius: 14, overflow: "hidden", boxShadow: "rgba(0,0,0,0.5) 0 60px 120px -40px, rgba(0,0,0,0.35) 0 30px 60px -20px", display: "flex", minHeight: 680, position: "relative" }}>
@@ -378,9 +378,9 @@ export default function Page() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "end", marginBottom: 56 }}>
               <div>
                 <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgb(255,250,226)", opacity: 0.6 }}>Market context</div>
-                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>Behavior is shaped by what the market is doing.</h2>
+                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>Your patterns don't trade in isolation.</h2>
               </div>
-              <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: 0, maxWidth: 480 }}>The Patterns dashboard pairs your behavioral score with the live market environment so the intervention engine knows whether you're trading into a green tape, a red flush, or something stranger in between.</p>
+              <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: 0, maxWidth: 480 }}>How you perform shifts with what the market is doing around you. NevUp reads both, so when it nudges you, it already has context on whether you're trading into a trending session, fighting a reversal, or navigating something in between.</p>
             </div>
 
             <div style={{ background: "rgb(13,13,13)", border: "1px solid rgb(31,31,31)", borderRadius: 14, padding: 26, boxShadow: "rgba(0,0,0,0.4) 0 40px 80px -20px" }}>
@@ -411,21 +411,21 @@ export default function Page() {
             <div style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr", gap: 80, alignItems: "start" }}>
               <div>
                 <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#0f1115", opacity: 0.6 }}>The foundation</div>
-                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "#0f1115", margin: "18px 0 0" }}>Built to scale with the modern trader.</h2>
-                <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "#5f646c", margin: "24px 0 0", maxWidth: 540 }}>NevUp is built on a foundation of proprietary technology designed to scale with the modern trader: purpose-built models for behavioral pattern detection, a personalization layer that adapts to your specific history, and an intervention engine that runs in the moment with zero workflow friction.</p>
+                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "#0f1115", margin: "18px 0 0" }}>The next generation of trading runs on behavioral intelligence.</h2>
+                <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "#5f646c", margin: "24px 0 0", maxWidth: 540 }}>NevUp's behavioral models learn how you trade under pressure and build a deeper understanding of your habits with every session. As the system becomes more personalized, it gets better at delivering interventions in the moments where they can make a difference.</p>
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 {[
-                  ["Behavioral models", "Purpose-built, not generic LLMs", "Small, specialized models trained on trader behavioral patterns. Fast enough to run inline. Specific enough to recognize your patterns."],
-                  ["Personalization", "Trained on your history", "The model uses your stated plan, your past trades, and the moments you have broken before so every intervention is grounded in lived context, not theory."],
-                  ["Intervention engine", "In-the-moment, not after", "Interventions surface inline at the moment of decision never as a daily report, never as a post-session debrief."],
-                  ["Roadmap", "HRV & biometric integration", "Heart-rate variability monitoring and other biometric signals are on the near-term roadmap as an additional input to behavioral state detection."],
+                  ["Behavioral models", "Purpose-built.", " Specialized models trained on trader behavioral patterns. Fast enough to run inline. Specific enough to recognize your patterns."],
+                  ["Personalization", "Personalisation ", "The model uses your stated plan, your past trades, and the moments you have broken before so every intervention is grounded in lived context, not theory."],
+                  ["Intervention engine", "⁠Real-time intervention", "⁠Interventions surface right at the point of decision. And when the session closes, a debrief breaks down exactly what happened and why, so the next one goes better."],
+                  ["Roadmap", "HRV & biometric integration", "Coming next!"],
                 ].map(([tag, title, copy]) => (
                   <div key={tag as string} style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 12, padding: 22, display: "grid", gridTemplateColumns: "auto 1fr", gap: 22, alignItems: "start" }}>
-                    <div style={{ ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: accent, fontWeight: 700, padding: "6px 10px", border: "1px solid rgba(243,67,1,0.4)", borderRadius: 6, width: "fit-content", whiteSpace: "nowrap", height: "fit-content" }}>{tag as string}</div>
+                    {/* <div style={{ ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: accent, fontWeight: 700, padding: "6px 10px", border: "1px solid rgba(243,67,1,0.4)", borderRadius: 6, width: "fit-content", whiteSpace: "nowrap", height: "fit-content" }}>{tag as string}</div> */}
                     <div>
-                      <div style={{ ...headingFont, fontSize: 22, color: "#0f1115", fontWeight: 500, letterSpacing: "-0.015em" }}>{title as string}</div>
+                      <div style={{ ...headingFont, fontSize: 22, color: "#f86c0f", fontWeight: 500, letterSpacing: "-0.015em" }}>{title as string}</div>
                       <p style={{ ...bodyFont, fontSize: 15, lineHeight: 1.6, color: "#5f646c", margin: "8px 0 0" }}>{copy as string}</p>
                     </div>
                   </div>

@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 
 const navLinks = [
   { label: "How it works", href: "/how" },
-  { label: "For Brokerages", href: "/brokerage", active: true },
+  { label: "For Partners", href: "/brokerage", active: true },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -222,15 +222,16 @@ export default function Page() {
           <div style={containerStyles}>
             <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>For Brokerages &amp; Prop Firms</div>
             <h1 style={{ ...headingFont, fontWeight: 500, fontSize: 80, lineHeight: 0.96, letterSpacing: "-0.03em", color: "var(--fg)", margin: "20px 0 0", textWrap: "balance" }}>
-              Your best traders blow accounts. Not from bad reads. From bad moments.
+              Behavioral intelligence, embedded in your infrastructure.
             </h1>
             <p style={{ ...bodyFont, fontSize: 20, lineHeight: 1.6, color: "var(--fg-muted)", margin: "28px 0 0", textWrap: "pretty", maxWidth: 720 }}>
-              NevUp integrates into your trading infrastructure as a behavioral intelligence layer. No platform migration. No friction at onboarding. Traders who manage their behavior retain longer, trade more consistently, and stay on your books.
+             NevUp integrates directly into your existing platform. No migration, no disruption. Purpose-built behavioral models, personalized to each trader, running live during every session. Available for platforms, funds, and firms ready to give their traders a genuine edge.
+
             </p>
           </div>
         </section>
 
-        <section style={{ padding: "80px 40px", position: "relative", background: "var(--bg-soft)", color: "var(--fg)" }}>
+        {/* <section style={{ padding: "80px 40px", position: "relative", background: "var(--bg-soft)", color: "var(--fg)" }}>
           <div style={containerStyles}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32 }}>
               {partnerStats.map((item) => (
@@ -241,9 +242,9 @@ export default function Page() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
-        <section style={{ padding: "140px 40px", position: "relative", background: "rgb(10, 10, 10)", color: "rgb(255, 255, 255)" }}>
+        {/* <section style={{ padding: "140px 40px", position: "relative", background: "rgb(10, 10, 10)", color: "rgb(255, 255, 255)" }}>
           <div style={containerStyles}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
               <div>
@@ -300,9 +301,9 @@ export default function Page() {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
-        <section style={{ padding: "140px 40px", position: "relative", background: "var(--bg-page)", color: "var(--fg)" }}>
+        {/* <section style={{ padding: "140px 40px", position: "relative", background: "var(--bg-page)", color: "var(--fg)" }}>
           <div style={containerStyles}>
             <div style={{ marginBottom: 60, maxWidth: 720 }}>
               <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>What partners get</div>
@@ -331,18 +332,18 @@ export default function Page() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         <section style={{ padding: "100px 40px", position: "relative", background: "var(--bg-warm)", color: "var(--fg)" }}>
           <div style={{ maxWidth: 920, margin: "0 auto", textAlign: "center" }}>
             <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>Partner with NevUp</div>
             <h2 style={{ ...headingFont, fontWeight: 500, fontSize: 56, lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: "20px 0 0", textWrap: "balance" }}>Book a partnership conversation.</h2>
-            <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-faint)", margin: "22px auto 0", textWrap: "pretty", maxWidth: 580 }}>
+            {/* <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-faint)", margin: "22px auto 0", textWrap: "pretty", maxWidth: 580 }}>
               Tell us about your trader base, your retention curve, and the behaviors costing you the most. We'll show you what NevUp could catch.
-            </p>
+            </p> */}
             <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 40, flexWrap: "wrap" }}>
               <a
-                href="mailto:partnerships@nevup.in"
+                href=" https://cal.com/nevup-ai/nevup-for-partners"
                 style={{
                   background: "var(--accent)",
                   color: "rgb(255, 250, 226)",
