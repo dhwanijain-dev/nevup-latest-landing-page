@@ -335,7 +335,7 @@ export default function Page() {
 								</div>
 
 								<div style={{ marginTop: "auto", paddingTop: 24, borderTop: "1px solid var(--card-border)" }}>
-									<div style={{ ...bodyFont, fontSize: 11, color: "var(--fg-ghost)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>Office</div>
+									{/* <div style={{ ...bodyFont, fontSize: 11, color: "var(--fg-ghost)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>Office</div> */}
 									<div style={{ ...bodyFont, fontSize: 14, color: "var(--fg)", marginTop: 8, lineHeight: 1.5 }} />
 								</div>
 							</div>

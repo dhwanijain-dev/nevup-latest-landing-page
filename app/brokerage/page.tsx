@@ -360,23 +360,7 @@ export default function Page() {
               >
                 Book a Partnership Call →
               </a>
-              <Link
-                href="/#how"
-                style={{
-                  background: "transparent",
-                  color: "var(--fg)",
-                  border: "1px solid rgba(0, 0, 0, 0.18)",
-                  borderRadius: 10,
-                  padding: "16px 30px",
-                  fontFamily: "Satoshi, sans-serif",
-                  fontWeight: 600,
-                  fontSize: 16,
-                  cursor: "pointer",
-                  textDecoration: "none",
-                }}
-              >
-                See the product
-              </Link>
+              
             </div>
           </div>
         </section>

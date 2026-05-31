@@ -28,12 +28,12 @@ const problemStats = [
   {
     value: "1%",
     label: "Only 1% maintain profitability over 5 years",
-    note: "(Barber et al., University of California, Davis (2010)",
+    note: "Source: Barber et al., University of California, Davis (2010)",
   },
   {
     value: "80%",
     label: "Of traders quit within two years",
-    note: "(Barber et al., University of California)",
+    note: "Source: Barber et al., University of California, Davis (2010)",
   },
 ];
 
@@ -307,7 +307,7 @@ export default function LandingPage() {
 
           <div style={{ ...container, position: "relative", zIndex: 2 }}>
             <div style={{ maxWidth: isMobile ? "100%" : 880 }}>
-              <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#fffaf2", opacity: 0.85 }}>NevUp · AI Behavioral Intelligence</p>
+              <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#fffaf2", opacity: 0.85 }}>NevUp | AI Behavioral Intelligence</p>
               <h1 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 52 : 104, lineHeight: 0.96, letterSpacing: "-0.035em", color: "#fffaf2", marginTop: 28, textWrap: "balance" as const }}>
                 Built for clear decisions in noisy markets.
               </h1>
@@ -424,7 +424,7 @@ is just expensive hindsight
           </div>
         </section>
 
-        <section id="how" style={{ padding: isMobile ? "90px 20px" : "100px 40px", background: vars.bgWarm, color: vars.fg }}>
+        <section id="how" style={{ padding: isMobile ? "90px 20px" : "100px 40px 0", background: vars.bgWarm, color: vars.fg }}>
           <div style={container}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: isMobile ? 24 : 48, alignItems: "end", marginBottom: 80 }}>
               <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: vars.fg, margin: "0 auto", textWrap: "balance" as const, textAlign: "center", width: "100%", maxWidth: isMobile ? "100%" : 1320 }}>

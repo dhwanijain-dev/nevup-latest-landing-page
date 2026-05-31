@@ -420,7 +420,7 @@ export default function Page() {
                   ["Behavioral models", "Purpose-built.", " Specialized models trained on trader behavioral patterns. Fast enough to run inline. Specific enough to recognize your patterns."],
                   ["Personalization", "Personalisation ", "The model uses your stated plan, your past trades, and the moments you have broken before so every intervention is grounded in lived context, not theory."],
                   ["Intervention engine", "⁠Real-time intervention", "⁠Interventions surface right at the point of decision. And when the session closes, a debrief breaks down exactly what happened and why, so the next one goes better."],
-                  ["Roadmap", "HRV & biometric integration", "Coming next!"],
+                  ["Roadmap", "Coming next!", "HRV & biometric integration"],
                 ].map(([tag, title, copy]) => (
                   <div key={tag as string} style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 12, padding: 22, display: "grid", gridTemplateColumns: "auto 1fr", gap: 22, alignItems: "start" }}>
                     {/* <div style={{ ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: accent, fontWeight: 700, padding: "6px 10px", border: "1px solid rgba(243,67,1,0.4)", borderRadius: 6, width: "fit-content", whiteSpace: "nowrap", height: "fit-content" }}>{tag as string}</div> */}
