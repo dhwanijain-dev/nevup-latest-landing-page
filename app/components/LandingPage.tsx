@@ -414,7 +414,7 @@ is just expensive hindsight
             </div>
 
             <div style={{ width: "100%", background: "#0a0a0a", border: "1px solid #1f1f1f", borderRadius: 14, overflow: "hidden", boxShadow: "0 60px 120px -40px rgba(0,0,0,0.5), 0 30px 60px -20px rgba(0,0,0,0.35)" }}>
-              <Image src="/launcpad3x.png" alt="NevUp Home preview" width={1920} height={1080} style={{ width: "100%", height: "auto", display: "block" }} />
+              <Image src="/dashboard.jpeg" alt="NevUp Home preview" width={1920} height={1080} style={{ width: "100%", height: "auto", display: "block" }} />
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 24, fontFamily: "Satoshi, sans-serif", fontSize: 12, color: "rgba(255,250,226,0.45)", flexWrap: "wrap", gap: 12 }}>

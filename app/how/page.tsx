@@ -377,7 +377,6 @@ export default function Page() {
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "end", marginBottom: 56 }}>
               <div>
-                <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgb(255,250,226)", opacity: 0.6 }}>Market context</div>
                 <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>Your patterns don't trade in isolation.</h2>
               </div>
               <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: 0, maxWidth: 480 }}>How you perform shifts with what the market is doing around you. NevUp reads both, so when it nudges you, it already has context on whether you're trading into a trending session, fighting a reversal, or navigating something in between.</p>
@@ -410,7 +409,6 @@ export default function Page() {
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr", gap: 80, alignItems: "start" }}>
               <div>
-                <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#0f1115", opacity: 0.6 }}>The foundation</div>
                 <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "#0f1115", margin: "18px 0 0" }}>The next generation of trading runs on behavioral intelligence.</h2>
                 <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "#5f646c", margin: "24px 0 0", maxWidth: 540 }}>NevUp's behavioral models learn how you trade under pressure and build a deeper understanding of your habits with every session. As the system becomes more personalized, it gets better at delivering interventions in the moments where they can make a difference.</p>
               </div>

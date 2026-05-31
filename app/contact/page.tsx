@@ -278,7 +278,7 @@ export default function Page() {
 					</div>
 				</section>
 
-				<section style={{ ...sectionStyles, padding: "100px 40px 120px", position: "relative", background: "var(--bg-soft)", color: "var(--fg)" }}>
+				<section style={{ ...sectionStyles, padding: "100px 40px 0px", position: "relative", background: "var(--bg-soft)", color: "var(--fg)" }}>
 					<div style={containerStyles}>
 						<div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 18 }}>
 							<div style={{ background: "linear-gradient(160deg, rgb(243, 67, 1) 0%, rgb(190, 95, 35) 100%)", color: "rgb(255,250,226)", borderRadius: 16, padding: 36, display: "flex", flexDirection: "column", minHeight: 480, position: "relative", overflow: "hidden" }}>
@@ -313,32 +313,20 @@ export default function Page() {
 								actionBackground="linear-gradient(rgb(59, 130, 246), rgb(30, 58, 138))"
 							/>
 
-							{/* <div style={{ background: "var(--card-bg)", borderRadius: 16, padding: 36, minHeight: 480, display: "flex", flexDirection: "column", border: "1px solid var(--card-border)" }}>
-								<div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>For everyone else</div>
-								<div style={{ ...headingFont, fontSize: 36, color: "var(--fg)", fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.05, marginTop: 16 }}>Say hello.</div>
-								<p style={{ ...bodyFont, fontSize: 15, lineHeight: 1.6, color: "var(--fg-faint)", margin: "16px 0 0", textWrap: "pretty" }}>
-									Press, hiring, research, or you&apos;ve just seen yourself in something we wrote write to us.
-								</p>
+							
+						</div>
+<div style={{ background: "var(--card-bg)", borderRadius: 16, padding: 36, display: "flex", alignItems:"center",flexDirection: "column", border: "1px solid var(--card-border)" }}>
+								<div style={{ ...headingFont, fontSize: 36, color: "var(--fg)", fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.05, marginTop: 16 }}>For Any Queries</div>
+								
+								<p style={{ ...bodyFont, fontSize: 20, lineHeight: 1.6, color: "var(--fg-faint)", margin: "28px 0 0", textWrap: "pretty", maxWidth: 660 }}>
+								feel free to reach out on<span style={{color:"#f59e0b", fontStyle:"italic"}}>connect@nevup.in</span>
 
-								<div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 14 }}>
-									{[
-										["General", "connect@nevup"],
-										["Press", "connect@nevup"],
-										["Careers", "connect@nevup"],
-										["Security", "connect@nevup"],
-									].map(([label, value]) => (
-										<div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20 }}>
-											<span style={{ ...bodyFont, fontSize: 12, color: "var(--fg-ghost)", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600 }}>{label}</span>
-											<span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 13, color: "var(--fg)" }}>{value}</span>
-										</div>
-									))}
-								</div>
+							</p>
 
 								<div style={{ marginTop: "auto", paddingTop: 24, borderTop: "1px solid var(--card-border)" }}>
 									<div style={{ ...bodyFont, fontSize: 14, color: "var(--fg)", marginTop: 8, lineHeight: 1.5 }} />
 								</div>
-							</div> */}
-						</div>
+							</div>
 						<div>
 							
 						</div>
