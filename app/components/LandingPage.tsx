@@ -405,7 +405,7 @@ is just expensive hindsight
           <div style={container}>
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr auto", alignItems: "end", marginBottom: 56, gap: 60 }}>
               <div>
-                <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#fffaf2", opacity: 0.6 }}>The product · Home</p>
+                {/* <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#fffaf2", opacity: 0.6 }}>The product · Home</p> */}
                 <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: "#fffaf2", marginTop: 18, textWrap: "balance" as const }}>Your portfolio, your behavior, one view.</h2>
               </div>
               <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", maxWidth: 380, margin: 0 }}>
@@ -426,10 +426,9 @@ is just expensive hindsight
 
         <section id="how" style={{ padding: isMobile ? "90px 20px" : "140px 40px", background: vars.bgWarm, color: vars.fg }}>
           <div style={container}>
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.1fr 1fr", gap: 80, alignItems: "end", marginBottom: 80 }}>
-              <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: vars.fg, margin: 0, textWrap: "balance" as const }}>
-                Every trader knows their patterns. <br />
-                <span style={{ color: vars.fgFaint }}>The hard part is seeing them in the moment they matter. That's what NevUp is built for.</span>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: isMobile ? 24 : 48, alignItems: "end", marginBottom: 80 }}>
+              <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: vars.fg, margin: "0 auto", textWrap: "balance" as const, textAlign: "center", width: "100%", maxWidth: isMobile ? "100%" : 1320 }}>
+                Every trader knows their patterns. The hard part is seeing them in the moment they matter. That&apos;s what NevUp is built for.
               </h2>
               {/* <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, margin: 0, maxWidth: 460 }}>
                 Three layers, one system. Each one builds on the last so by the time you click a position size, NevUp has already done the math you couldn&apos;t do in the moment.
@@ -458,8 +457,8 @@ is just expensive hindsight
         <section
   aria-label="How cards"
   style={{
-    background: "#F7F3ED",
-    padding: isMobile ? "40px 20px" : "80px 40px",
+    background: "rgb(242, 236, 228)",
+    padding: isMobile ? "40px 20px" : "40px 20px",
     color: "#0a0a0a",
     width: "100%",
     boxSizing: "border-box",
@@ -588,8 +587,8 @@ is just expensive hindsight
 
         <section id="brokerages" style={{ padding: isMobile ? "90px 20px" : "120px 40px", background: vars.bgPage, color: vars.fg }}>
           <div style={{ maxWidth: 920, margin: "0 auto", textAlign: "center" }}>
-            <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: vars.fg, opacity: 0.6 }}>Trade Smarter, Not Emotional.</p>
-            <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: vars.fg, marginTop: 22 }}>Get early access before it opens.</h2>
+            {/* <p style={{ fontFamily: "Satoshi, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: vars.fg, opacity: 0.6 }}>Trade Smarter, Not Emotional.</p> */}
+            <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: vars.fg, marginTop: 22 }}>Get early access</h2>
             <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 19, lineHeight: 1.6, color: vars.fgFaint, margin: "24px auto 0", maxWidth: 600 }}>
               Join NevUp's first user cohort and get access before public launch.
             </p>
