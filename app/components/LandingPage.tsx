@@ -424,11 +424,11 @@ is just expensive hindsight
           </div>
         </section>
 
-        <section id="how" style={{ padding: isMobile ? "90px 20px" : "140px 40px", background: vars.bgWarm, color: vars.fg }}>
+        <section id="how" style={{ padding: isMobile ? "90px 20px" : "100px 40px", background: vars.bgWarm, color: vars.fg }}>
           <div style={container}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: isMobile ? 24 : 48, alignItems: "end", marginBottom: 80 }}>
               <h2 style={{ fontFamily: "Funnel Display, sans-serif", fontWeight: 500, fontSize: isMobile ? 42 : 64, lineHeight: 1.02, letterSpacing: "-0.025em", color: vars.fg, margin: "0 auto", textWrap: "balance" as const, textAlign: "center", width: "100%", maxWidth: isMobile ? "100%" : 1320 }}>
-                Every trader knows their patterns. The hard part is seeing them in the moment they matter. That&apos;s what NevUp is built for.
+                Every trader knows their patterns. The hard part is seeing them in the moment they matter. That&apos;s what <span style={{ color: "#f34301" }}>NevUp</span> is built for.
               </h2>
               {/* <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, margin: 0, maxWidth: 460 }}>
                 Three layers, one system. Each one builds on the last so by the time you click a position size, NevUp has already done the math you couldn&apos;t do in the moment.
@@ -464,7 +464,20 @@ is just expensive hindsight
     boxSizing: "border-box",
   }}
 >
-  <div
+
+  <div style={container}>
+    <h2 style={{
+      fontFamily: "Funnel Display, sans-serif",
+      fontWeight: 600,
+      fontSize: isMobile ? 28 : 40,
+      lineHeight: 1.04,
+      letterSpacing: "-0.02em",
+      color: vars.fg,
+      textAlign: "center",
+      margin: "0 auto 28px",
+      maxWidth: isMobile ? "100%" : 920,
+    }}>How it works</h2>
+    <div
     style={{
       display: "grid",
       gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
@@ -583,6 +596,8 @@ is just expensive hindsight
       </p>
     </div>
   </div>
+  </div>
+
 </section>
 
         <section id="brokerages" style={{ padding: isMobile ? "90px 20px" : "120px 40px", background: vars.bgPage, color: vars.fg }}>
