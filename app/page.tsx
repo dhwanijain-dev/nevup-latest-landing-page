@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import LandingPage from "./components/LandingPage";
+import LaunchingSoon from "./components/LaunchingSoon";
 
 export const metadata: Metadata = {
   title: "NevUp Built for clear decisions in noisy markets.",
@@ -8,5 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <LandingPage />;
+  // return <LandingPage />;
+  return <LaunchingSoon/>;
+
 }
