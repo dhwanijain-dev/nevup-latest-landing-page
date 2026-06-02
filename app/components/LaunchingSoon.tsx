@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import PixelBlast from "./PixelBlast";
 
 export default function LaunchingSoon(): React.ReactElement {
   const getLaunchTarget = (): number => {
@@ -58,6 +59,23 @@ export default function LaunchingSoon(): React.ReactElement {
 
   return (
     <div className="launch-root">
+      <div className="pixelblast-bg" aria-hidden="true">
+        <PixelBlast
+          variant="square"
+          pixelSize={3}
+          color="#f34301"
+          patternScale={1.5}
+          patternDensity={0.4}
+          enableRipples={false}
+          rippleSpeed={0.15}
+          rippleThickness={0.1}
+          rippleIntensityScale={1}
+          speed={0.4}
+          transparent
+          edgeFade={0.25}
+          className="pixelblast-canvas"
+        />
+      </div>
       <div className="status-bar" />
       
 
@@ -174,6 +192,27 @@ export default function LaunchingSoon(): React.ReactElement {
           z-index: 0;
         }
 
+        .launch-root {
+          position: relative;
+          min-height: 100vh;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .pixelblast-bg {
+          position: fixed;
+          inset: 0;
+          z-index: -1;
+          pointer-events: none;
+          overflow: hidden;
+        }
+        .pixelblast-canvas {
+          width: 100%;
+          height: 100%;
+          opacity: 0.35;
+        }
+
         .corner { position: fixed; width: 80px; height: 80px; z-index: 1; opacity: 0; animation: fadeIn 1.2s ease forwards; }
         .corner svg { width: 100%; height: 100%; }
         .corner--tl { top: 32px; left: 32px; animation-delay: 0.2s; }
@@ -185,7 +224,15 @@ export default function LaunchingSoon(): React.ReactElement {
 
         @keyframes shimmer { 0%,100%{opacity:.4}50%{opacity:1} }
 
-        .container { position: relative; z-index: 2; text-align: center; max-width: 680px; width: 100%; padding: 48px 40px; }
+        .container {
+          position: relative;
+          z-index: 2;
+          text-align: center;
+          max-width: 680px;
+          width: 100%;
+          margin: 0 auto;
+          padding: 48px 40px;
+        }
 
         .brand { position: absolute; left: 24px; top: 24px; font-family: 'DM Mono', monospace; font-weight: 700; color: var(--ink); letter-spacing: .08em; background: transparent; padding: 6px 10px; border-radius: 6px; border: 1px solid transparent; }
         .brand .mark { color: var(--gold); font-weight: 800; margin-right: 8px; }
