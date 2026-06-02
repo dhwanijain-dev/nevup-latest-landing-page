@@ -3,7 +3,18 @@
 import React, { useEffect, useRef, useState } from "react";
 
 export default function LaunchingSoon(): React.ReactElement {
-  const launchDateRef = useRef<number>(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const getLaunchTarget = (): number => {
+    const now = new Date();
+    let year = now.getFullYear();
+    // Target: June 3 at 15:00 (3pm) local time
+    let target = new Date(year, 5, 3, 15, 0, 0);
+    if (target.getTime() <= now.getTime()) {
+      target = new Date(year + 1, 5, 3, 15, 0, 0);
+    }
+    return target.getTime();
+  };
+
+  const launchDateRef = useRef<number>(getLaunchTarget());
   const [time, setTime] = useState({ days: "00", hours: "00", minutes: "00", seconds: "00" });
   const [flipSec, setFlipSec] = useState(false);
   const [email, setEmail] = useState("");
@@ -48,10 +59,12 @@ export default function LaunchingSoon(): React.ReactElement {
   return (
     <div className="launch-root">
       <div className="status-bar" />
-      <div className="scanline" />
+      
 
       <div className="orb orb-1" />
       <div className="orb orb-2" />
+
+      <img className="bg-logo" src="/logo.png" alt="NevUp logo" />
 
       <div className="corner corner--tl">
         <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -79,6 +92,7 @@ export default function LaunchingSoon(): React.ReactElement {
       </div>
 
       <main className="container">
+        {/* <div className="brand"><span className="mark">nevup</span></div> */}
         <div className="badge">
           <span className="badge-dot" />
           Something extraordinary is being crafted
@@ -102,7 +116,7 @@ export default function LaunchingSoon(): React.ReactElement {
           <div className="time-unit"><div className={`time-number ${flipSec ? 'flip' : ''}`}>{time.seconds}</div><div className="time-label">Seconds</div></div>
         </div>
 
-        {!subscribed ? (
+        {/* {!subscribed ? (
           <form className="notify-form" onSubmit={handleNotify}>
             <input className="notify-input" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
             <button className="notify-btn" type="submit">Notify Me</button>
@@ -111,25 +125,25 @@ export default function LaunchingSoon(): React.ReactElement {
           <div className="success-msg visible"><div className="success-check">
             <svg viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 4L3 6L7 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>You're on the list — we'll be in touch</div>
-        )}
+        )} */}
 
-        <div className="social-links"><a href="#" className="social-link">Twitter</a><a href="#" className="social-link">Instagram</a><a href="#" className="social-link">LinkedIn</a></div>
+        {/* <div className="social-links"><a href="#" className="social-link">Twitter</a><a href="#" className="social-link">Instagram</a><a href="#" className="social-link">LinkedIn</a></div> */}
       </main>
 
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap');
 
         :root {
-          --cream: #faf8f4;
-          --warm-white: #f5f2eb;
-          --ink: #1a1814;
-          --ink-soft: #3d3a34;
-          --ink-muted: #8a867d;
-          --gold: #c8a96e;
-          --gold-light: #e8d9b8;
-          --gold-pale: #f5eed8;
-          --border: rgba(26,24,20,0.1);
-          --border-strong: rgba(26,24,20,0.2);
+          --cream: #f7f8fb; /* background base */
+          --warm-white: #ffffff;
+          --ink: #0a0a0a; /* foreground */
+          --ink-soft: #222222;
+          --ink-muted: #6b6b6b;
+          --gold: #f34301; /* brand accent */
+          --gold-light: rgba(243,67,1,0.12);
+          --gold-pale: rgba(243,67,1,0.06);
+          --border: rgba(10,10,10,0.06);
+          --border-strong: rgba(10,10,10,0.12);
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -148,17 +162,7 @@ export default function LaunchingSoon(): React.ReactElement {
           overflow: hidden;
         }
 
-        body::before {
-          content: '';
-          position: fixed;
-          inset: 0;
-          background-image:
-            linear-gradient(var(--border) 1px, transparent 1px),
-            linear-gradient(90deg, var(--border) 1px, transparent 1px);
-          background-size: 60px 60px;
-          pointer-events: none;
-          z-index: 0;
-        }
+        /* grid background removed as requested */
 
         body::after {
           content: '';
@@ -182,6 +186,9 @@ export default function LaunchingSoon(): React.ReactElement {
         @keyframes shimmer { 0%,100%{opacity:.4}50%{opacity:1} }
 
         .container { position: relative; z-index: 2; text-align: center; max-width: 680px; width: 100%; padding: 48px 40px; }
+
+        .brand { position: absolute; left: 24px; top: 24px; font-family: 'DM Mono', monospace; font-weight: 700; color: var(--ink); letter-spacing: .08em; background: transparent; padding: 6px 10px; border-radius: 6px; border: 1px solid transparent; }
+        .brand .mark { color: var(--gold); font-weight: 800; margin-right: 8px; }
 
         .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border: 1px solid var(--border-strong); background: rgba(255,255,255,0.7); backdrop-filter: blur(8px); border-radius: 100px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 48px; opacity: 0; animation: slideDown 0.8s cubic-bezier(0.16,1,0.3,1) 0.4s forwards; }
         .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2s ease-in-out infinite; }
@@ -231,8 +238,9 @@ export default function LaunchingSoon(): React.ReactElement {
         @keyframes slideUp { from{opacity:0; transform: translateY(24px)} to{opacity:1; transform: translateY(0)} }
         @keyframes slideDown { from{opacity:0; transform: translateY(-16px)} to{opacity:1; transform: translateY(0)} }
 
-        .scanline { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, rgba(200,169,110,0.4), transparent); z-index: 5; animation: scan 8s linear infinite; pointer-events: none; }
-        @keyframes scan { from{top:0;opacity:0} 5%{opacity:1} 95%{opacity:1} to{top:100vh;opacity:0} }
+        /* scanline removed */
+
+        .bg-logo { position: fixed; right: 5%; bottom: 6%; width: 420px; max-width: 42vw; opacity: 0.08; pointer-events: none; z-index: 0; transform-origin: center; }
       `}</style>
     </div>
   );
