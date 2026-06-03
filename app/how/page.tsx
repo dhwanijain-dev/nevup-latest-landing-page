@@ -102,8 +102,8 @@ const pageStyles: CSSProperties = {
   position: "relative",
   minHeight: "100vh",
   overflow: "hidden",
-  backgroundColor: "#ffffff",
-  color: "#0f1115",
+  backgroundColor: "var(--bg-page)",
+  color: "var(--fg)",
 };
 
 const containerStyles: CSSProperties = {
@@ -126,10 +126,10 @@ function SectionTitle({ eyebrow, title, description }: { eyebrow: string; title:
   return (
     <div style={{ maxWidth: 900 }}>
       <p style={{ ...bodyFont, fontSize: 12, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", color: accent }}>{eyebrow}</p>
-      <h2 style={{ ...headingFont, marginTop: 18, fontWeight: 500, fontSize: "clamp(2.4rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.03em", color: "#0f1115", textWrap: "balance" }}>
+      <h2 style={{ ...headingFont, marginTop: 18, fontWeight: 500, fontSize: "clamp(2.4rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.03em", color: "var(--fg)", textWrap: "balance" }}>
         {title}
       </h2>
-      {description ? <p style={{ ...bodyFont, marginTop: 22, fontSize: 18, lineHeight: 1.7, color: "#5f646c", maxWidth: 720, textWrap: "pretty" }}>{description}</p> : null}
+      {description ? <p style={{ ...bodyFont, marginTop: 22, fontSize: 18, lineHeight: 1.7, color: "var(--fg-faint)", maxWidth: 720, textWrap: "pretty" }}>{description}</p> : null}
     </div>
   );
 }
@@ -147,27 +147,27 @@ export default function Page() {
 
       <LandingNavbar />
       <main id="top" style={{ position: "relative" }}>
-        <section style={{ ...sectionStyles, paddingTop: 180, paddingBottom: 80, paddingLeft: 40, paddingRight: 40, background: "linear-gradient(180deg, #fff7ef 0%, #fff4eb 100%)", color: "#0f1115" }}>
+        <section style={{ ...sectionStyles, paddingTop: 180, paddingBottom: 80, paddingLeft: 40, paddingRight: 40, background: "var(--bg-warm)", color: "var(--fg)" }}>
           <div style={{ ...containerStyles }}>
-            <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#0f1115", opacity: 0.6 }}>How it works</div>
-            <h1 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3.5rem, 7vw, 5rem)", lineHeight: 0.96, letterSpacing: "-0.03em", color: "#0f1115", margin: "20px 0 0", maxWidth: 980, textWrap: "balance" }}>
+            <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>How it works</div>
+            <h1 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3.5rem, 7vw, 5rem)", lineHeight: 0.96, letterSpacing: "-0.03em", color: "var(--fg)", margin: "20px 0 0", maxWidth: 980, textWrap: "balance" }}>
               Every session is a chance to trade your best. <span style={{ color: "#f34301" }}>NevUp </span>  makes sure you don&apos;t get in the way
             </h1>
-            <p style={{ ...bodyFont, fontSize: 20, lineHeight: 1.6, color: "#5f646c", margin: "28px 0 0", maxWidth: 720, textWrap: "pretty" }}>
+            <p style={{ ...bodyFont, fontSize: 20, lineHeight: 1.6, color: "var(--fg-faint)", margin: "28px 0 0", maxWidth: 720, textWrap: "pretty" }}>
               NevUp learns how you trade, watches every session live, and steps in just before a behaviorally driven decision has the chance to become an expensive one.
             </p>
           </div>
         </section>
 
-        <section id="about" style={{ ...sectionStyles, padding: "120px 40px", background: "#ffffff", color: "#0f1115" }}>
+        <section id="about" style={{ ...sectionStyles, padding: "120px 40px", background: "var(--bg-page)", color: "var(--fg)" }}>
           <div style={{ ...containerStyles, marginBottom: 64 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "end" }}>
-              <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "#0f1115", margin: 0, textWrap: "balance" }}>
+              <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: 0, textWrap: "balance" }}>
                 The eight patterns 
                 <br />
-                <span style={{ color: "#8b8b8b" }}> behind most blown accounts.</span>
+                <span style={{ color: "var(--fg-ghost)" }}> behind most blown accounts.</span>
               </h2>
-              <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "#6b7280", margin: 0, maxWidth: 480, paddingBottom: 8, textWrap: "pretty" }}>
+              <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-faint)", margin: 0, maxWidth: 480, paddingBottom: 8, textWrap: "pretty" }}>
                Every trader has a handful of patterns they keep falling back into, usually under pressure and without realising it. The eight below account for most of the damage. Knowing which ones are yours is where real improvement begins.
               </p>
             </div>
@@ -175,12 +175,12 @@ export default function Page() {
 
           <div style={{ ...containerStyles, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
             {behaviorPatterns.map((item, index) => (
-              <motion.div key={item.title} whileHover={{ y: -4 }} transition={{ duration: 0.2 }} style={{ background: "#fafafa", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 14, padding: 24, minHeight: 200, display: "flex", flexDirection: "column", justifyContent: "space-between", cursor: "default", boxShadow: "0 20px 50px rgba(0,0,0,0.04)" }}>
+              <motion.div key={item.title} whileHover={{ y: -4 }} transition={{ duration: 0.2 }} style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 14, padding: 24, minHeight: 200, display: "flex", flexDirection: "column", justifyContent: "space-between", cursor: "default", boxShadow: "0 20px 50px rgba(0,0,0,0.04)" }}>
                 <div>
                   <div style={{ width: 10, height: 10, borderRadius: "50%", background: item.dot, marginBottom: 22 }} />
-                  <div style={{ ...headingFont, fontWeight: 500, fontSize: 22, color: "#0f1115", letterSpacing: "-0.015em", lineHeight: 1.15 }}>{item.title}</div>
+                  <div style={{ ...headingFont, fontWeight: 500, fontSize: 22, color: "var(--fg)", letterSpacing: "-0.015em", lineHeight: 1.15 }}>{item.title}</div>
                 </div>
-                <div style={{ ...bodyFont, fontSize: 13.5, color: "#6b7280", lineHeight: 1.55, marginTop: 14 }}>{item.copy}</div>
+                <div style={{ ...bodyFont, fontSize: 13.5, color: "var(--fg-faint)", lineHeight: 1.55, marginTop: 14 }}>{item.copy}</div>
               </motion.div>
             ))}
           </div>
@@ -358,12 +358,12 @@ export default function Page() {
           </div>
         </section>
 
-        <section style={{ padding: "140px 40px", background: "#fff7ef", color: "#0f1115" }}>
+        <section style={{ padding: "140px 40px", background: "var(--bg-warm)", color: "var(--fg)" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr", gap: 80, alignItems: "start" }}>
               <div>
-                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "#0f1115", margin: "18px 0 0" }}>The next generation of trading runs on behavioral intelligence.</h2>
-                <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "#5f646c", margin: "24px 0 0", maxWidth: 540 }}>NevUp&apos;s behavioral models learn how you trade under pressure and build a deeper understanding of your habits with every session. As the system becomes more personalized, it gets better at delivering interventions in the moments where they can make a difference.</p>
+                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: "18px 0 0" }}>The next generation of trading runs on behavioral intelligence.</h2>
+                <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-faint)", margin: "24px 0 0", maxWidth: 540 }}>NevUp&apos;s behavioral models learn how you trade under pressure and build a deeper understanding of your habits with every session. As the system becomes more personalized, it gets better at delivering interventions in the moments where they can make a difference.</p>
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -373,11 +373,11 @@ export default function Page() {
                   ["Intervention engine", "⁠Real-time intervention", "⁠Interventions surface right at the point of decision. And when the session closes, a debrief breaks down exactly what happened and why, so the next one goes better."],
                   ["Roadmap", "Coming next!", "HRV & biometric integration"],
                 ].map(([tag, title, copy]) => (
-                  <div key={tag as string} style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 12, padding: 22, display: "grid", gridTemplateColumns: "auto 1fr", gap: 22, alignItems: "start" }}>
+                  <div key={tag as string} style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 12, padding: 22, display: "grid", gridTemplateColumns: "auto 1fr", gap: 22, alignItems: "start" }}>
                     {/* <div style={{ ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: accent, fontWeight: 700, padding: "6px 10px", border: "1px solid rgba(243,67,1,0.4)", borderRadius: 6, width: "fit-content", whiteSpace: "nowrap", height: "fit-content" }}>{tag as string}</div> */}
                     <div>
                       <div style={{ ...headingFont, fontSize: 22, color: "#f86c0f", fontWeight: 500, letterSpacing: "-0.015em" }}>{title as string}</div>
-                      <p style={{ ...bodyFont, fontSize: 15, lineHeight: 1.6, color: "#5f646c", margin: "8px 0 0" }}>{copy as string}</p>
+                      <p style={{ ...bodyFont, fontSize: 15, lineHeight: 1.6, color: "var(--fg-faint)", margin: "8px 0 0" }}>{copy as string}</p>
                     </div>
                   </div>
                 ))}

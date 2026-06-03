@@ -210,9 +210,9 @@ export default function Page() {
 					<div style={containerStyles}>
 						<div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 18 }}>
 							<div style={{ background: "linear-gradient(160deg, rgb(243, 67, 1) 0%, rgb(190, 95, 35) 100%)", color: "rgb(255,250,226)", borderRadius: 16, padding: 36, display: "flex", flexDirection: "column", minHeight: 480, position: "relative", overflow: "hidden" }}>
-								<div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, opacity: 0.18, pointerEvents: "none" }}>
+								{/* <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, opacity: 0.18, pointerEvents: "none" }}>
 									<Image src="/logo.png" width={200} height={200} alt="NevUp" style={{ display: "inline-block", width: "100%", height: "100%", objectFit: "contain" }} />
-								</div>
+								</div> */}
 								<div style={{ position: "relative", zIndex: 1, flex: 1, display: "flex", flexDirection: "column" }}>
 									<div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgb(255,250,226)", opacity: 0.85 }}>For traders</div>
 									<div style={{ ...headingFont, fontSize: 36, color: "rgb(255,250,226)", fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.05, marginTop: 16 }}>Join the waitlist.</div>

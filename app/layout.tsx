@@ -3,6 +3,7 @@ import { Inter, Outfit, Geist_Mono, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import SmoothScroll from "./components/SmoorthScroll";
+import ThemeProvider from "./components/ThemeProvider";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -38,7 +39,9 @@ export default function RootLayout({
       className={cn(inter.variable, outfit.variable, geistMono.variable, "font-sans", geist.variable)}
     >
       <body>
-        <SmoothScroll>{children}</SmoothScroll>
+        <ThemeProvider>
+          <SmoothScroll>{children}</SmoothScroll>
+        </ThemeProvider>
       </body>
     </html>
   );

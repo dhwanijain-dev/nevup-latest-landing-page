@@ -8,11 +8,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Menu, Moon, Sun, X } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
-
-type LandingNavbarProps = {
-  isDark?: boolean;
-  onToggleTheme?: () => void;
-};
+import { useTheme } from "./ThemeProvider";
 
 const navLinks = [
   { label: "How it works", href: "/how" },
@@ -21,12 +17,12 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-export default function LandingNavbar({ isDark, onToggleTheme }: LandingNavbarProps) {
+export default function LandingNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const pathname = usePathname();
-  const darkMode = isDark ?? false;
-  const toggleTheme = onToggleTheme ?? (() => {});
+  const { isDark, toggleTheme } = useTheme();
+  const darkMode = isDark;
   const logoHref = pathname === "/" ? "#top" : "/";
 
   const vars: Record<string, string> = isDark
@@ -206,6 +202,25 @@ export default function LandingNavbar({ isDark, onToggleTheme }: LandingNavbarPr
                   {link.label}
                 </a>
               ))}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                style={{
+                  borderRadius: 10,
+                  border: `1px solid ${vars.navBorder}`,
+                  padding: "12px 14px",
+                  fontFamily: "Satoshi, sans-serif",
+                  fontSize: 14,
+                  color: vars.fg,
+                  background: "transparent",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+                {darkMode ? "Light Mode" : "Dark Mode"}
+              </button>
             </div>
           </motion.div>
         ) : null}

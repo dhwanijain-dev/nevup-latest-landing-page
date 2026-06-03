@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useState } from "react";
+import { useTheme } from "./ThemeProvider";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
@@ -174,7 +174,7 @@ function LayerVisual({ kind }: { kind: LayerKind }) {
 }
 
 export default function LandingPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark } = useTheme();
   const isMobile = useIsMobile();
 
   const vars: Record<string, string> = isDark
@@ -208,7 +208,7 @@ export default function LandingPage() {
 
   return (
     <div style={{ background: vars.bgPage, color: vars.fg, position: "relative", overflowX: "hidden" }}>
-      <LandingNavbar isDark={isDark} onToggleTheme={() => setIsDark((value) => !value)} />
+      <LandingNavbar />
 
       <main id="top">
         <section style={{ position: "relative", minHeight: 760, overflow: "hidden", padding: isMobile ? "140px 20px 80px" : "180px 40px 120px", background: "linear-gradient(125deg, rgb(230, 58, 0) 0%, rgb(243, 67, 1) 30%, rgb(242, 105, 63) 70%, rgb(248, 128, 96) 100%)" }}>

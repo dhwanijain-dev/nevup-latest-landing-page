@@ -12,6 +12,7 @@ const Waitlist = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isTrader, setIsTrader] = useState(false);
+  const [agreedToContact, setAgreedToContact] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,6 +46,7 @@ const Waitlist = () => {
       setName("");
       setEmail("");
       setIsTrader(false);
+      setAgreedToContact(false);
 
       if (!syncResult.ok) {
         console.error("Waitlist sync failed", syncResult);
@@ -79,12 +81,7 @@ const Waitlist = () => {
         alignItems: "center",
         justifyContent: "center",
         padding: "2rem 1.5rem",
-        background: `
-          radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.03) 0%, transparent 60%),
-          radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.02) 0%, transparent 55%),
-          radial-gradient(ellipse at 60% 80%, rgba(255,255,255,0.01) 0%, transparent 50%),
-          linear-gradient(180deg, #050508 0%, #000000 100%)
-        `,
+        background: "var(--bg-page)",
       }}
     >
       <div style={{ width: "100%", maxWidth: "480px" }}>
@@ -103,7 +100,7 @@ const Waitlist = () => {
             borderRadius: "999px",
             padding: "4px 14px",
             fontSize: "0.72rem",
-            color: "rgba(255,255,255,0.45)",
+            color: "var(--fg-ghost)",
             marginBottom: "1rem",
             letterSpacing: "0.04em",
           }}
@@ -129,7 +126,7 @@ const Waitlist = () => {
             fontSize: "clamp(2rem, 5vw, 2.75rem)",
             fontWeight: 700,
             lineHeight: 1.15,
-            background: "linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.65) 100%)",
+            background: "linear-gradient(135deg, var(--fg) 0%, var(--fg-faint) 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
@@ -145,7 +142,7 @@ const Waitlist = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
           style={{
-            color: "rgba(255,255,255,0.45)",
+            color: "var(--fg-ghost)",
             fontSize: "1rem",
             lineHeight: 1.65,
             marginBottom: "2rem",
@@ -181,7 +178,7 @@ const Waitlist = () => {
                 fontWeight: 600,
                 letterSpacing: "0.07em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.4)",
+                color: "var(--fg-ghost)",
                 marginBottom: "0.5rem",
               }}
             >
@@ -196,7 +193,7 @@ const Waitlist = () => {
                 background: "rgba(255,255,255,0.06)",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "10px",
-                color: "#ffffff",
+                color: "var(--fg)",
                 padding: "12px 16px",
                 fontSize: "0.95rem",
                 outline: "none",
@@ -215,7 +212,7 @@ const Waitlist = () => {
                 fontWeight: 600,
                 letterSpacing: "0.07em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.4)",
+                color: "var(--fg-ghost)",
                 marginBottom: "0.5rem",
               }}
             >
@@ -231,7 +228,7 @@ const Waitlist = () => {
                 background: "rgba(255,255,255,0.06)",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "10px",
-                color: "#ffffff",
+                color: "var(--fg)",
                 padding: "12px 16px",
                 fontSize: "0.95rem",
                 outline: "none",
@@ -302,7 +299,7 @@ const Waitlist = () => {
                 style={{
                   fontSize: "0.9rem",
                   fontWeight: 500,
-                  color: "rgba(255,255,255,0.85)",
+                  color: "var(--fg-muted)",
                 }}
               >
                 I actively trade in financial markets
@@ -310,7 +307,7 @@ const Waitlist = () => {
               <div
                 style={{
                   fontSize: "0.75rem",
-                  color: "rgba(255,255,255,0.35)",
+                  color: "var(--fg-ghost)",
                   marginTop: "2px",
                 }}
               >
@@ -319,10 +316,78 @@ const Waitlist = () => {
             </div>
           </label>
 
+          {/* Contact Consent */}
+          <label
+            htmlFor="agreedToContact"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+              padding: "0.85rem 1rem",
+              marginBottom: "1.25rem",
+              borderRadius: "12px",
+              cursor: "pointer",
+              border: agreedToContact
+                ? "1px solid rgba(99,102,241,0.45)"
+                : "1px solid rgba(255,255,255,0.08)",
+              background: agreedToContact
+                ? "rgba(99,102,241,0.1)"
+                : "rgba(255,255,255,0.04)",
+              transition: "all 0.2s ease",
+            }}
+          >
+            {/* Custom checkbox visual */}
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                borderRadius: "6px",
+                flexShrink: 0,
+                border: agreedToContact
+                  ? "1.5px solid transparent"
+                  : "1.5px solid rgba(255,255,255,0.2)",
+                background: agreedToContact
+                  ? "linear-gradient(135deg, #2563eb, #7c3aed)"
+                  : "rgba(255,255,255,0.05)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s ease",
+              }}
+              aria-hidden="true"
+            >
+              <Checkbox
+                id="agreedToContact"
+                checked={agreedToContact}
+                onCheckedChange={(value) => setAgreedToContact(value === true)}
+                aria-label="Agree to be contacted about NevUp AI product launch"
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  border: "none",
+                  background: "transparent",
+                  padding: 0,
+                  boxShadow: "none",
+                }}
+              />
+            </div>
+
+            <div
+              style={{
+                fontSize: "0.8rem",
+                fontWeight: 500,
+                color: "var(--fg-ghost)",
+                lineHeight: 1.45,
+              }}
+            >
+              By submitting your email, you agree to be contacted about NevUp AI&apos;s product launch
+            </div>
+          </label>
+
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !agreedToContact}
             style={{
               width: "100%",
               padding: "13px 1.5rem",
@@ -332,10 +397,10 @@ const Waitlist = () => {
               color: "#000000",
               fontSize: "0.95rem",
               fontWeight: 600,
-              cursor: isSubmitting ? "not-allowed" : "pointer",
+              cursor: isSubmitting || !agreedToContact ? "not-allowed" : "pointer",
               display: "block",
               boxShadow: "none",
-              opacity: isSubmitting ? 0.6 : 1,
+              opacity: isSubmitting || !agreedToContact ? 0.6 : 1,
               position: "relative",
             }}
           >
@@ -348,7 +413,7 @@ const Waitlist = () => {
               textAlign: "center",
               marginTop: "1rem",
               fontSize: "0.75rem",
-              color: "rgba(255,255,255,0.28)",
+              color: "var(--fg-ghost)",
             }}
           >
             ✓ No spam &nbsp;·&nbsp; Unsubscribe anytime

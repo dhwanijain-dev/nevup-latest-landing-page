@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useTheme } from "./ThemeProvider";
 
 const footerColumns = [
   {
@@ -38,12 +41,20 @@ const footerColumns = [
 ] as const;
 
 export default function LandingFooter() {
+  const { isDark } = useTheme();
+
+  const bg = isDark ? "#0a0a0a" : "#111111";
+  const fg = "#fffaf2";
+  const fgMuted = "rgba(255,250,226,0.55)";
+  const fgGhost = "rgba(255,250,226,0.45)";
+  const borderColor = "rgba(255,250,226,0.1)";
+
   return (
     <footer
       id="contact"
       style={{
-        background: "#0a0a0a",
-        color: "#fffaf2",
+        background: bg,
+        color: fg,
         padding: "72px 40px 32px",
       }}
     >
@@ -54,23 +65,23 @@ export default function LandingFooter() {
             gridTemplateColumns: "1.6fr 1fr 1fr 1fr 1fr",
             gap: 48,
             paddingBottom: 56,
-            borderBottom: "1px solid rgba(255,250,226,0.1)",
+            borderBottom: `1px solid ${borderColor}`,
           }}
         >
           <div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
               <Image src="/whitelogo.png" width={160} height={32} alt="NevUp" style={{ width: "100%", height: "100%" }} />
             </div>
-            <p style={{ fontFamily: "Funnel Display, sans-serif", fontSize: 22, lineHeight: 1.3, color: "#fffaf2", marginTop: 22, maxWidth: 320, fontWeight: 400 }}>Built for clear decisions in noisy markets.</p>
-            <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 13, color: "rgba(255,250,226,0.55)", marginTop: 18, lineHeight: 1.6, maxWidth: 320 }}>NevUp AI is a behavioral intelligence layer for modern traders. Trusted by traders across crypto, forex, and equities.</p>
+            <p style={{ fontFamily: "Funnel Display, sans-serif", fontSize: 22, lineHeight: 1.3, color: fg, marginTop: 22, maxWidth: 320, fontWeight: 400 }}>Built for clear decisions in noisy markets.</p>
+            <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 13, color: fgMuted, marginTop: 18, lineHeight: 1.6, maxWidth: 320 }}>NevUp AI is a behavioral intelligence layer for modern traders. Trusted by traders across crypto, forex, and equities.</p>
           </div>
 
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,250,226,0.45)", fontWeight: 600 }}>{column.title}</p>
+              <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: fgGhost, fontWeight: 600 }}>{column.title}</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 18 }}>
                 {column.links.map(([label, href]) => (
-                  <a key={label} href={href} style={{ fontFamily: "Satoshi, sans-serif", fontSize: 14, color: "#fffaf2", textDecoration: "none", opacity: 0.85 }}>
+                  <a key={label} href={href} style={{ fontFamily: "Satoshi, sans-serif", fontSize: 14, color: fg, textDecoration: "none", opacity: 0.85 }}>
                     {label}
                   </a>
                 ))}
@@ -79,9 +90,9 @@ export default function LandingFooter() {
           ))}
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 32, fontFamily: "Satoshi, sans-serif", fontSize: 12, color: "rgba(255,250,226,0.45)", flexWrap: "wrap", gap: 12 }}>
-          <span>© 2026 NevUp AI, Inc. All rights reserved. NevUp™ is a trademark of NevUp AI, Inc.</span>
-          <span>Trade Smarter, Not Emotional.</span>
+        <div style={{ display: "flex", justifyContent: "start", alignItems: "center", marginTop: 32, fontFamily: "Satoshi, sans-serif", fontSize: 12, color: fgGhost, flexWrap: "wrap", gap: 12 }}>
+          <span>© 2026 NevUp AI. All rights reserved. NevUp™ is a trademark of NevUp AI.</span>
+          {/* <span>Trade Smarter, Not Emotional.</span> */}
         </div>
 
         <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 11, color: "rgba(255,250,226,0.3)", marginTop: 24, lineHeight: 1.6, maxWidth: 900 }}>
