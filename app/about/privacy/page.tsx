@@ -186,7 +186,7 @@ export default function Page() {
 								<p style={{ ...bodyFont, fontWeight: 700, fontSize: 12, letterSpacing: "0.2em", textTransform: "uppercase", color: "#f34301" }}>Privacy Policy</p>
 								<h1 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3.4rem, 7vw, 6rem)", lineHeight: 0.94, letterSpacing: "-0.04em", color: "#0a0a0a", margin: "18px 0 0", textWrap: "balance" }}>How NevUp handles your data.</h1>
 								<p style={{ ...bodyFont, fontSize: 19, lineHeight: 1.7, color: "#4f5560", margin: "24px 0 0", maxWidth: 760, textWrap: "pretty" }}>
-									Effective Date: June 2026 | Last Updated: June 2026 | www.nevup.ai
+									Effective Date: June 2026 | Last Updated: June 2026 | <www className="nevup in"></www>
 								</p>
 								<p style={{ ...bodyFont, fontSize: 17, lineHeight: 1.75, color: "#4f5560", margin: "18px 0 0", maxWidth: 840, textWrap: "pretty" }}>
 									This Privacy Policy explains how NevUp AI collects, uses, stores, and shares your personal data when you visit our website and join our product waitlist. It is drafted in compliance with India's Information Technology Act, 2000, the IT (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011, and the Digital Personal Data Protection Act, 2023 (DPDP Act).

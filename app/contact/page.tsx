@@ -271,9 +271,9 @@ export default function Page() {
 							<div style={{ position: "relative", zIndex: 1 }}>
 								<div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgb(255,250,226)", opacity: 0.55 }}>Newsletter</div>
 								<h2 style={{ ...headingFont, fontWeight: 500, fontSize: 48, lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0", textWrap: "balance" }}>Sign up for our newsletter here.</h2>
-								<p style={{ ...bodyFont, fontSize: 16, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: "22px 0 0", textWrap: "pretty", maxWidth: 460 }}>
+								{/* <p style={{ ...bodyFont, fontSize: 16, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: "22px 0 0", textWrap: "pretty", maxWidth: 460 }}>
 									One email a month. Behavioral research notes, market psychology reads, and what we&apos;re shipping next. No promotions.
-								</p>
+								</p> */}
 							</div>
 
 							<div style={{ position: "relative", zIndex: 1 }}>
