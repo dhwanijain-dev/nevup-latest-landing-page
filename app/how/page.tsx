@@ -110,8 +110,6 @@ const containerStyles: CSSProperties = {
   width: "100%",
   maxWidth: 1280,
   margin: "0 auto",
-  paddingLeft: 24,
-  paddingRight: 24,
 };
 
 const sectionStyles: CSSProperties = {
@@ -147,33 +145,33 @@ export default function Page() {
 
       <LandingNavbar />
       <main id="top" style={{ position: "relative" }}>
-        <section style={{ ...sectionStyles, paddingTop: 180, paddingBottom: 80, paddingLeft: 40, paddingRight: 40, background: "var(--bg-warm)", color: "var(--fg)" }}>
-          <div style={{ ...containerStyles }}>
+        <section style={{ ...sectionStyles, paddingTop: isMobile ? 140 : 180, paddingBottom: isMobile ? 40 : 80, paddingLeft: isMobile ? 20 : 40, paddingRight: isMobile ? 20 : 40, background: "var(--bg-warm)", color: "var(--fg)" }}>
+          <div style={{ ...containerStyles, paddingLeft: isMobile ? 16 : 24, paddingRight: isMobile ? 16 : 24 }}>
             <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>How it works</div>
-            <h1 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3.5rem, 7vw, 5rem)", lineHeight: 0.96, letterSpacing: "-0.03em", color: "var(--fg)", margin: "20px 0 0", maxWidth: 980, textWrap: "balance" }}>
+            <h1 style={{ ...headingFont, fontWeight: 500, fontSize: isMobile ? "clamp(2.5rem, 6vw, 3.5rem)" : "clamp(3.5rem, 7vw, 5rem)", lineHeight: 0.96, letterSpacing: "-0.03em", color: "var(--fg)", margin: "20px 0 0", maxWidth: 980, textWrap: "balance" }}>
               Every session is a chance to trade your best. <span style={{ color: "#f34301" }}>NevUp </span>  makes sure you don&apos;t get in the way
             </h1>
-            <p style={{ ...bodyFont, fontSize: 20, lineHeight: 1.6, color: "var(--fg-faint)", margin: "28px 0 0", maxWidth: 720, textWrap: "pretty" }}>
+            <p style={{ ...bodyFont, fontSize: isMobile ? 18 : 20, lineHeight: 1.6, color: "var(--fg-faint)", margin: "28px 0 0", maxWidth: 720, textWrap: "pretty" }}>
               NevUp learns how you trade, watches every session live, and steps in just before a behaviorally driven decision has the chance to become an expensive one.
             </p>
           </div>
         </section>
 
-        <section id="about" style={{ ...sectionStyles, padding: "120px 40px", background: "var(--bg-page)", color: "var(--fg)" }}>
-          <div style={{ ...containerStyles, marginBottom: 64 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "end" }}>
+        <section id="about" style={{ ...sectionStyles, padding: isMobile ? "64px 20px" : "120px 40px", background: "var(--bg-page)", color: "var(--fg)" }}>
+          <div style={{ ...containerStyles, paddingLeft: isMobile ? 16 : 24, paddingRight: isMobile ? 16 : 24, marginBottom: 64 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 80, alignItems: "end" }}>
               <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: 0, textWrap: "balance" }}>
-                The eight patterns 
+                The eight patterns
                 <br />
                 <span style={{ color: "var(--fg-ghost)" }}> behind most blown accounts.</span>
               </h2>
               <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-faint)", margin: 0, maxWidth: 480, paddingBottom: 8, textWrap: "pretty" }}>
-               Every trader has a handful of patterns they keep falling back into, usually under pressure and without realising it. The eight below account for most of the damage. Knowing which ones are yours is where real improvement begins.
+                Every trader has a handful of patterns they keep falling back into, usually under pressure and without realising it. The eight below account for most of the damage. Knowing which ones are yours is where real improvement begins.
               </p>
             </div>
           </div>
 
-          <div style={{ ...containerStyles, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
+          <div style={{ ...containerStyles, paddingLeft: isMobile ? 16 : 24, paddingRight: isMobile ? 16 : 24, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
             {behaviorPatterns.map((item, index) => (
               <motion.div key={item.title} whileHover={{ y: -4 }} transition={{ duration: 0.2 }} style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 14, padding: 24, minHeight: 200, display: "flex", flexDirection: "column", justifyContent: "space-between", cursor: "default", boxShadow: "0 20px 50px rgba(0,0,0,0.04)" }}>
                 <div>
@@ -196,20 +194,20 @@ export default function Page() {
           </div> */}
         </section>
 
-        <section style={{ padding: "140px 40px", background: "#0a0a0a", color: "rgb(255,250,226)" }}>
-          <div style={containerStyles}>
+        <section style={{ padding: isMobile ? "64px 20px" : "140px 40px", background: "#0a0a0a", color: "rgb(255,250,226)" }}>
+          <div style={{ ...containerStyles, paddingLeft: isMobile ? 16 : 24, paddingRight: isMobile ? 16 : 24 }}>
             <div style={{ textAlign: "center", maxWidth: 800, margin: "0 auto 56px" }}>
               <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgb(255,250,226)", opacity: 0.6 }}>See it work</div>
               <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(2.75rem, 5vw, 4rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>
-                Watch a <span style={{ color: "#f34301", fontStyle: "italic", display: "inline-block", minWidth: 220, textAlign: "center" }}>FOMO</span>  trade get nudged in real time right before execution 
+                Watch a <span style={{ color: "#f34301", fontStyle: "italic", display: "inline-block", minWidth: 220, textAlign: "center" }}>FOMO</span>  trade get nudged in real time right before execution
               </h2>
               {/* <p style={{ ...bodyFont, fontSize: 19, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: "22px auto 0", maxWidth: 640, textWrap: "pretty" }}>
                 The Home screen is your portfolio. The Agent overlays a behavioral layer on top of it. When patterns are detected, the intervention surfaces inline.
               </p> */}
             </div>
 
-            <div style={{ width: "100%", background: "#0a0a0a", border: "1px solid rgb(31,31,31)", borderRadius: 14, overflow: "hidden", boxShadow: "rgba(0,0,0,0.5) 0 60px 120px -40px, rgba(0,0,0,0.35) 0 30px 60px -20px", display: "flex", minHeight: 680, position: "relative" }}>
-              <aside style={{ width: 76, minWidth: 76, background: "#000", borderRight: "1px solid rgb(31,31,31)", display: "flex", flexDirection: "column", alignItems: "center", padding: "20px 0" }}>
+            <div style={{ width: "100%", background: "#0a0a0a", border: "1px solid rgb(31,31,31)", borderRadius: 14, overflow: "hidden", boxShadow: "rgba(0,0,0,0.5) 0 60px 120px -40px, rgba(0,0,0,0.35) 0 30px 60px -20px", display: "flex", flexDirection: isMobile ? "column" : "row", minHeight: isMobile ? "auto" : 680, position: "relative" }}>
+              <aside style={{ width: 76, minWidth: 76, background: "#000", borderRight: isMobile ? "none" : "1px solid rgb(31,31,31)", borderBottom: isMobile ? "1px solid rgb(31,31,31)" : "none", display: isMobile ? "none" : "flex", flexDirection: "column", alignItems: "center", padding: "20px 0" }}>
                 <div style={{ marginBottom: 24 }}>
                   <Image src="/logo.png" alt="NevUp" width={22} height={22} style={{ display: "inline-block", width: 22, height: 22, objectFit: "contain", flexShrink: 0 }} />
                 </div>
@@ -223,9 +221,9 @@ export default function Page() {
               </aside>
 
               <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-                <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 24px", borderBottom: "1px solid rgb(31,31,31)", background: "#0a0a0a" }}>
+                <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "10px 16px" : "14px 24px", borderBottom: "1px solid rgb(31,31,31)", background: "#0a0a0a" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", background: "rgb(15,15,15)", border: "1px solid rgb(31,31,31)", borderRadius: 8, width: 320 }}>
+                    <div style={{ display: isMobile ? "none" : "flex", alignItems: "center", gap: 8, padding: "7px 12px", background: "rgb(15,15,15)", border: "1px solid rgb(31,31,31)", borderRadius: 8, width: 320 }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B6B6D" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
                       <span style={{ color: "rgb(107,107,109)", ...bodyFont, fontSize: 12 }}>Search assets, patterns, sessions…</span>
                       <span style={{ marginLeft: "auto", color: "rgb(68,68,68)", ...bodyFont, fontSize: 10, padding: "2px 6px", border: "1px solid rgb(31,31,31)", borderRadius: 4 }}>⌘K</span>
@@ -240,7 +238,7 @@ export default function Page() {
                   </div>
                 </header>
 
-                <div style={{ padding: "20px 24px 28px", flex: 1, display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ padding: isMobile ? "16px 16px 24px" : "20px 24px 28px", flex: 1, display: "flex", flexDirection: "column", gap: 14 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap" }}>
                     <div>
                       <div style={{ ...headingFont, color: "rgb(255,255,255)", fontSize: 24, fontWeight: 600 }}>Home</div>
@@ -254,8 +252,8 @@ export default function Page() {
                   </div>
 
                   <div style={{ background: "rgb(13,13,13)", border: "1px solid rgb(31,31,31)", borderRadius: 12, padding: 22 }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr 1fr 1fr auto auto", gap: 24, alignItems: "baseline" }}>
-                      <div>
+                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "1.4fr 1fr 1fr 1fr 1fr auto auto", gap: 24, alignItems: isMobile ? "stretch" : "baseline" }}>
+                      <div style={{ gridColumn: isMobile ? "span 2" : "auto" }}>
                         <div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Total Value</div>
                         <span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(255,255,255)", fontSize: 34, fontWeight: 700, display: "block", marginTop: 6 }}>$230,846.12</span>
                         <div style={{ display: "flex", gap: 8, marginTop: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -267,12 +265,12 @@ export default function Page() {
                       <div><div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Total Profit</div><span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(34,197,94)", fontSize: 17, fontWeight: 600, display: "block", marginTop: 8 }}>+$28,540.18</span></div>
                       <div><div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Realized P&amp;L</div><span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(34,197,94)", fontSize: 17, fontWeight: 600, display: "block", marginTop: 8 }}>+$12,418.30</span></div>
                       <div><div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>All-Time Return</div><span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(34,197,94)", fontSize: 17, fontWeight: 600, display: "block", marginTop: 8 }}>+45.6%</span></div>
-                      <div style={{ background: "linear-gradient(rgb(59,130,246), rgb(30,58,138))", color: "rgb(255,255,255)", border: "1px solid rgba(96,165,250,0.5)", padding: "10px 16px", borderRadius: 8, ...bodyFont, fontWeight: 600, fontSize: 13 }}>+ Deposit</div>
-                      <div style={{ background: "rgb(15,15,15)", color: "rgb(255,255,255)", border: "1px solid rgb(31,31,31)", padding: "10px 16px", borderRadius: 8, ...bodyFont, fontSize: 13 }}>Withdraw ↓</div>
+                      <div style={{ background: "linear-gradient(rgb(59,130,246), rgb(30,58,138))", color: "rgb(255,255,255)", border: "1px solid rgba(96,165,250,0.5)", padding: "10px 16px", borderRadius: 8, ...bodyFont, fontWeight: 600, fontSize: 13, textAlign: "center" }}>+ Deposit</div>
+                      <div style={{ background: "rgb(15,15,15)", color: "rgb(255,255,255)", border: "1px solid rgb(31,31,31)", padding: "10px 16px", borderRadius: 8, ...bodyFont, fontSize: 13, textAlign: "center" }}>Withdraw ↓</div>
                     </div>
 
-                    <div style={{ marginTop: 18 }}>
-                      <svg viewBox="0 0 1200 200" preserveAspectRatio="none" style={{ width: "100%", height: 200, display: "block" }}>
+                    <div style={{ marginTop: 18, height: isMobile ? 120 : 200 }}>
+                      <svg viewBox="0 0 1200 200" preserveAspectRatio="none" style={{ width: "100%", height: "100%", display: "block" }}>
                         <defs>
                           <linearGradient id="phGrnFill" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#22C55E" stopOpacity="0.32" />
@@ -285,7 +283,7 @@ export default function Page() {
                     </div>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: isMobile ? 8 : 12 }}>
                     {[["Crypto", "$142,820", "61.9% of portfolio", "rgb(34,197,94)"], ["Stocks", "$58,920", "25.5% of portfolio", "rgb(59,130,246)"], ["DeFi", "$18,106", "7.8% of portfolio", "rgb(124,92,255)"], ["Cash & Stable", "$11,000", "4.8% of portfolio", "rgb(245,158,11)"]].map(([label, value, note, tone]) => (
                       <div key={label as string} style={{ background: "rgb(15,15,15)", border: "1px solid rgb(31,31,31)", borderRadius: 12, padding: 18 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -303,7 +301,7 @@ export default function Page() {
                 </div>
               </div>
 
-              <div style={{ position: "absolute", right: 28, top: 110, width: 320, background: "rgb(16,16,16)", border: "1px solid rgba(245,158,11,0.4)", borderRadius: 12, padding: 18, boxShadow: "rgba(0,0,0,0.55) 0 40px 80px, rgba(245,158,11,0.18) 0 0 40px" }}>
+              <div style={{ position: isMobile ? "relative" : "absolute", right: isMobile ? "auto" : 28, top: isMobile ? "auto" : 110, width: isMobile ? "100%" : 320, background: "rgb(16,16,16)", border: "1px solid rgba(245,158,11,0.4)", borderRadius: 12, padding: 18, boxShadow: "rgba(0,0,0,0.55) 0 40px 80px, rgba(245,158,11,0.18) 0 0 40px", marginTop: isMobile ? 16 : 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                   <span style={{ width: 7, height: 7, borderRadius: "50%", background: "rgb(245,158,11)", boxShadow: "rgb(245,158,11) 0 0 6px" }} />
                   <span style={{ color: "rgb(245,158,11)", ...bodyFont, fontWeight: 700, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase" }}>Intervention · Live · 14:32</span>
@@ -326,16 +324,16 @@ export default function Page() {
           </div>
         </section>
 
-        <section style={{ padding: "140px 40px", background: "#111111", color: "rgb(255,250,226)" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "end", marginBottom: 56 }}>
+        <section style={{ padding: isMobile ? "64px 20px" : "140px 40px", background: "#111111", color: "rgb(255,250,226)" }}>
+          <div style={containerStyles}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 80, alignItems: "end", marginBottom: 56 }}>
               <div>
                 <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>Your patterns don&apos;t trade in isolation.</h2>
               </div>
               <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: 0, maxWidth: 480 }}>How you perform shifts with what the market is doing around you. NevUp reads both, so when it nudges you, it already has context on whether you&apos;re trading into a trending session, fighting a reversal, or navigating something in between.</p>
             </div>
 
-            <div style={{ background: "rgb(13,13,13)", border: "1px solid rgb(31,31,31)", borderRadius: 14, padding: 26, boxShadow: "rgba(0,0,0,0.4) 0 40px 80px -20px" }}>
+            <div style={{ background: "rgb(13,13,13)", border: "1px solid rgb(31,31,31)", borderRadius: 14, padding: isMobile ? 16 : 26, boxShadow: "rgba(0,0,0,0.4) 0 40px 80px -20px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18, gap: 12, flexWrap: "wrap" }}>
                 <div>
                   <div style={{ ...headingFont, fontWeight: 600, fontSize: 22, color: "rgb(255,255,255)" }}>Market Heatmap</div>
@@ -343,24 +341,26 @@ export default function Page() {
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gridTemplateRows: "repeat(4, 80px)", gap: 5 }}>
-                {heatmapAssets.map((asset, index) => (
-                  <div key={`${asset[0]}-${index}`} style={{ background: asset[3] as string, color: "rgb(255,250,226)", padding: 14, borderRadius: 6, display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 60, position: "relative", overflow: "hidden", gridColumn: index === 0 ? "span 2" : index === 1 ? "span 2" : index === 12 ? "span 2" : "span 1", gridRow: index < 2 ? "span 2" : index === 12 ? "span 2" : "span 1" }}>
-                    <div style={{ ...headingFont, fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em", color: "rgb(255,250,226)" }}>{asset[0] as string}</div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                      <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 11, color: "rgba(255,250,226,0.78)" }}>{asset[1] as string}</span>
-                      <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 12, fontWeight: 600, color: "rgb(255,250,226)" }}>{asset[2] as string}</span>
+              <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gridTemplateRows: "repeat(4, 80px)", gap: 5, minWidth: isMobile ? 700 : "auto" }}>
+                  {heatmapAssets.map((asset, index) => (
+                    <div key={`${asset[0]}-${index}`} style={{ background: asset[3] as string, color: "rgb(255,250,226)", padding: 14, borderRadius: 6, display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 60, position: "relative", overflow: "hidden", gridColumn: index === 0 ? "span 2" : index === 1 ? "span 2" : index === 12 ? "span 2" : "span 1", gridRow: index < 2 ? "span 2" : index === 12 ? "span 2" : "span 1" }}>
+                      <div style={{ ...headingFont, fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em", color: "rgb(255,250,226)" }}>{asset[0] as string}</div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                        <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 11, color: "rgba(255,250,226,0.78)" }}>{asset[1] as string}</span>
+                        <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 12, fontWeight: 600, color: "rgb(255,250,226)" }}>{asset[2] as string}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section style={{ padding: "140px 40px", background: "var(--bg-warm)", color: "var(--fg)" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr", gap: 80, alignItems: "start" }}>
+        <section style={{ padding: isMobile ? "64px 20px" : "140px 40px", background: "var(--bg-warm)", color: "var(--fg)" }}>
+          <div style={containerStyles}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.05fr 1fr", gap: isMobile ? 40 : 80, alignItems: "start" }}>
               <div>
                 <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: "18px 0 0" }}>The next generation of trading runs on behavioral intelligence.</h2>
                 <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-faint)", margin: "24px 0 0", maxWidth: 540 }}>NevUp&apos;s behavioral models learn how you trade under pressure and build a deeper understanding of your habits with every session. As the system becomes more personalized, it gets better at delivering interventions in the moments where they can make a difference.</p>
@@ -387,8 +387,8 @@ export default function Page() {
         </section>
       </main>
 
-           <LandingFooter  />
-      
+      <LandingFooter />
+
     </div>
   );
 }
