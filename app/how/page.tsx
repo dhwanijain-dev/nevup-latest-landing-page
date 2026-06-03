@@ -1,12 +1,12 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Menu, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import LandingFooter from "../components/LandingFooter";
+import LandingNavbar from "../components/LandingNavbar";
 
 const navLinks = [
   { label: "How it works", href: "/how" },
@@ -135,7 +135,6 @@ function SectionTitle({ eyebrow, title, description }: { eyebrow: string; title:
 }
 
 export default function Page() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const isMobile = useIsMobile();
 
   return (
@@ -146,59 +145,13 @@ export default function Page() {
         <div style={{ position: "absolute", bottom: "-10%", left: "18%", height: 352, width: 352, borderRadius: 999, background: "radial-gradient(circle, rgba(15,17,21,0.12) 0%, rgba(15,17,21,0.04) 38%, transparent 76%)", filter: "blur(48px)" }} />
       </div>
 
-      <header style={{ position: "fixed", insetInline: 0, top: 0, zIndex: 50, borderBottom: "1px solid rgba(0,0,0,0.08)", background: "rgba(255,250,245,0.84)", backdropFilter: "blur(14px) saturate(140%)" }}>
-        <div style={{ ...containerStyles, display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 20, paddingBottom: 20 }}>
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-            <Image src="/logo.png" width={1920} height={1080} alt="NevUp" style={{ display: "inline-block", width: 100, height: 20, objectFit: "contain", flexShrink: 0 }} />
-          </Link>
-
-          {!isMobile ? (
-            <div style={{ display: "flex", gap: 32, alignItems: "center" }}>
-              {navLinks.map((item) => (
-                <a key={item.href} href={item.href} style={{ ...bodyFont, fontSize: 14, fontWeight: 500, color: "#000", opacity: item.href === "#how" ? 1 : 0.85, textDecoration: "none", paddingBottom: 2, borderBottom: item.href === "#how" ? "1.5px solid #000" : "1.5px solid transparent" }}>
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          ) : null}
-
-          {!isMobile ? (
-            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <button aria-label="Switch to dark mode" title="Switch to dark mode" style={{ background: "transparent", color: "#000", border: "1px solid rgba(0,0,0,0.15)", borderRadius: 999, width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }} type="button">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
-              </button>
-              <button style={{ background: "transparent", color: "#000", border: "1px solid rgba(0,0,0,0.15)", borderRadius: 8, padding: "10px 18px", ...bodyFont, fontWeight: 600, fontSize: 13, cursor: "pointer" }} type="button">Book a Call</button>
-              <Link href="/waitlist" style={{ background: accent, color: "rgb(255,250,226)", border: 0, borderRadius: 8, padding: "11px 18px", ...bodyFont, fontWeight: 600, fontSize: 13, cursor: "pointer", textDecoration: "none" }}>Join the Waitlist →</Link>
-            </div>
-          ) : (
-            <button type="button" onClick={() => setMenuOpen((value) => !value)} aria-label="Toggle navigation menu" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 999, border: "1px solid rgba(0,0,0,0.1)", background: "rgba(255,255,255,0.8)", color: "#292929" }}>
-              {menuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          )}
-        </div>
-
-        {isMobile && menuOpen ? (
-          <div style={{ borderTop: "1px solid rgba(0,0,0,0.08)", background: "rgba(255,250,245,0.95)", padding: 20, backdropFilter: "blur(24px)" }}>
-            <div style={{ ...containerStyles, display: "flex", flexDirection: "column", gap: 12 }}>
-              {navLinks.map((item) => (
-                <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)} style={{ borderRadius: 18, border: "1px solid rgba(0,0,0,0.08)", background: "white", padding: "14px 16px", fontSize: 14, fontWeight: 500, color: "#3f3f46", textDecoration: "none" }}>
-                  {item.label}
-                </a>
-              ))}
-              <Link href="/waitlist" onClick={() => setMenuOpen(false)} style={{ borderRadius: 18, background: "#0f1115", padding: "14px 16px", fontSize: 14, fontWeight: 700, color: "white", textAlign: "center", textDecoration: "none" }}>
-                Join the waitlist
-              </Link>
-            </div>
-          </div>
-        ) : null}
-      </header>
-
+      <LandingNavbar />
       <main id="top" style={{ position: "relative" }}>
         <section style={{ ...sectionStyles, paddingTop: 180, paddingBottom: 80, paddingLeft: 40, paddingRight: 40, background: "linear-gradient(180deg, #fff7ef 0%, #fff4eb 100%)", color: "#0f1115" }}>
           <div style={{ ...containerStyles }}>
             <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#0f1115", opacity: 0.6 }}>How it works</div>
             <h1 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3.5rem, 7vw, 5rem)", lineHeight: 0.96, letterSpacing: "-0.03em", color: "#0f1115", margin: "20px 0 0", maxWidth: 980, textWrap: "balance" }}>
-              Every session is a chance to trade your best. NevUp makes sure you don't get in the way
+              Every session is a chance to trade your best. <span style={{ color: "#f34301" }}>NevUp </span>  makes sure you don&apos;t get in the way
             </h1>
             <p style={{ ...bodyFont, fontSize: 20, lineHeight: 1.6, color: "#5f646c", margin: "28px 0 0", maxWidth: 720, textWrap: "pretty" }}>
               NevUp learns how you trade, watches every session live, and steps in just before a behaviorally driven decision has the chance to become an expensive one.
@@ -248,7 +201,7 @@ export default function Page() {
             <div style={{ textAlign: "center", maxWidth: 800, margin: "0 auto 56px" }}>
               <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgb(255,250,226)", opacity: 0.6 }}>See it work</div>
               <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(2.75rem, 5vw, 4rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>
-                Watch a <span style={{ color: "#f5a80b", fontStyle: "italic", display: "inline-block", minWidth: 220, textAlign: "center" }}>FOMO</span>  trade get nudged in real time right before execution 
+                Watch a <span style={{ color: "#f34301", fontStyle: "italic", display: "inline-block", minWidth: 220, textAlign: "center" }}>FOMO</span>  trade get nudged in real time right before execution 
               </h2>
               {/* <p style={{ ...bodyFont, fontSize: 19, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: "22px auto 0", maxWidth: 640, textWrap: "pretty" }}>
                 The Home screen is your portfolio. The Agent overlays a behavioral layer on top of it. When patterns are detected, the intervention surfaces inline.
@@ -355,7 +308,7 @@ export default function Page() {
                   <span style={{ width: 7, height: 7, borderRadius: "50%", background: "rgb(245,158,11)", boxShadow: "rgb(245,158,11) 0 0 6px" }} />
                   <span style={{ color: "rgb(245,158,11)", ...bodyFont, fontWeight: 700, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase" }}>Intervention · Live · 14:32</span>
                 </div>
-                <div style={{ ...headingFont, fontWeight: 600, fontSize: 17, color: "rgb(255,255,255)", lineHeight: 1.3 }}>You're about to size 2× SOL after a winning streak.</div>
+                <div style={{ ...headingFont, fontWeight: 600, fontSize: 17, color: "rgb(255,255,255)", lineHeight: 1.3 }}>You&apos;re about to size 2× SOL after a winning streak.</div>
                 <div style={{ color: "rgb(168,168,168)", ...bodyFont, fontSize: 12, lineHeight: 1.5, marginTop: 10 }}>
                   The last 4 times you did this, average outcome was <span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(239,68,68)", fontWeight: 600 }}>−$1,240</span>. Hold the size flat?
                 </div>
@@ -377,9 +330,9 @@ export default function Page() {
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "end", marginBottom: 56 }}>
               <div>
-                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>Your patterns don't trade in isolation.</h2>
+                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>Your patterns don&apos;t trade in isolation.</h2>
               </div>
-              <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: 0, maxWidth: 480 }}>How you perform shifts with what the market is doing around you. NevUp reads both, so when it nudges you, it already has context on whether you're trading into a trending session, fighting a reversal, or navigating something in between.</p>
+              <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: 0, maxWidth: 480 }}>How you perform shifts with what the market is doing around you. NevUp reads both, so when it nudges you, it already has context on whether you&apos;re trading into a trending session, fighting a reversal, or navigating something in between.</p>
             </div>
 
             <div style={{ background: "rgb(13,13,13)", border: "1px solid rgb(31,31,31)", borderRadius: 14, padding: 26, boxShadow: "rgba(0,0,0,0.4) 0 40px 80px -20px" }}>
@@ -410,7 +363,7 @@ export default function Page() {
             <div style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr", gap: 80, alignItems: "start" }}>
               <div>
                 <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "#0f1115", margin: "18px 0 0" }}>The next generation of trading runs on behavioral intelligence.</h2>
-                <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "#5f646c", margin: "24px 0 0", maxWidth: 540 }}>NevUp's behavioral models learn how you trade under pressure and build a deeper understanding of your habits with every session. As the system becomes more personalized, it gets better at delivering interventions in the moments where they can make a difference.</p>
+                <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "#5f646c", margin: "24px 0 0", maxWidth: 540 }}>NevUp&apos;s behavioral models learn how you trade under pressure and build a deeper understanding of your habits with every session. As the system becomes more personalized, it gets better at delivering interventions in the moments where they can make a difference.</p>
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -434,42 +387,8 @@ export default function Page() {
         </section>
       </main>
 
-      <footer id="contact" style={{ background: "#0a0a0a", color: "rgb(255,250,226)", padding: "72px 40px 32px" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr 1fr 1fr", gap: 48, paddingBottom: 56, borderBottom: "1px solid rgba(255,250,226,0.1)" }}>
-            <div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 10, color: "rgb(255,255,255)" }}>
-                <Image src="/whitelogo.png" alt="NevUp" width={32} height={32} style={{ display: "inline-block", width: 32, height: 32, objectFit: "contain", flexShrink: 0 }} />
-                <span style={{ ...headingFont, fontWeight: 700, fontSize: 25, letterSpacing: "-0.025em", color: "rgb(255,255,255)", lineHeight: 1 }}>NevUp</span>
-              </div>
-              <div style={{ ...headingFont, fontSize: 22, lineHeight: 1.3, color: "rgb(255,250,226)", marginTop: 22, maxWidth: 320, fontWeight: 400 }}>Built for clear decisions in noisy markets.</div>
-              <div style={{ ...bodyFont, fontSize: 13, color: "rgba(255,250,226,0.55)", marginTop: 18, lineHeight: 1.6, maxWidth: 320 }}>NevUp AI is a behavioral intelligence layer for modern traders. Trusted by traders across crypto, forex, and equities.</div>
-            </div>
-
-            {footerColumns.map((column) => (
-              <div key={column.title}>
-                <div style={{ ...bodyFont, fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,250,226,0.45)", fontWeight: 600 }}>{column.title}</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 18 }}>
-                  {column.links.map(([label, href]) => (
-                    <a key={label as string} href={href as string} style={{ ...bodyFont, fontSize: 14, color: "rgb(255,250,226)", textDecoration: "none", opacity: 0.85 }}>
-                      {label as string}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 32, ...bodyFont, fontSize: 12, color: "rgba(255,250,226,0.45)", flexWrap: "wrap", gap: 12 }}>
-            <span>© 2026 NevUp AI, Inc. All rights reserved. NevUp™ is a trademark of NevUp AI, Inc.</span>
-            <span>Trade Smarter, Not Emotional.</span>
-          </div>
-
-          <div style={{ ...bodyFont, fontSize: 11, color: "rgba(255,250,226,0.3)", marginTop: 24, lineHeight: 1.6, maxWidth: 900 }}>
-            Risk disclosure: Trading in financial markets carries a high level of risk, including the potential loss of capital. NevUp AI is a behavioral analytics and intervention tool and is not a registered investment advisor or broker-dealer. NevUp does not provide trading recommendations, execute trades, or take custody of funds. Past performance does not guarantee future results.
-          </div>
-        </div>
-      </footer>
+           <LandingFooter  />
+      
     </div>
   );
 }

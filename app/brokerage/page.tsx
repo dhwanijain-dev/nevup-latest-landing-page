@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import LandingNavbar from "../components/LandingNavbar";
+import LandingFooter from "../components/LandingFooter";
 
 const navLinks = [
   { label: "How it works", href: "/how" },
@@ -113,109 +115,7 @@ const containerStyles: CSSProperties = {
 export default function Page() {
   return (
     <div id="root" data-screen-label="/brokerage" style={{ minHeight: "100vh", background: "var(--bg-page)", color: "var(--fg)" }}>
-      <header
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 50,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "14px 40px",
-          background: "var(--nav-bg-scrolled)",
-          borderBottom: "1px solid var(--nav-border)",
-          backdropFilter: "blur(14px) saturate(140%)",
-          transition: "padding 200ms, background 200ms, border-color 200ms",
-        }}
-      >
-        <Link href="/" style={{ textDecoration: "none", opacity: 1, transition: "opacity 200ms" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 10, color: "rgb(0, 0, 0)" }}>
-            <Image src="/logo.png" width={1920} height={1080} alt="NevUp" style={{ display: "inline-block", width: 100, height: 20, objectFit: "contain", flexShrink: 0 }} />
-          </div>
-        </Link>
-
-        <nav style={{ display: "flex", gap: 32, alignItems: "center" }}>
-          {navLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              style={{
-                ...bodyFont,
-                fontSize: 14,
-                fontWeight: 500,
-                color: "rgb(0, 0, 0)",
-                opacity: item.active ? 1 : 0.85,
-                textDecoration: "none",
-                paddingBottom: 2,
-                borderBottom: item.active ? "1.5px solid rgb(0, 0, 0)" : "1.5px solid transparent",
-              }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          <button
-            aria-label="Switch to dark mode"
-            title="Switch to dark mode"
-            type="button"
-            style={{
-              background: "transparent",
-              color: "rgb(0, 0, 0)",
-              border: "1px solid rgba(0, 0, 0, 0.15)",
-              borderRadius: 999,
-              width: 38,
-              height: 38,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              padding: 0,
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            style={{
-              background: "transparent",
-              color: "rgb(0, 0, 0)",
-              border: "1px solid rgba(0, 0, 0, 0.15)",
-              borderRadius: 8,
-              padding: "10px 18px",
-              fontFamily: "Satoshi, sans-serif",
-              fontWeight: 600,
-              fontSize: 13,
-              cursor: "pointer",
-            }}
-          >
-            Book a Call
-          </button>
-          <Link
-            href="/waitlist"
-            style={{
-              background: "var(--accent)",
-              color: "rgb(255, 250, 226)",
-              border: 0,
-              borderRadius: 8,
-              padding: "11px 18px",
-              fontFamily: "Satoshi, sans-serif",
-              fontWeight: 600,
-              fontSize: 13,
-              cursor: "pointer",
-              textDecoration: "none",
-            }}
-          >
-            Join the Waitlist →
-          </Link>
-        </div>
-      </header>
+      <LandingNavbar />
 
       <div className="page-fade">
         <section style={{ padding: "180px 40px 80px", position: "relative", background: "var(--bg-page)", color: "var(--fg)" }}>
@@ -366,48 +266,7 @@ export default function Page() {
         </section>
       </div>
 
-      <footer style={{ background: "rgb(10, 10, 10)", color: "rgb(255, 250, 226)", padding: "72px 40px 32px" }}>
-        <div style={containerStyles}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr 1fr 1fr", gap: 48, paddingBottom: 56, borderBottom: "1px solid rgba(255, 250, 226, 0.1)" }}>
-            <div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 10, color: "rgb(255, 255, 255)" }}>
-                <Image src="/whitelogo.png" width={32} height={32} alt="NevUp" style={{ display: "inline-block", width: 32, height: 32, objectFit: "contain", flexShrink: 0 }} />
-                <span style={{ fontFamily: "Funnel Display, Satoshi, sans-serif", fontWeight: 700, fontSize: 24.96, letterSpacing: "-0.025em", color: "rgb(255, 255, 255)", lineHeight: 1 }}>NevUp</span>
-              </div>
-              <div style={{ ...headingFont, fontSize: 22, lineHeight: 1.3, color: "rgb(255, 250, 226)", marginTop: 22, maxWidth: 320, fontWeight: 400 }}>Built for clear decisions in noisy markets.</div>
-              <div style={{ ...bodyFont, fontSize: 13, color: "rgba(255, 250, 226, 0.55)", marginTop: 18, lineHeight: 1.6, maxWidth: 320 }}>NevUp AI is a behavioral intelligence layer for modern traders. Trusted by traders across crypto, forex, and equities.</div>
-            </div>
-
-            {footerColumns.map((column) => (
-              <div key={column.title}>
-                <div style={{ ...bodyFont, fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255, 250, 226, 0.45)", fontWeight: 600 }}>{column.title}</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 18 }}>
-                  {column.links.map((item) =>
-                    item.external ? (
-                      <a key={item.label} href={item.href} target="_blank" rel="noopener noreferrer" style={{ ...bodyFont, fontSize: 14, color: "rgb(255, 250, 226)", textDecoration: "none", opacity: 0.85 }}>
-                        {item.label}
-                      </a>
-                    ) : (
-                      <Link key={item.label} href={item.href} style={{ ...bodyFont, fontSize: 14, color: "rgb(255, 250, 226)", textDecoration: "none", opacity: 0.85 }}>
-                        {item.label}
-                      </Link>
-                    ),
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 32, fontFamily: "Satoshi, sans-serif", fontSize: 12, color: "rgba(255, 250, 226, 0.45)", flexWrap: "wrap", gap: 12 }}>
-            <span>© 2026 NevUp AI, Inc. All rights reserved. NevUp™ is a trademark of NevUp AI, Inc.</span>
-            <span>Trade Smarter, Not Emotional.</span>
-          </div>
-
-          <div style={{ ...bodyFont, fontSize: 11, color: "rgba(255, 250, 226, 0.3)", marginTop: 24, lineHeight: 1.6, maxWidth: 900 }}>
-            Risk disclosure Trading in financial markets carries a high level of risk, including the potential loss of capital. NevUp AI is a behavioral analytics and intervention tool and is not a registered investment advisor or broker-dealer. NevUp does not provide trading recommendations, execute trades, or take custody of funds. Past performance does not guarantee future results.
-          </div>
-        </div>
-      </footer>
+     <LandingFooter  />
     </div>
   );
 }
