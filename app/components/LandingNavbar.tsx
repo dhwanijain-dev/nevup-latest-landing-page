@@ -27,15 +27,15 @@ export default function LandingNavbar() {
 
   const vars: Record<string, string> = isDark
     ? {
-        navBg: "rgba(10,10,10,0.7)",
-        navBorder: "rgba(255,250,226,0.12)",
-        fg: "#fffaf2",
-      }
+      navBg: "rgba(10,10,10,0.7)",
+      navBorder: "rgba(255,250,226,0.12)",
+      fg: "#fffaf2",
+    }
     : {
-        navBg: "rgba(247,243,237,0.8)",
-        navBorder: "rgba(0,0,0,0.1)",
-        fg: "#0a0a0a",
-      };
+      navBg: "rgba(247,243,237,0.8)",
+      navBorder: "rgba(0,0,0,0.1)",
+      fg: "#0a0a0a",
+    };
 
   return (
     <header

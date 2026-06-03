@@ -40,35 +40,35 @@ const layers: {
   copy: string;
   kind: LayerKind;
 }[] = [
-  {
-    number: "01",
-    label: " ",
-    title: "Insight",
-    eyebrow: "Into your behavioural trading profile.",
-    copy:
-      "NevUp analyzes trading behavior in real time to help identify patterns in decision-making, emotional responses, and trading habits unique to you.",
-    kind: "insight",
-  },
-  {
-    number: "02",
-    label: " ",
-    title: "Awareness",
-    eyebrow: "Through real-time AI behavioural monitoring.",
-    copy:
-      "NevUp observes trading behavior to help identify patterns like impulsive entries, overexposure, or emotionally driven decisions before they escalate.",
-    kind: "awareness",
-  },
-  {
-    number: "03",
-    label: " ",
-    title: "Execution",
-    eyebrow:
-      "With personalised interventions designed to reduce emotionally driven decisions.",
-    copy:
-      "Personalized, context-aware interventions that help bring attention to moments where emotion may begin influencing execution while trading.",
-    kind: "execution",
-  },
-];
+    {
+      number: "01",
+      label: " ",
+      title: "Insight",
+      eyebrow: "Into your behavioural trading profile.",
+      copy:
+        "NevUp analyzes trading behavior in real time to help identify patterns in decision-making, emotional responses, and trading habits unique to you.",
+      kind: "insight",
+    },
+    {
+      number: "02",
+      label: " ",
+      title: "Awareness",
+      eyebrow: "Through real-time AI behavioural monitoring.",
+      copy:
+        "NevUp observes trading behavior to help identify patterns like impulsive entries, overexposure, or emotionally driven decisions before they escalate.",
+      kind: "awareness",
+    },
+    {
+      number: "03",
+      label: " ",
+      title: "Execution",
+      eyebrow:
+        "With personalised interventions designed to reduce emotionally driven decisions.",
+      copy:
+        "Personalized, context-aware interventions that help bring attention to moments where emotion may begin influencing execution while trading.",
+      kind: "execution",
+    },
+  ];
 
 function LayerVisual({ kind }: { kind: LayerKind }) {
   if (kind === "insight") {
@@ -179,25 +179,25 @@ export default function LandingPage() {
 
   const vars: Record<string, string> = isDark
     ? {
-        bgPage: "#0a0a0a",
-        bgWarm: "#111111",
-        fg: "#fffaf2",
-        fgFaint: "rgba(255,250,226,0.7)",
-        fgGhost: "rgba(255,250,226,0.45)",
-        divider: "#1f1f1f",
-        navBg: "rgba(10,10,10,0.7)",
-        navBorder: "rgba(255,250,226,0.12)",
-      }
+      bgPage: "#0a0a0a",
+      bgWarm: "#111111",
+      fg: "#fffaf2",
+      fgFaint: "rgba(255,250,226,0.7)",
+      fgGhost: "rgba(255,250,226,0.45)",
+      divider: "#1f1f1f",
+      navBg: "rgba(10,10,10,0.7)",
+      navBorder: "rgba(255,250,226,0.12)",
+    }
     : {
-        bgPage: "#f7f3ed",
-        bgWarm: "#f2ece4",
-        fg: "#0a0a0a",
-        fgFaint: "#5a5a5a",
-        fgGhost: "#767676",
-        divider: "rgba(0,0,0,0.12)",
-        navBg: "rgba(247,243,237,0.8)",
-        navBorder: "rgba(0,0,0,0.1)",
-      };
+      bgPage: "#f7f3ed",
+      bgWarm: "#f2ece4",
+      fg: "#0a0a0a",
+      fgFaint: "#5a5a5a",
+      fgGhost: "#767676",
+      divider: "rgba(0,0,0,0.12)",
+      navBg: "rgba(247,243,237,0.8)",
+      navBorder: "rgba(0,0,0,0.1)",
+    };
 
   const container: CSSProperties = {
     maxWidth: 1280,
@@ -282,7 +282,7 @@ export default function LandingPage() {
                 <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, marginTop: 22 }}>
                   It learns your patterns, tracks them live, and puts your own data in front of you, bringing awareness to self-sabotaging behaviors in the moments they emerge. The longer you trade with it, the sharper it gets.
 
- {/* <strong style={{ color: vars.fg }}>But they show up after.</strong> They help you learn from the last mistake. They don&apos;t stop the next one. */}
+                  {/* <strong style={{ color: vars.fg }}>But they show up after.</strong> They help you learn from the last mistake. They don&apos;t stop the next one. */}
 
                 </p>
                 {/* <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 18, lineHeight: 1.6, color: vars.fgFaint, marginTop: 22 }}>
@@ -303,10 +303,10 @@ export default function LandingPage() {
 
             <div style={{ margin: "96px auto 0", textAlign: "center", maxWidth: 880 }}>
               <p style={{ fontFamily: "Funnel Display, sans-serif", fontStyle: "italic", fontWeight: 500, fontSize: isMobile ? 38 : 56, lineHeight: 1.1, letterSpacing: "-0.02em", color: vars.fg }}>&quot;Awareness after the trade
-is just expensive hindsight
-&quot;</p>
+                is just expensive hindsight
+                &quot;</p>
               <p style={{ fontFamily: "Satoshi, sans-serif", fontSize: 16, lineHeight: 1.6, color: vars.fgFaint, marginTop: 24, textWrap: "pretty" as const }}>
-                That is why we work in real time. 
+                That is why we work in real time.
               </p>
             </div>
           </div>

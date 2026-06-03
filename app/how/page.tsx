@@ -60,44 +60,6 @@ const heatmapAssets = [
   ["TIA", "$8.40", "-2.95%", "#3a0e0e"],
 ];
 
-const footerColumns = [
-  {
-    title: "Product",
-    links: [
-      ["How it works", "/how"],
-      ["For Brokerages", "/brokerage"],
-      ["Join the waitlist", "/waitlist"],
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      ["About", "#about"],
-      ["Team", "#about"],
-      ["Contact", "#contact"],
-      ["Newsletter", "#contact"],
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      ["Privacy Policy", "#contact"],
-      ["Terms of Service", "#contact"],
-      ["Risk Disclosure", "#contact"],
-      ["Cookie Policy", "#contact"],
-      ["Security", "#contact"],
-    ],
-  },
-  {
-    title: "Connect",
-    links: [
-      ["LinkedIn", "https://www.linkedin.com/company/nevup/"],
-      ["Twitter / X", "https://twitter.com/nevup"],
-      ["hello@nevup.in", "mailto:connect@nevup.in"],
-    ],
-  },
-];
-
 const pageStyles: CSSProperties = {
   position: "relative",
   minHeight: "100vh",
@@ -110,6 +72,8 @@ const containerStyles: CSSProperties = {
   width: "100%",
   maxWidth: 1280,
   margin: "0 auto",
+  paddingLeft: 24,
+  paddingRight: 24,
 };
 
 const sectionStyles: CSSProperties = {
@@ -137,6 +101,60 @@ export default function Page() {
 
   return (
     <div id="root" data-screen-label="/how" style={pageStyles}>
+      {/* ── global responsive styles ── */}
+      <style>{`
+        @media (max-width: 768px) {
+          .hero-section   { padding: 120px 20px 60px !important; }
+          .about-section  { padding: 80px 20px !important; }
+          .dark-section   { padding: 80px 20px !important; }
+          .dark2-section  { padding: 80px 20px !important; }
+          .warm-section   { padding: 80px 20px !important; }
+
+          /* two-col → one-col grids */
+          .two-col-grid   { grid-template-columns: 1fr !important; gap: 32px !important; }
+          /* four asset cards → two col */
+          .four-col-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+          /* behavior patterns → two col */
+          .pattern-grid   { grid-template-columns: repeat(2, 1fr) !important; }
+          /* tech feature list */
+          .feature-list   { gap: 10px !important; }
+
+          /* heatmap: fixed 3-col on mobile, no span tricks */
+          .heatmap-grid   {
+            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-rows: unset !important;
+          }
+          .heatmap-grid > div {
+            grid-column: span 1 !important;
+            grid-row: span 1 !important;
+            min-height: 64px !important;
+          }
+
+          /* dashboard mock: hide sidebar, stack header */
+          .dash-sidebar   { display: none !important; }
+          .dash-header    { flex-wrap: wrap !important; gap: 8px !important; padding: 10px 14px !important; }
+          .dash-header-search { width: 100% !important; }
+          .dash-stats-grid { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+          .dash-deposit-row { display: none !important; }
+
+          /* intervention card: static below chart instead of absolute */
+          .intervention-card {
+            position: static !important;
+            width: 100% !important;
+            margin: 12px 0 0 !important;
+            box-shadow: none !important;
+          }
+
+          /* wrap chart labels */
+          .chart-footer    { flex-direction: column !important; gap: 6px !important; }
+        }
+        @media (max-width: 480px) {
+          .pattern-grid   { grid-template-columns: 1fr !important; }
+          .four-col-grid  { grid-template-columns: 1fr !important; }
+          .heatmap-grid   { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
+
       <div aria-hidden="true" style={{ pointerEvents: "none", position: "absolute", inset: 0, overflow: "hidden" }}>
         <div style={{ position: "absolute", left: "-10%", top: "-8%", height: 512, width: 512, borderRadius: 999, background: "radial-gradient(circle, rgba(243,67,1,0.22) 0%, rgba(243,67,1,0.08) 35%, transparent 72%)", filter: "blur(48px)" }} />
         <div style={{ position: "absolute", right: "-6%", top: "12%", height: 416, width: 416, borderRadius: 999, background: "radial-gradient(circle, rgba(250,180,126,0.28) 0%, rgba(250,180,126,0.08) 42%, transparent 75%)", filter: "blur(48px)" }} />
@@ -145,22 +163,25 @@ export default function Page() {
 
       <LandingNavbar />
       <main id="top" style={{ position: "relative" }}>
-        <section style={{ ...sectionStyles, paddingTop: isMobile ? 140 : 180, paddingBottom: isMobile ? 40 : 80, paddingLeft: isMobile ? 20 : 40, paddingRight: isMobile ? 20 : 40, background: "var(--bg-warm)", color: "var(--fg)" }}>
-          <div style={{ ...containerStyles, paddingLeft: isMobile ? 16 : 24, paddingRight: isMobile ? 16 : 24 }}>
+
+        {/* ── Hero ── */}
+        <section className="hero-section" style={{ ...sectionStyles, paddingTop: 180, paddingBottom: 80, paddingLeft: 40, paddingRight: 40, background: "var(--bg-warm)", color: "var(--fg)" }}>
+          <div style={{ ...containerStyles }}>
             <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>How it works</div>
-            <h1 style={{ ...headingFont, fontWeight: 500, fontSize: isMobile ? "clamp(2.5rem, 6vw, 3.5rem)" : "clamp(3.5rem, 7vw, 5rem)", lineHeight: 0.96, letterSpacing: "-0.03em", color: "var(--fg)", margin: "20px 0 0", maxWidth: 980, textWrap: "balance" }}>
-              Every session is a chance to trade your best. <span style={{ color: "#f34301" }}>NevUp </span>  makes sure you don&apos;t get in the way
+            <h1 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(2.4rem, 7vw, 5rem)", lineHeight: 0.96, letterSpacing: "-0.03em", color: "var(--fg)", margin: "20px 0 0", maxWidth: 980, textWrap: "balance" }}>
+              Every session is a chance to trade your best. <span style={{ color: "#f34301" }}>NevUp </span> makes sure you don&apos;t get in the way
             </h1>
-            <p style={{ ...bodyFont, fontSize: isMobile ? 18 : 20, lineHeight: 1.6, color: "var(--fg-faint)", margin: "28px 0 0", maxWidth: 720, textWrap: "pretty" }}>
+            <p style={{ ...bodyFont, fontSize: "clamp(16px, 2.5vw, 20px)", lineHeight: 1.6, color: "var(--fg-faint)", margin: "28px 0 0", maxWidth: 720, textWrap: "pretty" }}>
               NevUp learns how you trade, watches every session live, and steps in just before a behaviorally driven decision has the chance to become an expensive one.
             </p>
           </div>
         </section>
 
-        <section id="about" style={{ ...sectionStyles, padding: isMobile ? "64px 20px" : "120px 40px", background: "var(--bg-page)", color: "var(--fg)" }}>
-          <div style={{ ...containerStyles, paddingLeft: isMobile ? 16 : 24, paddingRight: isMobile ? 16 : 24, marginBottom: 64 }}>
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 80, alignItems: "end" }}>
-              <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: 0, textWrap: "balance" }}>
+        {/* ── Behavior patterns ── */}
+        <section id="about" className="about-section" style={{ ...sectionStyles, padding: "120px 40px", background: "var(--bg-page)", color: "var(--fg)" }}>
+          <div style={{ ...containerStyles, marginBottom: 64 }}>
+            <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "end" }}>
+              <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(2.2rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: 0, textWrap: "balance" }}>
                 The eight patterns
                 <br />
                 <span style={{ color: "var(--fg-ghost)" }}> behind most blown accounts.</span>
@@ -171,9 +192,9 @@ export default function Page() {
             </div>
           </div>
 
-          <div style={{ ...containerStyles, paddingLeft: isMobile ? 16 : 24, paddingRight: isMobile ? 16 : 24, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
-            {behaviorPatterns.map((item, index) => (
-              <motion.div key={item.title} whileHover={{ y: -4 }} transition={{ duration: 0.2 }} style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 14, padding: 24, minHeight: 200, display: "flex", flexDirection: "column", justifyContent: "space-between", cursor: "default", boxShadow: "0 20px 50px rgba(0,0,0,0.04)" }}>
+          <div className="pattern-grid" style={{ ...containerStyles, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
+            {behaviorPatterns.map((item) => (
+              <motion.div key={item.title} whileHover={{ y: -4 }} transition={{ duration: 0.2 }} style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 14, padding: 24, minHeight: 160, display: "flex", flexDirection: "column", justifyContent: "space-between", cursor: "default", boxShadow: "0 20px 50px rgba(0,0,0,0.04)" }}>
                 <div>
                   <div style={{ width: 10, height: 10, borderRadius: "50%", background: item.dot, marginBottom: 22 }} />
                   <div style={{ ...headingFont, fontWeight: 500, fontSize: 22, color: "var(--fg)", letterSpacing: "-0.015em", lineHeight: 1.15 }}>{item.title}</div>
@@ -182,158 +203,154 @@ export default function Page() {
               </motion.div>
             ))}
           </div>
-
-          {/* <div style={{ ...containerStyles, marginTop: 96, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0, borderTop: "1px solid rgba(0,0,0,0.08)", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
-            {steps.map((step, index) => (
-              <div key={step.number} style={{ padding: "40px 32px", borderLeft: index === 0 ? "none" : "1px solid rgba(0,0,0,0.08)" }}>
-                <span style={{ ...bodyFont, color: accent, fontSize: 13, letterSpacing: "0.06em" }}>{step.number}</span>
-                <div style={{ ...headingFont, fontWeight: 500, fontSize: 32, color: "#0f1115", marginTop: 8 }}>{step.title}</div>
-                <p style={{ ...bodyFont, fontSize: 15, lineHeight: 1.6, color: "#6b7280", margin: "16px 0 0", maxWidth: 300 }}>{step.copy}</p>
-              </div>
-            ))}
-          </div> */}
         </section>
 
-        <section style={{ padding: isMobile ? "64px 20px" : "140px 40px", background: "#0a0a0a", color: "rgb(255,250,226)" }}>
-          <div style={{ ...containerStyles, paddingLeft: isMobile ? 16 : 24, paddingRight: isMobile ? 16 : 24 }}>
+        {/* ── Dashboard mock / intervention demo ── */}
+        <section className="dark-section" style={{ padding: "140px 40px", background: "#0a0a0a", color: "rgb(255,250,226)" }}>
+          <div style={containerStyles}>
             <div style={{ textAlign: "center", maxWidth: 800, margin: "0 auto 56px" }}>
               <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgb(255,250,226)", opacity: 0.6 }}>See it work</div>
-              <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(2.75rem, 5vw, 4rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>
-                Watch a <span style={{ color: "#f34301", fontStyle: "italic", display: "inline-block", minWidth: 220, textAlign: "center" }}>FOMO</span>  trade get nudged in real time right before execution
+              <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(2.2rem, 5vw, 4rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>
+                Watch a <span style={{ color: "#f34301", fontStyle: "italic" }}>FOMO</span> trade get nudged in real time right before execution
               </h2>
-              {/* <p style={{ ...bodyFont, fontSize: 19, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: "22px auto 0", maxWidth: 640, textWrap: "pretty" }}>
-                The Home screen is your portfolio. The Agent overlays a behavioral layer on top of it. When patterns are detected, the intervention surfaces inline.
-              </p> */}
             </div>
 
-            <div style={{ width: "100%", background: "#0a0a0a", border: "1px solid rgb(31,31,31)", borderRadius: 14, overflow: "hidden", boxShadow: "rgba(0,0,0,0.5) 0 60px 120px -40px, rgba(0,0,0,0.35) 0 30px 60px -20px", display: "flex", flexDirection: isMobile ? "column" : "row", minHeight: isMobile ? "auto" : 680, position: "relative" }}>
-              <aside style={{ width: 76, minWidth: 76, background: "#000", borderRight: isMobile ? "none" : "1px solid rgb(31,31,31)", borderBottom: isMobile ? "1px solid rgb(31,31,31)" : "none", display: isMobile ? "none" : "flex", flexDirection: "column", alignItems: "center", padding: "20px 0" }}>
-                <div style={{ marginBottom: 24 }}>
-                  <Image src="/logo.png" alt="NevUp" width={22} height={22} style={{ display: "inline-block", width: 22, height: 22, objectFit: "contain", flexShrink: 0 }} />
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4, width: "100%", padding: "0 8px" }}>
-                  {["Home", "Sessions", "Patterns", "Debriefs"].map((label, index) => (
-                    <div key={label} style={{ padding: "10px 0", borderRadius: 8, background: index === 0 ? "rgb(22,22,22)" : "transparent", display: "flex", flexDirection: "column", gap: 4, alignItems: "center", justifyContent: "center", ...bodyFont, fontSize: 9.5, color: index === 0 ? "rgb(255,250,226)" : "rgb(107,107,109)" }}>
-                      <span>{label}</span>
-                    </div>
-                  ))}
-                </div>
-              </aside>
+            <div style={{ width: "100%", background: "#0a0a0a", border: "1px solid rgb(31,31,31)", borderRadius: 14, overflow: "hidden", boxShadow: "rgba(0,0,0,0.5) 0 60px 120px -40px, rgba(0,0,0,0.35) 0 30px 60px -20px", display: "flex", flexDirection: "column", position: "relative" }}>
 
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-                <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "10px 16px" : "14px 24px", borderBottom: "1px solid rgb(31,31,31)", background: "#0a0a0a" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <div style={{ display: isMobile ? "none" : "flex", alignItems: "center", gap: 8, padding: "7px 12px", background: "rgb(15,15,15)", border: "1px solid rgb(31,31,31)", borderRadius: 8, width: 320 }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B6B6D" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
-                      <span style={{ color: "rgb(107,107,109)", ...bodyFont, fontSize: 12 }}>Search assets, patterns, sessions…</span>
-                      <span style={{ marginLeft: "auto", color: "rgb(68,68,68)", ...bodyFont, fontSize: 10, padding: "2px 6px", border: "1px solid rgb(31,31,31)", borderRadius: 4 }}>⌘K</span>
-                    </div>
+              {/* top bar (sidebar removed on mobile via CSS) */}
+              <div style={{ display: "flex", flex: 1 }}>
+                <aside className="dash-sidebar" style={{ width: 76, minWidth: 76, background: "#000", borderRight: "1px solid rgb(31,31,31)", display: "flex", flexDirection: "column", alignItems: "center", padding: "20px 0" }}>
+                  <div style={{ marginBottom: 24 }}>
+                    <Image src="/logo.png" alt="NevUp" width={22} height={22} style={{ display: "inline-block", width: 22, height: 22, objectFit: "contain", flexShrink: 0 }} />
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", background: "rgba(47,107,255,0.08)", border: "1px solid rgba(47,107,255,0.3)", borderRadius: 999 }}>
-                      <span style={{ width: 7, height: 7, borderRadius: "50%", background: "rgb(59,130,246)", boxShadow: "rgb(59,130,246) 0 0 6px" }} />
-                      <span style={{ color: "rgb(168,195,255)", ...bodyFont, fontSize: 11, fontWeight: 600, letterSpacing: "0.04em" }}>Agent Mode</span>
-                    </div>
-                    <div style={{ padding: "6px 12px", background: "rgb(15,15,15)", border: "1px solid rgb(31,31,31)", borderRadius: 8, ...bodyFont, fontSize: 11, color: "rgb(167,139,250)", fontWeight: 600, letterSpacing: "0.08em" }}>PRO</div>
-                  </div>
-                </header>
-
-                <div style={{ padding: isMobile ? "16px 16px 24px" : "20px 24px 28px", flex: 1, display: "flex", flexDirection: "column", gap: 14 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap" }}>
-                    <div>
-                      <div style={{ ...headingFont, color: "rgb(255,255,255)", fontSize: 24, fontWeight: 600 }}>Home</div>
-                      <div style={{ color: "rgb(138,138,138)", ...bodyFont, fontSize: 12, marginTop: 2 }}>Your portfolio at a glance · Updated 2s ago</div>
-                    </div>
-                    <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                      {["1D", "1W", "1M", "3M", "6M", "1Y", "All"].map((period) => (
-                        <div key={period} style={{ background: period === "1M" ? "rgb(22,22,22)" : "transparent", color: "rgb(138,138,138)", border: "1px solid rgb(31,31,31)", padding: "6px 12px", borderRadius: 6, ...bodyFont, fontSize: 11 }}>{period}</div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div style={{ background: "rgb(13,13,13)", border: "1px solid rgb(31,31,31)", borderRadius: 12, padding: 22 }}>
-                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "1.4fr 1fr 1fr 1fr 1fr auto auto", gap: 24, alignItems: isMobile ? "stretch" : "baseline" }}>
-                      <div style={{ gridColumn: isMobile ? "span 2" : "auto" }}>
-                        <div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Total Value</div>
-                        <span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(255,255,255)", fontSize: 34, fontWeight: 700, display: "block", marginTop: 6 }}>$230,846.12</span>
-                        <div style={{ display: "flex", gap: 8, marginTop: 8, alignItems: "center", flexWrap: "wrap" }}>
-                          <span style={{ background: "rgba(34,197,94,0.12)", color: "rgb(34,197,94)", padding: "3px 9px", borderRadius: 4, ...bodyFont, fontSize: 11, fontWeight: 600 }}>↑ +$28,540 · +14.12%</span>
-                          <span style={{ color: "rgb(107,107,109)", ...bodyFont, fontSize: 11 }}>Last 30 days</span>
-                        </div>
-                      </div>
-                      <div><div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Total Invested</div><span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(255,255,255)", fontSize: 17, fontWeight: 600, display: "block", marginTop: 8 }}>$202,305.94</span></div>
-                      <div><div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Total Profit</div><span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(34,197,94)", fontSize: 17, fontWeight: 600, display: "block", marginTop: 8 }}>+$28,540.18</span></div>
-                      <div><div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Realized P&amp;L</div><span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(34,197,94)", fontSize: 17, fontWeight: 600, display: "block", marginTop: 8 }}>+$12,418.30</span></div>
-                      <div><div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>All-Time Return</div><span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(34,197,94)", fontSize: 17, fontWeight: 600, display: "block", marginTop: 8 }}>+45.6%</span></div>
-                      <div style={{ background: "linear-gradient(rgb(59,130,246), rgb(30,58,138))", color: "rgb(255,255,255)", border: "1px solid rgba(96,165,250,0.5)", padding: "10px 16px", borderRadius: 8, ...bodyFont, fontWeight: 600, fontSize: 13, textAlign: "center" }}>+ Deposit</div>
-                      <div style={{ background: "rgb(15,15,15)", color: "rgb(255,255,255)", border: "1px solid rgb(31,31,31)", padding: "10px 16px", borderRadius: 8, ...bodyFont, fontSize: 13, textAlign: "center" }}>Withdraw ↓</div>
-                    </div>
-
-                    <div style={{ marginTop: 18, height: isMobile ? 120 : 200 }}>
-                      <svg viewBox="0 0 1200 200" preserveAspectRatio="none" style={{ width: "100%", height: "100%", display: "block" }}>
-                        <defs>
-                          <linearGradient id="phGrnFill" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#22C55E" stopOpacity="0.32" />
-                            <stop offset="100%" stopColor="#22C55E" stopOpacity="0" />
-                          </linearGradient>
-                        </defs>
-                        <path d="M0,200 L0,162.58 L75,151.61 L150,157.09 L225,146.13 L300,132.42 L375,140.65 L450,124.19 L525,113.23 L600,121.45 L675,102.26 L750,85.81 L825,91.29 L900,69.35 L975,52.90 L1050,58.39 L1125,36.45 L1200,20 L1200,200 Z" fill="url(#phGrnFill)" />
-                        <path d="M0,162.58 L75,151.61 L150,157.09 L225,146.13 L300,132.42 L375,140.65 L450,124.19 L525,113.23 L600,121.45 L675,102.26 L750,85.81 L825,91.29 L900,69.35 L975,52.90 L1050,58.39 L1125,36.45 L1200,20" fill="none" stroke="#22C55E" strokeWidth="2.5" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: isMobile ? 8 : 12 }}>
-                    {[["Crypto", "$142,820", "61.9% of portfolio", "rgb(34,197,94)"], ["Stocks", "$58,920", "25.5% of portfolio", "rgb(59,130,246)"], ["DeFi", "$18,106", "7.8% of portfolio", "rgb(124,92,255)"], ["Cash & Stable", "$11,000", "4.8% of portfolio", "rgb(245,158,11)"]].map(([label, value, note, tone]) => (
-                      <div key={label as string} style={{ background: "rgb(15,15,15)", border: "1px solid rgb(31,31,31)", borderRadius: 12, padding: 18 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ width: 8, height: 8, borderRadius: "50%", background: tone as string }} />
-                          <span style={{ color: "rgb(138,138,138)", ...bodyFont, fontSize: 12 }}>{label as string}</span>
-                        </div>
-                        <span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(255,255,255)", fontSize: 24, fontWeight: 700, display: "block", marginTop: 10 }}>{value as string}</span>
-                        <div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 11, marginTop: 4 }}>{note as string}</div>
-                        <div style={{ height: 4, background: "rgb(31,31,31)", borderRadius: 999, marginTop: 12, overflow: "hidden" }}>
-                          <div style={{ height: "100%", width: label === "Crypto" ? "61.9%" : label === "Stocks" ? "25.5%" : label === "DeFi" ? "7.8%" : "4.8%", background: tone as string }} />
-                        </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4, width: "100%", padding: "0 8px" }}>
+                    {["Home", "Sessions", "Patterns", "Debriefs"].map((label, index) => (
+                      <div key={label} style={{ padding: "10px 0", borderRadius: 8, background: index === 0 ? "rgb(22,22,22)" : "transparent", display: "flex", flexDirection: "column", gap: 4, alignItems: "center", justifyContent: "center", ...bodyFont, fontSize: 9.5, color: index === 0 ? "rgb(255,250,226)" : "rgb(107,107,109)" }}>
+                        <span>{label}</span>
                       </div>
                     ))}
                   </div>
-                </div>
-              </div>
+                </aside>
 
-              <div style={{ position: isMobile ? "relative" : "absolute", right: isMobile ? "auto" : 28, top: isMobile ? "auto" : 110, width: isMobile ? "100%" : 320, background: "rgb(16,16,16)", border: "1px solid rgba(245,158,11,0.4)", borderRadius: 12, padding: 18, boxShadow: "rgba(0,0,0,0.55) 0 40px 80px, rgba(245,158,11,0.18) 0 0 40px", marginTop: isMobile ? 16 : 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: "rgb(245,158,11)", boxShadow: "rgb(245,158,11) 0 0 6px" }} />
-                  <span style={{ color: "rgb(245,158,11)", ...bodyFont, fontWeight: 700, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase" }}>Intervention · Live · 14:32</span>
-                </div>
-                <div style={{ ...headingFont, fontWeight: 600, fontSize: 17, color: "rgb(255,255,255)", lineHeight: 1.3 }}>You&apos;re about to size 2× SOL after a winning streak.</div>
-                <div style={{ color: "rgb(168,168,168)", ...bodyFont, fontSize: 12, lineHeight: 1.5, marginTop: 10 }}>
-                  The last 4 times you did this, average outcome was <span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(239,68,68)", fontWeight: 600 }}>−$1,240</span>. Hold the size flat?
-                </div>
-                <div style={{ display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap" }}>
-                  <div style={{ background: "linear-gradient(rgb(59,130,246), rgb(30,58,138))", color: "rgb(255,255,255)", borderRadius: 8, padding: "7px 12px", ...bodyFont, fontWeight: 600, fontSize: 11 }}>Hold the size</div>
-                  <div style={{ background: "transparent", color: "rgb(138,138,138)", border: "1px solid rgb(31,31,31)", borderRadius: 8, padding: "6px 12px", ...bodyFont, fontSize: 11 }}>Override</div>
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+                  <header className="dash-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 24px", borderBottom: "1px solid rgb(31,31,31)", background: "#0a0a0a" }}>
+                    <div className="dash-header-search" style={{ display: "flex", alignItems: "center", gap: 14, flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", background: "rgb(15,15,15)", border: "1px solid rgb(31,31,31)", borderRadius: 8, flex: 1, maxWidth: 320 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B6B6D" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+                        <span style={{ color: "rgb(107,107,109)", ...bodyFont, fontSize: 12 }}>Search assets…</span>
+                        <span style={{ marginLeft: "auto", color: "rgb(68,68,68)", ...bodyFont, fontSize: 10, padding: "2px 6px", border: "1px solid rgb(31,31,31)", borderRadius: 4 }}>⌘K</span>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 10px", background: "rgba(47,107,255,0.08)", border: "1px solid rgba(47,107,255,0.3)", borderRadius: 999 }}>
+                        <span style={{ width: 7, height: 7, borderRadius: "50%", background: "rgb(59,130,246)", boxShadow: "rgb(59,130,246) 0 0 6px", flexShrink: 0 }} />
+                        <span style={{ color: "rgb(168,195,255)", ...bodyFont, fontSize: 11, fontWeight: 600, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>Agent</span>
+                      </div>
+                      <div style={{ padding: "6px 10px", background: "rgb(15,15,15)", border: "1px solid rgb(31,31,31)", borderRadius: 8, ...bodyFont, fontSize: 11, color: "rgb(167,139,250)", fontWeight: 600, letterSpacing: "0.08em" }}>PRO</div>
+                    </div>
+                  </header>
+
+                  <div style={{ padding: "20px 16px 28px", flex: 1, display: "flex", flexDirection: "column", gap: 14 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap" }}>
+                      <div>
+                        <div style={{ ...headingFont, color: "rgb(255,255,255)", fontSize: 22, fontWeight: 600 }}>Home</div>
+                        <div style={{ color: "rgb(138,138,138)", ...bodyFont, fontSize: 12, marginTop: 2 }}>Portfolio · Updated 2s ago</div>
+                      </div>
+                      <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                        {["1D", "1W", "1M", "3M"].map((period) => (
+                          <div key={period} style={{ background: period === "1M" ? "rgb(22,22,22)" : "transparent", color: "rgb(138,138,138)", border: "1px solid rgb(31,31,31)", padding: "5px 10px", borderRadius: 6, ...bodyFont, fontSize: 11 }}>{period}</div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ background: "rgb(13,13,13)", border: "1px solid rgb(31,31,31)", borderRadius: 12, padding: "18px 16px" }}>
+                      <div className="dash-stats-grid" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr 1fr 1fr auto auto", gap: 20, alignItems: "baseline" }}>
+                        <div style={{ gridColumn: "1 / -1" }}>
+                          <div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Total Value</div>
+                          <span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(255,255,255)", fontSize: "clamp(24px,5vw,34px)", fontWeight: 700, display: "block", marginTop: 6 }}>$230,846.12</span>
+                          <div style={{ display: "flex", gap: 8, marginTop: 8, alignItems: "center", flexWrap: "wrap" }}>
+                            <span style={{ background: "rgba(34,197,94,0.12)", color: "rgb(34,197,94)", padding: "3px 9px", borderRadius: 4, ...bodyFont, fontSize: 11, fontWeight: 600 }}>↑ +$28,540 · +14.12%</span>
+                            <span style={{ color: "rgb(107,107,109)", ...bodyFont, fontSize: 11 }}>Last 30 days</span>
+                          </div>
+                        </div>
+                        {[["Total Invested", "$202,305.94", "rgb(255,255,255)"], ["Total Profit", "+$28,540.18", "rgb(34,197,94)"], ["Realized P&L", "+$12,418.30", "rgb(34,197,94)"], ["All-Time", "+45.6%", "rgb(34,197,94)"]].map(([label, value, color]) => (
+                          <div key={label as string} style={{ minWidth: 0 }}>
+                            <div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{label as string}</div>
+                            <span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: color as string, fontSize: "clamp(13px,1.8vw,17px)", fontWeight: 600, display: "block", marginTop: 8 }}>{value as string}</span>
+                          </div>
+                        ))}
+                        <div className="dash-deposit-row" style={{ background: "linear-gradient(rgb(59,130,246), rgb(30,58,138))", color: "rgb(255,255,255)", border: "1px solid rgba(96,165,250,0.5)", padding: "10px 16px", borderRadius: 8, ...bodyFont, fontWeight: 600, fontSize: 13, whiteSpace: "nowrap" }}>+ Deposit</div>
+                        <div className="dash-deposit-row" style={{ background: "rgb(15,15,15)", color: "rgb(255,255,255)", border: "1px solid rgb(31,31,31)", padding: "10px 16px", borderRadius: 8, ...bodyFont, fontSize: 13, whiteSpace: "nowrap" }}>Withdraw ↓</div>
+                      </div>
+
+                      <div style={{ marginTop: 18 }}>
+                        <svg viewBox="0 0 1200 200" preserveAspectRatio="none" style={{ width: "100%", height: 140, display: "block" }}>
+                          <defs>
+                            <linearGradient id="phGrnFill" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#22C55E" stopOpacity="0.32" />
+                              <stop offset="100%" stopColor="#22C55E" stopOpacity="0" />
+                            </linearGradient>
+                          </defs>
+                          <path d="M0,200 L0,162.58 L75,151.61 L150,157.09 L225,146.13 L300,132.42 L375,140.65 L450,124.19 L525,113.23 L600,121.45 L675,102.26 L750,85.81 L825,91.29 L900,69.35 L975,52.90 L1050,58.39 L1125,36.45 L1200,20 L1200,200 Z" fill="url(#phGrnFill)" />
+                          <path d="M0,162.58 L75,151.61 L150,157.09 L225,146.13 L300,132.42 L375,140.65 L450,124.19 L525,113.23 L600,121.45 L675,102.26 L750,85.81 L825,91.29 L900,69.35 L975,52.90 L1050,58.39 L1125,36.45 L1200,20" fill="none" stroke="#22C55E" strokeWidth="2.5" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div className="four-col-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+                      {[["Crypto", "$142,820", "61.9%", "rgb(34,197,94)"], ["Stocks", "$58,920", "25.5%", "rgb(59,130,246)"], ["DeFi", "$18,106", "7.8%", "rgb(124,92,255)"], ["Cash", "$11,000", "4.8%", "rgb(245,158,11)"]].map(([label, value, pct, tone]) => (
+                        <div key={label as string} style={{ background: "rgb(15,15,15)", border: "1px solid rgb(31,31,31)", borderRadius: 12, padding: 14 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <span style={{ width: 7, height: 7, borderRadius: "50%", background: tone as string, flexShrink: 0 }} />
+                            <span style={{ color: "rgb(138,138,138)", ...bodyFont, fontSize: 11 }}>{label as string}</span>
+                          </div>
+                          <span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(255,255,255)", fontSize: "clamp(16px,2.5vw,22px)", fontWeight: 700, display: "block", marginTop: 8 }}>{value as string}</span>
+                          <div style={{ color: "rgb(90,90,90)", ...bodyFont, fontSize: 10, marginTop: 3 }}>{pct as string} of portfolio</div>
+                          <div style={{ height: 4, background: "rgb(31,31,31)", borderRadius: 999, marginTop: 10, overflow: "hidden" }}>
+                            <div style={{ height: "100%", width: pct as string, background: tone as string }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Intervention card — static on mobile, absolute on desktop */}
+                    <div className="intervention-card" style={{ position: "absolute", right: 28, top: 110, width: 300, background: "rgb(16,16,16)", border: "1px solid rgba(245,158,11,0.4)", borderRadius: 12, padding: 18, boxShadow: "rgba(0,0,0,0.55) 0 40px 80px, rgba(245,158,11,0.18) 0 0 40px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                        <span style={{ width: 7, height: 7, borderRadius: "50%", background: "rgb(245,158,11)", boxShadow: "rgb(245,158,11) 0 0 6px", flexShrink: 0 }} />
+                        <span style={{ color: "rgb(245,158,11)", ...bodyFont, fontWeight: 700, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase" }}>Intervention · Live · 14:32</span>
+                      </div>
+                      <div style={{ ...headingFont, fontWeight: 600, fontSize: 16, color: "rgb(255,255,255)", lineHeight: 1.3 }}>You&apos;re about to size 2× SOL after a winning streak.</div>
+                      <div style={{ color: "rgb(168,168,168)", ...bodyFont, fontSize: 12, lineHeight: 1.5, marginTop: 10 }}>
+                        The last 4 times you did this, average outcome was <span style={{ fontFamily: "JetBrains Mono, monospace", fontVariantNumeric: "tabular-nums", color: "rgb(239,68,68)", fontWeight: 600 }}>−$1,240</span>. Hold the size flat?
+                      </div>
+                      <div style={{ display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap" }}>
+                        <div style={{ background: "linear-gradient(rgb(59,130,246), rgb(30,58,138))", color: "rgb(255,255,255)", borderRadius: 8, padding: "7px 12px", ...bodyFont, fontWeight: 600, fontSize: 11 }}>Hold the size</div>
+                        <div style={{ background: "transparent", color: "rgb(138,138,138)", border: "1px solid rgb(31,31,31)", borderRadius: 8, padding: "6px 12px", ...bodyFont, fontSize: 11 }}>Override</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 24, ...bodyFont, fontSize: 12, color: "rgba(255,250,226,0.45)", flexWrap: "wrap", gap: 12 }}>
+            <div className="chart-footer" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 24, ...bodyFont, fontSize: 12, color: "rgba(255,250,226,0.45)", flexWrap: "wrap", gap: 12 }}>
               <span>NevUp Home · with live intervention overlay</span>
               <span>Agent Mode · v2.1 · 1,249 trades indexed</span>
             </div>
           </div>
         </section>
 
-        <section style={{ padding: isMobile ? "64px 20px" : "140px 40px", background: "#111111", color: "rgb(255,250,226)" }}>
-          <div style={containerStyles}>
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 80, alignItems: "end", marginBottom: 56 }}>
+        {/* ── Heatmap ── */}
+        <section className="dark2-section" style={{ padding: "140px 40px", background: "#111111", color: "rgb(255,250,226)" }}>
+          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+            <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "end", marginBottom: 56 }}>
               <div>
-                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>Your patterns don&apos;t trade in isolation.</h2>
+                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(2.2rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "rgb(255,250,226)", margin: "18px 0 0" }}>Your patterns don&apos;t trade in isolation.</h2>
               </div>
               <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "rgba(255,250,226,0.7)", margin: 0, maxWidth: 480 }}>How you perform shifts with what the market is doing around you. NevUp reads both, so when it nudges you, it already has context on whether you&apos;re trading into a trending session, fighting a reversal, or navigating something in between.</p>
             </div>
 
-            <div style={{ background: "rgb(13,13,13)", border: "1px solid rgb(31,31,31)", borderRadius: 14, padding: isMobile ? 16 : 26, boxShadow: "rgba(0,0,0,0.4) 0 40px 80px -20px" }}>
+            <div style={{ background: "rgb(13,13,13)", border: "1px solid rgb(31,31,31)", borderRadius: 14, padding: 26, boxShadow: "rgba(0,0,0,0.4) 0 40px 80px -20px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18, gap: 12, flexWrap: "wrap" }}>
                 <div>
                   <div style={{ ...headingFont, fontWeight: 600, fontSize: 22, color: "rgb(255,255,255)" }}>Market Heatmap</div>
@@ -341,44 +358,40 @@ export default function Page() {
                 </div>
               </div>
 
-              <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gridTemplateRows: "repeat(4, 80px)", gap: 5, minWidth: isMobile ? 700 : "auto" }}>
-                  {heatmapAssets.map((asset, index) => (
-                    <div key={`${asset[0]}-${index}`} style={{ background: asset[3] as string, color: "rgb(255,250,226)", padding: 14, borderRadius: 6, display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 60, position: "relative", overflow: "hidden", gridColumn: index === 0 ? "span 2" : index === 1 ? "span 2" : index === 12 ? "span 2" : "span 1", gridRow: index < 2 ? "span 2" : index === 12 ? "span 2" : "span 1" }}>
-                      <div style={{ ...headingFont, fontWeight: 700, fontSize: 18, letterSpacing: "-0.01em", color: "rgb(255,250,226)" }}>{asset[0] as string}</div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                        <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 11, color: "rgba(255,250,226,0.78)" }}>{asset[1] as string}</span>
-                        <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 12, fontWeight: 600, color: "rgb(255,250,226)" }}>{asset[2] as string}</span>
-                      </div>
+              <div className="heatmap-grid" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gridTemplateRows: "repeat(4, 80px)", gap: 5 }}>
+                {heatmapAssets.map((asset, index) => (
+                  <div key={`${asset[0]}-${index}`} style={{ background: asset[3] as string, color: "rgb(255,250,226)", padding: 12, borderRadius: 6, display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 60, position: "relative", overflow: "hidden", gridColumn: index === 0 ? "span 2" : index === 1 ? "span 2" : index === 12 ? "span 2" : "span 1", gridRow: index < 2 ? "span 2" : index === 12 ? "span 2" : "span 1" }}>
+                    <div style={{ ...headingFont, fontWeight: 700, fontSize: "clamp(13px,2vw,18px)", letterSpacing: "-0.01em", color: "rgb(255,250,226)" }}>{asset[0] as string}</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 4, flexWrap: "wrap" }}>
+                      <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, color: "rgba(255,250,226,0.78)" }}>{asset[1] as string}</span>
+                      <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 11, fontWeight: 600, color: "rgb(255,250,226)" }}>{asset[2] as string}</span>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
-        <section style={{ padding: isMobile ? "64px 20px" : "140px 40px", background: "var(--bg-warm)", color: "var(--fg)" }}>
-          <div style={containerStyles}>
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.05fr 1fr", gap: isMobile ? 40 : 80, alignItems: "start" }}>
+        {/* ── Tech features ── */}
+        <section className="warm-section" style={{ padding: "140px 40px", background: "var(--bg-warm)", color: "var(--fg)" }}>
+          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+            <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr", gap: 80, alignItems: "start" }}>
               <div>
-                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(3rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: "18px 0 0" }}>The next generation of trading runs on behavioral intelligence.</h2>
+                <h2 style={{ ...headingFont, fontWeight: 500, fontSize: "clamp(2.2rem, 5vw, 4.2rem)", lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: "18px 0 0" }}>The next generation of trading runs on behavioral intelligence.</h2>
                 <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-faint)", margin: "24px 0 0", maxWidth: 540 }}>NevUp&apos;s behavioral models learn how you trade under pressure and build a deeper understanding of your habits with every session. As the system becomes more personalized, it gets better at delivering interventions in the moments where they can make a difference.</p>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div className="feature-list" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 {[
                   ["Behavioral models", "Purpose-built.", " Specialized models trained on trader behavioral patterns. Fast enough to run inline. Specific enough to recognize your patterns."],
                   ["Personalization", "Personalisation ", "The model uses your stated plan, your past trades, and the moments you have broken before so every intervention is grounded in lived context, not theory."],
-                  ["Intervention engine", "⁠Real-time intervention", "⁠Interventions surface right at the point of decision. And when the session closes, a debrief breaks down exactly what happened and why, so the next one goes better."],
+                  ["Intervention engine", "Real-time intervention", "Interventions surface right at the point of decision. And when the session closes, a debrief breaks down exactly what happened and why, so the next one goes better."],
                   ["Roadmap", "Coming next!", "HRV & biometric integration"],
                 ].map(([tag, title, copy]) => (
-                  <div key={tag as string} style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 12, padding: 22, display: "grid", gridTemplateColumns: "auto 1fr", gap: 22, alignItems: "start" }}>
-                    {/* <div style={{ ...bodyFont, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: accent, fontWeight: 700, padding: "6px 10px", border: "1px solid rgba(243,67,1,0.4)", borderRadius: 6, width: "fit-content", whiteSpace: "nowrap", height: "fit-content" }}>{tag as string}</div> */}
-                    <div>
-                      <div style={{ ...headingFont, fontSize: 22, color: "#f86c0f", fontWeight: 500, letterSpacing: "-0.015em" }}>{title as string}</div>
-                      <p style={{ ...bodyFont, fontSize: 15, lineHeight: 1.6, color: "var(--fg-faint)", margin: "8px 0 0" }}>{copy as string}</p>
-                    </div>
+                  <div key={tag as string} style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 12, padding: 22 }}>
+                    <div style={{ ...headingFont, fontSize: 22, color: "#f86c0f", fontWeight: 500, letterSpacing: "-0.015em" }}>{title as string}</div>
+                    <p style={{ ...bodyFont, fontSize: 15, lineHeight: 1.6, color: "var(--fg-faint)", margin: "8px 0 0" }}>{copy as string}</p>
                   </div>
                 ))}
               </div>
@@ -388,7 +401,6 @@ export default function Page() {
       </main>
 
       <LandingFooter />
-
     </div>
   );
 }

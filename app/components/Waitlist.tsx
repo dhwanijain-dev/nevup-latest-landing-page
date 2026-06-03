@@ -81,7 +81,7 @@ const Waitlist = () => {
         alignItems: "center",
         justifyContent: "center",
         padding: "2rem 1.5rem",
-        background: "var(--bg-page)",
+        background: "#000000",
       }}
     >
       <div style={{ width: "100%", maxWidth: "480px" }}>
@@ -100,7 +100,7 @@ const Waitlist = () => {
             borderRadius: "999px",
             padding: "4px 14px",
             fontSize: "0.72rem",
-            color: "var(--fg-ghost)",
+            color: "rgba(255, 255, 255, 0.6)",
             marginBottom: "1rem",
             letterSpacing: "0.04em",
           }}
@@ -126,7 +126,7 @@ const Waitlist = () => {
             fontSize: "clamp(2rem, 5vw, 2.75rem)",
             fontWeight: 700,
             lineHeight: 1.15,
-            background: "linear-gradient(135deg, var(--fg) 0%, var(--fg-faint) 100%)",
+            background: "linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.4) 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
@@ -142,7 +142,7 @@ const Waitlist = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
           style={{
-            color: "var(--fg-ghost)",
+            color: "rgba(255, 255, 255, 0.7)",
             fontSize: "1rem",
             lineHeight: 1.65,
             marginBottom: "2rem",
@@ -178,7 +178,7 @@ const Waitlist = () => {
                 fontWeight: 600,
                 letterSpacing: "0.07em",
                 textTransform: "uppercase",
-                color: "var(--fg-ghost)",
+                color: "rgba(255, 255, 255, 0.5)",
                 marginBottom: "0.5rem",
               }}
             >
@@ -193,7 +193,7 @@ const Waitlist = () => {
                 background: "rgba(255,255,255,0.06)",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "10px",
-                color: "var(--fg)",
+                color: "#ffffff",
                 padding: "12px 16px",
                 fontSize: "0.95rem",
                 outline: "none",
@@ -212,7 +212,7 @@ const Waitlist = () => {
                 fontWeight: 600,
                 letterSpacing: "0.07em",
                 textTransform: "uppercase",
-                color: "var(--fg-ghost)",
+                color: "rgba(255, 255, 255, 0.5)",
                 marginBottom: "0.5rem",
               }}
             >
@@ -228,7 +228,7 @@ const Waitlist = () => {
                 background: "rgba(255,255,255,0.06)",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "10px",
-                color: "var(--fg)",
+                color: "#ffffff",
                 padding: "12px 16px",
                 fontSize: "0.95rem",
                 outline: "none",
@@ -299,7 +299,7 @@ const Waitlist = () => {
                 style={{
                   fontSize: "0.9rem",
                   fontWeight: 500,
-                  color: "var(--fg-muted)",
+                  color: "#ffffff",
                 }}
               >
                 I actively trade in financial markets
@@ -307,7 +307,7 @@ const Waitlist = () => {
               <div
                 style={{
                   fontSize: "0.75rem",
-                  color: "var(--fg-ghost)",
+                  color: "rgba(255, 255, 255, 0.5)",
                   marginTop: "2px",
                 }}
               >
@@ -376,7 +376,7 @@ const Waitlist = () => {
               style={{
                 fontSize: "0.8rem",
                 fontWeight: 500,
-                color: "var(--fg-ghost)",
+                color: "rgba(255, 255, 255, 0.6)",
                 lineHeight: 1.45,
               }}
             >
@@ -413,7 +413,7 @@ const Waitlist = () => {
               textAlign: "center",
               marginTop: "1rem",
               fontSize: "0.75rem",
-              color: "var(--fg-ghost)",
+              color: "rgba(255, 255, 255, 0.4)",
             }}
           >
             ✓ No spam &nbsp;·&nbsp; Unsubscribe anytime

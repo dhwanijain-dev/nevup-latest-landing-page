@@ -34,58 +34,22 @@ const team = [
      },
 ];
 
-const footerColumns = [
-     {
-          title: "Product",
-          links: [
-               { label: "How it works", href: "/#how" },
-               { label: "For Brokerages", href: "/brokerage" },
-               { label: "Join the waitlist", href: "/waitlist" },
-          ],
-     },
-     {
-          title: "Company",
-          links: [
-               { label: "About", href: "/about" },
-               { label: "Team", href: "/about#team" },
-               { label: "Contact", href: "/waitlist" },
-               { label: "Newsletter", href: "/waitlist" },
-          ],
-     },
-     {
-          title: "Legal",
-          links: [
-               { label: "Privacy Policy", href: "/waitlist" },
-               { label: "Terms of Service", href: "/waitlist" },
-               { label: "Risk Disclosure", href: "/waitlist" },
-               { label: "Cookie Policy", href: "/waitlist" },
-               { label: "Security", href: "/waitlist" },
-          ],
-     },
-     {
-          title: "Connect",
-          links: [
-               { label: "LinkedIn", href: "https://www.linkedin.com/company/nevup/", external: true },
-               { label: "Twitter / X", href: "https://twitter.com/nevup", external: true },
-               { label: "Press kit", href: "/waitlist" },
-               { label: "hello@nevup.in", href: "mailto:connect@nevup.in", external: true },
-          ],
-     },
-];
-
 const pageStyles: CSSProperties = {
      minHeight: "100vh",
      background: "var(--bg-page)",
      color: "var(--fg)",
-     overflow: "hidden",
+     overflowX: "hidden", // Ironclad prevention against accidental layout shifting sideways
+     width: "100%"
 };
 
 const containerStyles: CSSProperties = {
      width: "100%",
      maxWidth: 1280,
      margin: "0 auto",
-     paddingLeft: 40,
-     paddingRight: 40,
+     // Drops side cushions gently down to 5% instead of cropping out text on tiny screens
+     paddingLeft: "min(5%, 40px)",
+     paddingRight: "min(5%, 40px)",
+     boxSizing: "border-box"
 };
 
 const sectionStyles: CSSProperties = {
@@ -115,16 +79,20 @@ function TeamCard({ name, role, blurb, initials, gradient, border, link, image }
                     background: "rgba(255,255,255,0.04)",
                     border: `1px solid ${border}`,
                     borderRadius: 28,
-                    padding: 24,
+                    padding: "min(24px, 5%)",
                     boxShadow: "0 24px 60px rgba(0,0,0,0.14)",
+                    minWidth: 0,
+                    width: "100%",
+                    boxSizing: "border-box"
                }}
           >
-               <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
+               {/* Flexbox wrapper handles avatar stack swapping dynamically on tiny screens */}
+               <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
                     <div style={{ width: 96, height: 96, flexShrink: 0, borderRadius: "50%", overflow: "hidden", display: "block" }}>
                          <Image src={image} width={96} height={96} alt={name} style={{ width: 96, height: 96, objectFit: "cover", borderRadius: "50%", border: `1px solid ${border}` }} />
                     </div>
-                    <div style={{ paddingTop: 8 }}>
-                         <div style={{ ...headingFont, fontSize: 32, color: "var(--fg)", fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.1 }}>{name}</div>
+                    <div style={{ paddingTop: 8, minWidth: "200px", flex: "1 1 auto" }}>
+                         <div style={{ ...headingFont, fontSize: "min(32px, 8.5vw)", color: "var(--fg)", fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.1 }}>{name}</div>
                          <div style={{ ...bodyFont, fontSize: 12, color: "var(--fg-faint)", marginTop: 6, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>{role}</div>
                          <a
                               href={link}
@@ -158,73 +126,79 @@ export default function Page() {
           <div id="root" data-screen-label="/about" style={pageStyles}>
                <LandingNavbar />
 
-               <div className="page-fade">
-                    <main style={{ position: "relative" }}>
+               <div className="page-fade" style={{ width: "100%" }}>
+                    <main style={{ position: "relative", width: "100%" }}>
+                         {/* HERO SECTION */}
                          <section
                               style={{
                                    position: "relative",
-                                   padding: "200px 40px 140px",
+                                   padding: "200px min(5%, 40px) 140px",
                                    overflow: "hidden",
                                    background: "linear-gradient(135deg, rgb(243,67,1) 0%, rgb(242,105,63) 50%, rgb(255,250,226) 100%)",
                                    color: "rgb(255,250,226)",
+                                   width: "100%",
+                                   boxSizing: "border-box"
                               }}
                          >
                               <div style={{ position: "absolute", inset: 0, background: "radial-gradient(45% 55% at 0% 0%, rgba(190,40,0,0.35) 0%, transparent 60%)", pointerEvents: "none" }} />
                               <div style={{ position: "absolute", inset: 0, background: "radial-gradient(55% 65% at 100% 100%, rgba(255,250,226,0.5) 0%, transparent 60%)", pointerEvents: "none" }} />
-                              <div style={{ position: "absolute", bottom: -120, left: -100, width: 580, height: 580, opacity: 0.18, pointerEvents: "none" }}>
-                                   {/* <Image src="/logo.png" width={580} height={580} alt="NevUp" style={{ display: "inline-block", width: "100%", height: "100%", objectFit: "contain" }} /> */}
-                              </div>
-
+                               
                               <div style={{ ...containerStyles, position: "relative", zIndex: 2 }}>
                                    <div style={{ maxWidth: 920 }}>
                                         <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgb(255,250,226)", opacity: 0.85 }}>
                                              About NevUp
                                         </div>
-                                        <h1 style={{ ...headingFont, fontWeight: 500, fontSize: 88, lineHeight: 0.96, letterSpacing: "-0.03em", color: "rgb(255,250,226)", margin: "24px 0 0", textWrap: "balance" }}>
+                                        <h1 
+                                             style={{ 
+                                                  ...headingFont, 
+                                                  fontWeight: 500, 
+                                                  // Caps out at 88px on large desktops, automatically folds cleanly on small phones
+                                                  fontSize: "min(88px, 12vw)", 
+                                                  lineHeight: 0.96, 
+                                                  letterSpacing: "-0.03em", 
+                                                  color: "rgb(255,250,226)", 
+                                                  margin: "24px 0 0", 
+                                                  textWrap: "balance" 
+                                             }}
+                                        >
                                              A behavioral intelligence layer for high-noise modern markets.
                                         </h1>
-                                        <p style={{ ...headingFont, fontSize: 22, lineHeight: 1.4, color: "rgb(255,250,226)", margin: "32px 0 0", textWrap: "pretty", maxWidth: 720, opacity: 0.95, fontWeight: 400 }}>
+                                        <p style={{ ...headingFont, fontSize: "min(22px, 5.5vw)", lineHeight: 1.4, color: "rgb(255,250,226)", margin: "32px 0 0", textWrap: "pretty", maxWidth: 720, opacity: 0.95, fontWeight: 400 }}>
                                              Every trader faces two battles: the market, and their own behavior within it.
                                         </p>
                                    </div>
                               </div>
                          </section>
 
-                         {/* <section style={{ ...sectionStyles, padding: "140px 40px", position: "relative", background: "var(--bg-page)", color: "var(--fg)" }}>
-                              <div style={containerStyles}>
-                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
-                                        <div>
-                                             <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>
-                                                  The thesis
-                                             </div>
-                                             <h2 style={{ ...headingFont, fontWeight: 500, fontSize: 52, lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: "20px 0 0", textWrap: "balance" }}>
-                                                  The industry built endlessly for the first.
-                                                  <br />
-                                                  <span style={{ color: "var(--fg-faint)" }}>Almost nothing for the second.</span>
-                                             </h2>
-                                        </div>
-                                        <div style={{ paddingTop: 12 }}>
-                                             <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-muted)", margin: 0, textWrap: "pretty" }}>
-                                                  NevUp introduces a behavioral intelligence layer designed to help identify behavioral patterns, execution drift, and moments where emotion may begin influencing trading behavior.
-                                             </p>
-                                             <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-faint)", margin: "22px 0 0", textWrap: "pretty" }}>
-                                                  Because trading performance is rarely defined by strategy alone. It&apos;s also defined by behavior when the strategy is tested.
-                                             </p>
-                                             <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-faint)", margin: "22px 0 0", textWrap: "pretty" }}>
-                                                  We are the cool head when the user is hot. The intervention layer that trades with you.
-                                             </p>
-                                        </div>
-                                   </div>
-                              </div>
-                         </section> */}
-
-                         <section id="team" style={{ ...sectionStyles, padding: "120px 40px 140px", position: "relative", background: "var(--bg-warm)", color: "var(--fg)" }}>
+                         {/* TEAM SECTION */}
+                         <section 
+                              id="team" 
+                              style={{ 
+                                   ...sectionStyles, 
+                                   padding: "120px min(5%, 40px) 140px", 
+                                   position: "relative", 
+                                   background: "var(--bg-warm)", 
+                                   color: "var(--fg)",
+                                   boxSizing: "border-box"
+                              }}
+                         >
                               <div style={containerStyles}>
                                    <div style={{ maxWidth: 880, marginBottom: 80 }}>
                                         <div style={{ ...bodyFont, fontWeight: 600, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg)", opacity: 0.6 }}>
                                              The team
                                         </div>
-                                        <h2 style={{ ...headingFont, fontWeight: 500, fontSize: 60, lineHeight: 1.02, letterSpacing: "-0.025em", color: "var(--fg)", margin: "20px 0 0", textWrap: "balance" }}>
+                                        <h2 
+                                             style={{ 
+                                                  ...headingFont, 
+                                                  fontWeight: 500, 
+                                                  fontSize: "min(60px, 9.5vw)", 
+                                                  lineHeight: 1.02, 
+                                                  letterSpacing: "-0.025em", 
+                                                  color: "var(--fg)", 
+                                                  margin: "20px 0 0", 
+                                                  textWrap: "balance" 
+                                             }}
+                                        >
                                              Built by traders, researchers and systems thinkers.
                                         </h2>
                                         <p style={{ ...bodyFont, fontSize: 18, lineHeight: 1.6, color: "var(--fg-muted)", margin: "28px 0 0", textWrap: "pretty", maxWidth: 760 }}>
@@ -232,7 +206,17 @@ export default function Page() {
                                         </p>
                                    </div>
 
-                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, paddingTop: 60, borderTop: "1px solid var(--divider-soft)" }}>
+                                   {/* RESPONSIVE TEAM GRID: Uses auto-fit. Perfectly 2 columns on desktop, drops smoothly to 1 stack on mobile */}
+                                   <div 
+                                        style={{ 
+                                             display: "grid", 
+                                             gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 460px), 1fr))", 
+                                             gap: "60px 80px", 
+                                             paddingTop: 60, 
+                                             borderTop: "1px solid var(--divider-soft)" 
+                                        }}
+                                        className="team-grid-wrapper"
+                                   >
                                         {team.map((member) => (
                                              <TeamCard key={member.name} {...member} />
                                         ))}
@@ -241,8 +225,7 @@ export default function Page() {
                          </section>
                     </main>
 
-                         <LandingFooter  />
-                    
+                    <LandingFooter />
                </div>
           </div>
      );
