@@ -65,7 +65,7 @@ export default function LandingNavbar() {
         }}
       >
         <Link href={logoHref} style={{ display: "inline-flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <Image src="/logo.png" alt="NevUp" width={160} height={30} style={{ width: "500%", height: "500%" }} />
+          <Image src="/darknevuplogo.png" alt="NevUp" width={160} height={30} style={{ width: "500%", height: "500%" }} />
         </Link>
 
         {!isMobile ? (
