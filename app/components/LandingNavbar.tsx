@@ -93,7 +93,7 @@ export default function LandingNavbar() {
 
         {!isMobile ? (
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <button
+            {/* <button
               type="button"
               aria-label="Switch theme"
               title="Switch theme"
@@ -112,7 +112,7 @@ export default function LandingNavbar() {
               }}
             >
               {darkMode ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
+            </button> */}
             <Link
               href="https://cal.com/nevup-ai/nevup-for-partners"
               style={{
@@ -202,7 +202,7 @@ export default function LandingNavbar() {
                   {link.label}
                 </a>
               ))}
-              <button
+              {/* <button
                 type="button"
                 onClick={toggleTheme}
                 style={{
@@ -220,7 +220,7 @@ export default function LandingNavbar() {
               >
                 {darkMode ? <Sun size={16} /> : <Moon size={16} />}
                 {darkMode ? "Light Mode" : "Dark Mode"}
-              </button>
+              </button> */}
             </div>
           </motion.div>
         ) : null}
