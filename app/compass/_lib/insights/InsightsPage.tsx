@@ -11,7 +11,11 @@ import { Hero, DnaSection } from '../components/Sections';
 
 const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
   ({ fontFamily: T.mono, fontSize: size, color, fontWeight: weight });
-const inr = (v: number) => `${v < 0 ? '−' : ''}₹${Math.abs(v).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+// currency symbol is set per-upload from the detected market; default ₹ until known
+let CUR = '₹';
+const setCur = (s: string) => { CUR = s || '₹'; };
+const locale = () => (CUR === '₹' ? 'en-IN' : 'en-US');
+const inr = (v: number) => `${v < 0 ? '−' : ''}${CUR}${Math.abs(v).toLocaleString(locale(), { maximumFractionDigits: 0 })}`;
 const pctF = (v: number) => `${Math.round(v * 100)}%`;
 
 const EXPORT_GUIDES: { broker: string; path: string }[] = [
@@ -32,22 +36,24 @@ export default function InsightsPage() {
 
   const insights = useMemo(() => {
     if (!report?.ok || !report.trades.length) return null;
-    return computeInsights(report.trades as NormTrade[]);
+    const r = computeInsights(report.trades as NormTrade[], report.marketHint);
+    if (!('insufficient' in r)) setCur(r.profile.currencySymbol);
+    return r;
   }, [report]);
 
   // Persist the upload + computed analysis to the user's account (server
   // recomputes accuracy). Fire-and-forget; a persistence failure never blocks
   // the on-device analysis the user sees.
-  const persist = (rawCsv: string, trades: NormTrade[], filename: string) => {
+  const persist = (rawCsv: string, trades: NormTrade[], filename: string, marketHint?: string) => {
     const user = (window as unknown as { __compassUser?: { userId?: string } }).__compassUser;
     if (!user?.userId) return;
     try {
-      const computed = computeInsights(trades);
+      const computed = computeInsights(trades, marketHint);
       const payload = 'insufficient' in computed ? {} : computed;
       void fetch('/api/ingest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.userId, filename, rawCsv, trades, insights: payload }),
+        body: JSON.stringify({ userId: user.userId, filename, rawCsv, trades, insights: payload, marketHint }),
       });
     } catch { /* never block the UI */ }
   };
@@ -81,7 +87,7 @@ export default function InsightsPage() {
             const packed = JSON.stringify(r.trades);
             if (packed.length < 3_000_000) sessionStorage.setItem('compass_trades', packed);
           } catch { /* ignore */ }
-          persist(text, r.trades as NormTrade[], file.name);
+          persist(text, r.trades as NormTrade[], file.name, r.marketHint);
         }
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Unexpected error parsing the file.');
@@ -289,11 +295,29 @@ function InsightsView({ x, trips }: { x: Insights; trips: RoundTrip[] }) {
     `Capping oversized losers at your average winner and skipping revenge entries, ` +
     `your rule-following self would have made ${inr(x.ghost.ghostPnl)} - a gap of ${inr(gap)}.`;
 
+  const p = x.profile;
+  const chips = [
+    p.style,
+    `${p.market}`,
+    p.instrument,
+    p.currency,
+  ];
   return (
     <>
       <Hero embedded headline={heroHeadline}
         sub="Compass paired every round-trip in your book and rebuilt the version of you that cut losers at your average winner and skipped revenge entries. The gap is what discipline cost you."
         stats={stats} />
+      {/* trader profile - classified from the real trades */}
+      <div style={{ maxWidth: 1120, margin: '0 auto', padding: '4px 24px 0', display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        {chips.map((c, i) => (
+          <span key={i} style={{
+            fontFamily: T.mono, fontSize: 11, letterSpacing: '0.04em',
+            color: i === 0 ? '#fff' : T.ink, background: i === 0 ? T.ghost : T.panelAlt,
+            border: `1px solid ${i === 0 ? T.ghost : T.border}`, borderRadius: 3, padding: '4px 10px',
+          }}>{c}</span>
+        ))}
+        <span style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 12, color: T.faint }}>{p.styleReason}</span>
+      </div>
       <GhostDemo real={{ you: x.ghost.actualPnl, ghost: x.ghost.ghostPnl, gap, line: verdictLine, trips: x.roundTrips }} />
       <DnaSection dna={dna} caption="Your Trading DNA - computed from this upload" />
       <Compounding x={x} />

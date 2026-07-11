@@ -59,8 +59,10 @@ export default async function AdminPage() {
         avg(overall)::float overall
       from accuracy_reports`);
 
-  const recentUsers = await q<{ email: string; name: string; created_at: string; last_seen_at: string }>(
-    `select email, name, created_at, last_seen_at from users order by created_at desc limit 20`);
+  const recentUsers = await q<{ email: string; name: string; trader_style: string; market: string; created_at: string; last_seen_at: string }>(
+    `select email, name, trader_style, market, created_at, last_seen_at from users order by created_at desc limit 20`);
+  const styleBreakdown = await q<{ trader_style: string; n: string }>(
+    `select coalesce(trader_style,'(no upload yet)') trader_style, count(*)::int n from users group by trader_style order by n desc`);
   const recentUploads = await q<{ email: string; filename: string; parsed_count: number; created_at: string }>(
     `select u.email, up.filename, up.parsed_count, up.created_at
        from uploads up join users u on u.id = up.user_id order by up.created_at desc limit 20`);
@@ -92,9 +94,16 @@ export default async function AdminPage() {
         <Card label="Kronos live evals" value={pct(evals?.dir)} sub={`${num(Number(evals?.n))} forecasts vs actual`} accent />
       </Grid>
 
+      <h2 style={h2}>Trader types (classified from uploads)</h2>
+      <Grid>
+        {styleBreakdown.map(s => (
+          <Card key={s.trader_style} label={s.trader_style} value={num(Number(s.n))} sub="users" />
+        ))}
+      </Grid>
+
       <h2 style={h2}>Recent users</h2>
-      <Table cols={['Email', 'Name', 'Joined', 'Last seen']}
-             rows={recentUsers.map(u => [u.email, u.name ?? '-', fmt(u.created_at), fmt(u.last_seen_at)])} />
+      <Table cols={['Email', 'Name', 'Trader type', 'Market', 'Joined', 'Last seen']}
+             rows={recentUsers.map(u => [u.email, u.name ?? '-', u.trader_style ?? '-', u.market ?? '-', fmt(u.created_at), fmt(u.last_seen_at)])} />
 
       <h2 style={h2}>Recent uploads</h2>
       <Table cols={['User', 'File', 'Trades', 'When']}

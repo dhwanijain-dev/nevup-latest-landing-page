@@ -21,6 +21,24 @@ export interface ParseReport {
   columns: Record<string, string>; // resolved field → source header
   delimiter: string;
   warnings: string[];
+  marketHint?: string;            // ISO currency code detected from ISIN/exchange, if any
+}
+
+// ISIN first two chars are an ISO country code → currency/market. This is
+// authoritative (real), not a guess: every listed security's ISIN encodes it.
+const ISIN_COUNTRY_CCY: Record<string, string> = {
+  IN: 'INR', US: 'USD', GB: 'GBP', JP: 'JPY', HK: 'HKD', AU: 'AUD',
+  CA: 'CAD', DE: 'EUR', FR: 'EUR', NL: 'EUR', IT: 'EUR', ES: 'EUR', IE: 'EUR',
+};
+function ccyFromExchange(v: string): string | null {
+  const s = v.toUpperCase();
+  if (/\b(NSE|BSE|NFO|BFO|MCX|CDS)\b/.test(s)) return 'INR';
+  if (/\b(NASDAQ|NYSE|ARCA|BATS|AMEX)\b/.test(s)) return 'USD';
+  if (/\b(LSE|LON)\b/.test(s)) return 'GBP';
+  if (/\b(TSX)\b/.test(s)) return 'CAD';
+  if (/\b(ASX)\b/.test(s)) return 'AUD';
+  if (/\b(HKEX|SEHK)\b/.test(s)) return 'HKD';
+  return null;
 }
 
 export const MAX_BYTES = 8 * 1024 * 1024;   // 8 MB
@@ -226,6 +244,11 @@ export function parseTradeCsv(text: string): ParseReport {
   const iSym = colIndex(map.symbol), iSide = colIndex(map.side);
   const iQty = colIndex(map.qty), iPrice = colIndex(map.price);
   const iDate = colIndex(map.date), iTime = colIndex(map.time);
+  // extra columns for market detection (not required for trades)
+  const findCol = (names: string[]) => headerRow.findIndex(h => names.includes(NORM(h)));
+  const iIsin = findCol(['isin', 'isincode']);
+  const iExch = findCol(['exchange', 'exch', 'segment', 'exchangesegment']);
+  const ccyVotes: Record<string, number> = {};
 
   const dataRows = rows.slice(headerIdx + 1);
   if (dataRows.length > MAX_ROWS) {
@@ -242,7 +265,7 @@ export function parseTradeCsv(text: string): ParseReport {
     try {
       // ignore repeated header rows / total/summary rows brokers append
       const first = (r[0] ?? '').toLowerCase();
-      if (/^(total|grand total|net|summary| - |-)$/.test(first.trim())) return;
+      if (/^(total|grand total|net|summary|—|-)$/.test(first.trim())) return;
 
       const sym = (r[iSym] ?? '').trim();
       const side = toSide(r[iSide] ?? '');
@@ -258,6 +281,17 @@ export function parseTradeCsv(text: string): ParseReport {
       const parsed = iDate >= 0 ? parseDate(r[iDate] ?? '', iTime >= 0 ? r[iTime] : undefined) : null;
       if (parsed) { ts = parsed.iso; hasTime = parsed.hasTime; }
       else { noDate++; }
+
+      // market vote: ISIN country prefix (authoritative) then exchange column
+      if (iIsin >= 0) {
+        const isin = (r[iIsin] ?? '').trim().toUpperCase();
+        const ccy = ISIN_COUNTRY_CCY[isin.slice(0, 2)];
+        if (ccy) ccyVotes[ccy] = (ccyVotes[ccy] ?? 0) + 1;
+      }
+      if (iExch >= 0) {
+        const ccy = ccyFromExchange(r[iExch] ?? '');
+        if (ccy) ccyVotes[ccy] = (ccyVotes[ccy] ?? 0) + 1;
+      }
 
       trades.push({
         symbol: sym.toUpperCase(),
@@ -289,8 +323,13 @@ export function parseTradeCsv(text: string): ParseReport {
     };
   }
 
+  const marketHint = Object.keys(ccyVotes).length
+    ? Object.keys(ccyVotes).reduce((a, b) => (ccyVotes[a] >= ccyVotes[b] ? a : b))
+    : undefined;
+
   return {
     ok: true, trades, delimiter, columns: cols,
     totalRows: dataRows.length, parsed: trades.length, skipped, skipSamples, warnings,
+    marketHint,
   };
 }

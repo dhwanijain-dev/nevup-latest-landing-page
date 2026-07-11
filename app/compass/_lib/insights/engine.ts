@@ -75,7 +75,22 @@ export interface Insights {
   // why it compounds - the gap extrapolated at the observed rate (labeled)
   compounding: { windowDays: number; perMonth: number; perQuarter: number; perYear: number } | null;
 
+  // who this trader is - classified from the real trades (style, market,
+  // currency). Every field is derived from the fills, never assumed.
+  profile: TraderProfile;
+
   notes: string[];               // honest caveats about what couldn't be computed
+}
+
+export interface TraderProfile {
+  style: 'Scalper' | 'Day trader' | 'Swing trader' | 'Position trader' | 'Investor' | 'Mixed';
+  styleReason: string;           // the real basis for the label
+  medianHoldMinutes: number | null;
+  intradayShare: number;         // 0..1 of round-trips opened+closed same day
+  market: string;                // e.g. 'India (NSE/BSE)', 'US', 'Mixed', 'Unknown'
+  currency: string;              // ISO-ish: 'INR' | 'USD' | ...
+  currencySymbol: string;        // '₹' | '$' | ...
+  instrument: string;            // 'Equity' | 'F&O / derivatives' | 'Mixed' | 'Unknown'
 }
 
 const MIN_TRIPS = 5;
@@ -140,7 +155,7 @@ export function pairTrades(fills: NormTrade[]): { trips: RoundTrip[]; openLegs: 
   return { trips, openLegs };
 }
 
-export function computeInsights(fills: NormTrade[]): Insights | { insufficient: string } {
+export function computeInsights(fills: NormTrade[], marketHint?: string): Insights | { insufficient: string } {
   const { trips, openLegs } = pairTrades(fills);
   if (trips.length < MIN_TRIPS) {
     return {
@@ -422,6 +437,116 @@ export function computeInsights(fills: NormTrade[]): Insights | { insufficient: 
     disciplineScore, scoreParts,
     debrief: { summary, wentWell, leaks, focus },
     ghost, compounding,
+    profile: classifyTrader(fills, trips, marketHint),
     notes,
+  };
+}
+
+// ── trader profile: style + market + currency, all from the real fills ───────
+
+const CCY: Record<string, { currency: string; symbol: string; market: string }> = {
+  INR: { currency: 'INR', symbol: '₹', market: 'India (NSE/BSE)' },
+  USD: { currency: 'USD', symbol: '$', market: 'US' },
+  GBP: { currency: 'GBP', symbol: '£', market: 'UK (LSE)' },
+  EUR: { currency: 'EUR', symbol: '€', market: 'Europe' },
+  JPY: { currency: 'JPY', symbol: '¥', market: 'Japan' },
+  HKD: { currency: 'HKD', symbol: 'HK$', market: 'Hong Kong' },
+  AUD: { currency: 'AUD', symbol: 'A$', market: 'Australia' },
+  CAD: { currency: 'CAD', symbol: 'C$', market: 'Canada' },
+};
+
+// Map a symbol's exchange suffix to a market. Indian tickers usually carry
+// .NS/.BO (or none, from Indian brokers); US tickers are bare or .US-style.
+function marketOfSymbol(sym: string): string | null {
+  const s = sym.toUpperCase();
+  if (/\.(NS|BO|NSE|BSE)$/.test(s)) return 'INR';
+  if (/\.(L|LON)$/.test(s)) return 'GBP';
+  if (/\.(TO|TSX)$/.test(s)) return 'CAD';
+  if (/\.(AX|ASX)$/.test(s)) return 'AUD';
+  if (/\.(HK)$/.test(s)) return 'HKD';
+  if (/\.(T|TYO)$/.test(s)) return 'JPY';
+  if (/\.(DE|PA|AS|MI)$/.test(s)) return 'EUR';
+  if (/\.(US|O|N)$/.test(s)) return 'USD';
+  return null;
+}
+
+// Detect F&O / derivatives from common contract naming (Indian + US).
+function looksDerivative(sym: string): boolean {
+  const s = sym.toUpperCase();
+  return /\b(FUT|CE|PE|OPT|CALL|PUT)\b/.test(s)
+    || /\d{2}(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)/.test(s)  // expiry-coded
+    || /\d+(C|P)\d/.test(s);
+}
+
+export function classifyTrader(fills: NormTrade[], trips: RoundTrip[], marketHint?: string): TraderProfile {
+  // ── market / currency ─────────────────────────────────────────────────────
+  // Prefer the parser's ISIN/exchange-derived hint (authoritative). Fall back
+  // to symbol exchange suffixes. Only "Unknown" when neither says anything.
+  const votes: Record<string, number> = {};
+  let derivative = 0, equity = 0;
+  for (const f of fills) {
+    const m = marketOfSymbol(f.symbol);
+    if (m) votes[m] = (votes[m] ?? 0) + 1;
+    if (looksDerivative(f.symbol)) derivative++; else equity++;
+  }
+  const marketCodes = Object.keys(votes);
+  let currencyCode: string, market: string;
+  if (marketHint && CCY[marketHint]) {
+    currencyCode = marketHint;
+    market = CCY[marketHint].market;
+  } else if (marketCodes.length === 1) {
+    currencyCode = marketCodes[0];
+    market = CCY[currencyCode]?.market ?? 'Unknown';
+  } else if (marketCodes.length > 1) {
+    currencyCode = marketCodes.reduce((a, b) => (votes[a] >= votes[b] ? a : b));
+    market = 'Mixed';
+  } else {
+    currencyCode = 'USD'; market = 'Unknown';
+  }
+  const cc = CCY[currencyCode] ?? CCY.USD;
+  const instrument = derivative && equity ? 'Mixed'
+    : derivative ? 'F&O / derivatives'
+    : equity ? 'Equity' : 'Unknown';
+
+  // ── style: median hold time + intraday share of round-trips ───────────────
+  const holds = trips.map(t => t.holdMinutes).filter((v): v is number => v != null).sort((a, b) => a - b);
+  const medianHold = holds.length ? holds[Math.floor(holds.length / 2)] : null;
+
+  // intraday = entry and exit fall on the same calendar day
+  let intraday = 0, dated = 0;
+  for (const t of trips) {
+    const e = t.entryTs?.slice(0, 10), x = t.exitTs?.slice(0, 10);
+    if (e && x) { dated++; if (e === x) intraday++; }
+  }
+  const intradayShare = dated ? intraday / dated : 0;
+
+  // hold in days for the swing/position/investor bands (uses dates when no time)
+  const dayHolds = trips.map(t => {
+    const e = t.entryTs ? Date.parse(t.entryTs) : NaN;
+    const x = t.exitTs ? Date.parse(t.exitTs) : NaN;
+    return Number.isFinite(e) && Number.isFinite(x) ? (x - e) / 86400000 : NaN;
+  }).filter(v => Number.isFinite(v)).sort((a, b) => a - b);
+  const medianDays = dayHolds.length ? dayHolds[Math.floor(dayHolds.length / 2)] : null;
+
+  let style: TraderProfile['style'] = 'Mixed';
+  let styleReason = '';
+  if (medianHold != null && intradayShare >= 0.6) {
+    if (medianHold <= 10) { style = 'Scalper'; styleReason = `median hold ${Math.round(medianHold)} min, ${Math.round(intradayShare * 100)}% intraday`; }
+    else { style = 'Day trader'; styleReason = `median hold ${Math.round(medianHold)} min, ${Math.round(intradayShare * 100)}% intraday`; }
+  } else if (medianDays != null) {
+    if (medianDays <= 1.5 && intradayShare >= 0.4) { style = 'Day trader'; styleReason = `${Math.round(intradayShare * 100)}% of trades closed same day`; }
+    else if (medianDays <= 10) { style = 'Swing trader'; styleReason = `median hold ${medianDays.toFixed(1)} days`; }
+    else if (medianDays <= 90) { style = 'Position trader'; styleReason = `median hold ${Math.round(medianDays)} days`; }
+    else { style = 'Investor'; styleReason = `median hold ${Math.round(medianDays)} days`; }
+  } else {
+    style = 'Mixed'; styleReason = 'not enough timing data to classify confidently';
+  }
+
+  return {
+    style, styleReason,
+    medianHoldMinutes: medianHold,
+    intradayShare,
+    market, currency: cc.currency, currencySymbol: cc.symbol,
+    instrument,
   };
 }

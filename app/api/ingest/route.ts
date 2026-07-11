@@ -6,6 +6,7 @@
 // credentials. Everything lands in the admin dashboard.
 import { q, dbEnabled } from '../_lib/db';
 import { accuracyReport } from '../../compass/_lib/insights/accuracy';
+import { classifyTrader, pairTrades } from '../../compass/_lib/insights/engine';
 import type { NormTrade } from '../../compass/_lib/insights/types';
 
 export const runtime = 'nodejs';
@@ -20,6 +21,7 @@ interface IngestBody {
   rawCsv?: string;
   trades?: NormTrade[];
   insights?: Record<string, unknown>;
+  marketHint?: string;
 }
 
 export async function POST(req: Request) {
@@ -87,11 +89,18 @@ export async function POST(req: Request) {
      JSON.stringify(report)],
   );
 
-  void q(
-    `insert into io_log (user_id, route, method, status, req, latency_ms) values ($1,'/api/ingest','POST',200,$2,0)`,
-    [userId, JSON.stringify({ filename: body.filename, trades: trades.length })],
+  // 5. trader profile - classified server-side from the trades (real)
+  const profile = classifyTrader(trades, pairTrades(trades).trips, body.marketHint);
+  await q(
+    `update users set trader_style = $2, market = $3, currency = $4, instrument = $5, profile = $6 where id = $1`,
+    [userId, profile.style, profile.market, profile.currency, profile.instrument, JSON.stringify(profile)],
   );
 
-  return Response.json({ ok: true, uploadId, accuracy: report },
+  void q(
+    `insert into io_log (user_id, route, method, status, req, latency_ms) values ($1,'/api/ingest','POST',200,$2,0)`,
+    [userId, JSON.stringify({ filename: body.filename, trades: trades.length, style: profile.style, market: profile.market })],
+  );
+
+  return Response.json({ ok: true, uploadId, accuracy: report, profile },
     { headers: { 'Cache-Control': 'no-store' } });
 }
