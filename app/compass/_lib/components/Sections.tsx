@@ -59,7 +59,7 @@ interface DnaData { headline: string; facts: [string, string][]; radar: { axis: 
 export function DnaSection({ dna, caption }: { dna?: DnaData; caption?: string } = {}) {
   const d = dna ?? DNA as DnaData;
   return (
-    <section style={{ maxWidth: 1120, margin: '0 auto', padding: '50px 24px' }}>
+    <section style={{ maxWidth: 1120, margin: '0 auto', padding: '40px 24px' }}>
       <div style={statLabel}>{caption ?? 'Illustration - a Trading DNA report (upload your trades for yours)'}</div>
       <div style={{
         display: 'grid', gridTemplateColumns: 'minmax(300px, 1.2fr) minmax(260px, .8fr)',
@@ -132,7 +132,7 @@ export function Moat() {
     ['1 year', 'A digital twin of your trading psychology. A competitor starts cold.'],
   ];
   return (
-    <section style={{ maxWidth: 1120, margin: '0 auto', padding: '50px 24px' }}>
+    <section style={{ maxWidth: 1120, margin: '0 auto', padding: '40px 24px' }}>
       <div style={statLabel}>Why this compounds - what you&rsquo;d lose by leaving</div>
       <div style={{ border: `1px solid ${T.border}`, marginTop: 14 }}>
         {rows.map(([t, w], i) => (

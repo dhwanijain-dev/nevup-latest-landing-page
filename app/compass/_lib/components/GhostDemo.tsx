@@ -123,7 +123,7 @@ export default function GhostDemo({ real }: { real?: { you: number; ghost: numbe
   const fmt = (v: number) => `${v >= 0 ? '+' : '−'}$${Math.abs(v).toFixed(0)}`;
 
   return (
-    <section id="demo" style={{ maxWidth: 1120, margin: '0 auto', padding: '90px 24px 40px' }}>
+    <section id="demo" style={{ maxWidth: 1120, margin: '0 auto', padding: '40px 24px' }}>
       <div style={statLabel}>Illustration - how the ghost trade works</div>
       <h2 style={{
         fontFamily: T.serif, fontWeight: 500, fontSize: 'clamp(26px, 4vw, 40px)',

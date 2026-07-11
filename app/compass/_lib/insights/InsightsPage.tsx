@@ -297,25 +297,25 @@ function Compounding({ x }: { x: Insights }) {
   const c = x.compounding;
   if (!c) return null;
   const rows: [string, number][] = [
-    ['Per month', c.perMonth],
-    ['Per quarter', c.perQuarter],
-    ['Per year', c.perYear],
+    [`This window · ${c.windowDays} days`, x.ghost.gap],
+    ['Projected · 1 month', c.perMonth],
+    ['Projected · 1 quarter', c.perQuarter],
+    ['Projected · 1 year', c.perYear],
   ];
   return (
-    <section style={{ maxWidth: 1120, margin: '0 auto', padding: '40px 24px 20px' }}>
+    <section style={{ maxWidth: 1120, margin: '0 auto', padding: '40px 24px' }}>
       <div style={statLabel}>Why it compounds - your discipline gap at this run-rate</div>
-      <div style={{ border: `1px solid ${T.ink}`, background: T.panel, marginTop: 14, padding: '22px 26px' }}>
-        <div style={{ fontFamily: T.serif, fontSize: 'clamp(18px, 2.4vw, 24px)', color: T.ink, lineHeight: 1.4 }}>
-          Over {c.windowDays} days the discipline gap was <b style={{ color: T.red }}>{inr(x.ghost.gap)}</b>. At this rate:
-        </div>
-        <div style={{ display: 'flex', gap: 44, marginTop: 20, flexWrap: 'wrap' }}>
-          {rows.map(([k, v]) => (
-            <div key={k}>
-              <div style={statLabel}>{k}</div>
-              <div style={{ fontFamily: T.mono, fontSize: 24, fontWeight: 700, color: T.red, marginTop: 4 }}>{inr(-v)}</div>
-            </div>
-          ))}
-        </div>
+      <div style={{ border: `1px solid ${T.border}`, marginTop: 14 }}>
+        {rows.map(([label, v], i) => (
+          <div key={label} style={{
+            display: 'grid', gridTemplateColumns: '220px 1fr', gap: 18, padding: '15px 20px', alignItems: 'center',
+            borderBottom: i < rows.length - 1 ? `1px solid ${T.borderSoft}` : 'none',
+            background: i === rows.length - 1 ? T.panelAlt : 'transparent',
+          }}>
+            <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 700, color: i === rows.length - 1 ? T.ghost : T.ink }}>{label}</span>
+            <span style={{ fontFamily: T.mono, fontSize: 18, fontWeight: 700, color: T.red, textAlign: 'right' }}>{inr(-Math.abs(v))}</span>
+          </div>
+        ))}
       </div>
       <div style={{ ...mono(10, T.faint), marginTop: 10 }}>
         Straight-line extrapolation of your own {c.windowDays}-day gap - a run-rate, not a forecast.
