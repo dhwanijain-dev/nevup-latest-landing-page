@@ -180,34 +180,39 @@ function ResultView({ report, insights, onReset, fileName }: {
   onReset: () => void;
   fileName: string;
 }) {
+  const valid = insights && !('insufficient' in insights);
   return (
-    <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-        <span style={mono(16, T.ink, 700)}>{fileName}</span>
-        <span style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 12.5, color: T.faint }}>
-          {report.parsed} trades parsed{report.skipped ? ` · ${report.skipped} rows skipped` : ''} · columns: {Object.entries(report.columns).map(([k, v]) => `${k}=${v}`).join(', ')}
-        </span>
-        <button onClick={onReset} style={{ marginLeft: 'auto', background: 'transparent', border: `1px solid ${T.border}`, ...mono(10, T.muted), padding: '5px 12px', cursor: 'pointer' }}>
-          ↺ UPLOAD ANOTHER
-        </button>
-      </div>
-      {report.warnings.map((w, i) => (
-        <div key={i} style={{ ...mono(10, T.gold), background: 'rgba(232,184,75,0.08)', border: `1px solid ${T.gold}`, padding: '7px 12px' }}>⚠ {w}</div>
-      ))}
-      {report.skipped > 0 && (
-        <div style={{ ...mono(10, T.faint) }}>
-          {report.skipped} row(s) skipped{report.skipSamples.length ? ` - e.g. ${report.skipSamples.slice(0, 3).map(s => `row ${s.row}: ${s.reason}`).join('; ')}` : ''}.
+    <div style={{ marginTop: 24 }}>
+      {/* upload meta + warnings (own spacing) */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+          <span style={mono(16, T.ink, 700)}>{fileName}</span>
+          <span style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 12.5, color: T.faint }}>
+            {report.parsed} trades parsed{report.skipped ? ` · ${report.skipped} rows skipped` : ''} · columns: {Object.entries(report.columns).map(([k, v]) => `${k}=${v}`).join(', ')}
+          </span>
+          <button onClick={onReset} style={{ marginLeft: 'auto', background: 'transparent', border: `1px solid ${T.border}`, ...mono(10, T.muted), padding: '5px 12px', cursor: 'pointer' }}>
+            ↺ UPLOAD ANOTHER
+          </button>
         </div>
-      )}
+        {report.warnings.map((w, i) => (
+          <div key={i} style={{ ...mono(10, T.gold), background: 'rgba(232,184,75,0.08)', border: `1px solid ${T.gold}`, padding: '7px 12px' }}>⚠ {w}</div>
+        ))}
+        {report.skipped > 0 && (
+          <div style={{ ...mono(10, T.faint) }}>
+            {report.skipped} row(s) skipped{report.skipSamples.length ? ` - e.g. ${report.skipSamples.slice(0, 3).map(s => `row ${s.row}: ${s.reason}`).join('; ')}` : ''}.
+          </div>
+        )}
+      </div>
 
+      {/* analysis - block flow so every section aligns to the same width */}
       {!insights ? (
-        <Card><div style={mono(12, T.muted)}>No usable trades in this file.</div></Card>
-      ) : 'insufficient' in insights ? (
-        <Card title="Not enough closed trades yet">
-          <p style={{ fontFamily: T.serif, fontSize: 14, color: T.body, lineHeight: 1.6, margin: 0 }}>{insights.insufficient}</p>
-        </Card>
+        <div style={{ marginTop: 14 }}><Card><div style={mono(12, T.muted)}>No usable trades in this file.</div></Card></div>
+      ) : !valid ? (
+        <div style={{ marginTop: 14 }}><Card title="Not enough closed trades yet">
+          <p style={{ fontFamily: T.serif, fontSize: 14, color: T.body, lineHeight: 1.6, margin: 0 }}>{(insights as { insufficient: string }).insufficient}</p>
+        </Card></div>
       ) : (
-        <InsightsView x={insights} trips={pairTrades(report.trades as NormTrade[]).trips} />
+        <InsightsView x={insights as Insights} trips={pairTrades(report.trades as NormTrade[]).trips} />
       )}
     </div>
   );
