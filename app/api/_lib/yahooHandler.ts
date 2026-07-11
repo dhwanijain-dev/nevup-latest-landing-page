@@ -1,4 +1,4 @@
-// Yahoo Finance proxy handler — framework-agnostic (used by the Vite dev
+// Yahoo Finance proxy handler - framework-agnostic (used by the Vite dev
 // middleware and the Vercel serverless function).
 //
 // Built for concurrent load:
@@ -30,10 +30,10 @@ const ALLOWED_MODULES = new Set([
 // TTLs by volatility. CDN s-maxage (set in the serverless wrapper) mirrors
 // these so Vercel's edge absorbs most traffic before it reaches an instance.
 export const TTL_S: Record<string, number> = {
-  search: 6 * 3600,      // symbol directory — barely changes
+  search: 6 * 3600,      // symbol directory - barely changes
   chart: 15 * 60,        // 1d bars
   summary: 10 * 60,      // quote + fundamentals bundle
-  timeseries: 24 * 3600, // annual/quarterly statements — change quarterly
+  timeseries: 24 * 3600, // annual/quarterly statements - change quarterly
 };
 const STALE_MAX_S = 24 * 3600; // how old a stale copy may be served on error
 
@@ -185,7 +185,7 @@ export async function handle(
 ): Promise<ProxyResult> {
   try {
     if (!allowClient(clientId)) {
-      return { ok: false, error: 'Rate limit — slow down and retry shortly' };
+      return { ok: false, error: 'Rate limit - slow down and retry shortly' };
     }
     const fn = params.fn ?? '';
 
@@ -252,7 +252,7 @@ export async function handle(
 // Kronos (open-source candlestick foundation model, HuggingFace) needs a
 // model-serving endpoint. Set KRONOS_ENDPOINT to a server exposing
 // POST { symbol, closes:number[], horizon } → { forecast:number[], sigma? }.
-// Without it, we honestly report the feature as unconfigured — never faked.
+// Without it, we honestly report the feature as unconfigured - never faked.
 export interface KronosResult {
   ok: boolean; configured: boolean;
   forecast?: number[]; sigma?: number[]; horizon?: number; error?: string;
@@ -263,7 +263,7 @@ export async function kronosForecast(symbol: string, closes: number[], horizon =
   if (!endpoint) {
     return {
       ok: false, configured: false,
-      error: 'Kronos forecasting is not connected yet — set KRONOS_ENDPOINT to a '
+      error: 'Kronos forecasting is not connected yet - set KRONOS_ENDPOINT to a '
         + 'Kronos model server. The chart and analytics above are live regardless.',
     };
   }

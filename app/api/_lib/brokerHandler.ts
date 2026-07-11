@@ -1,20 +1,20 @@
-// Broker connect — credential login flows. Users type their broker login
+// Broker connect - credential login flows. Users type their broker login
 // (ID + password/PIN + TOTP); app keys where required are COMPASS-owned,
-// registered once, supplied via env — users never see or provide API keys.
+// registered once, supplied via env - users never see or provide API keys.
 //
 // STATELESS: credentials arrive in the request body, are used for the
 // upstream login + pull, and are never stored, logged, or cached. The
 // response carries only normalized trades; the client computes insights.
 //
 // Honest coverage matrix (what each broker's systems actually return):
-//   zerodha  — credential login (enctoken) → Console tradebook: 90 DAYS
+//   zerodha - credential login (enctoken) → Console tradebook: 90 DAYS
 //              (date-level) + today's fills with exact timestamps
-//   angelone — client code + PIN + TOTP via Compass SmartAPI app key →
+//   angelone - client code + PIN + TOTP via Compass SmartAPI app key →
 //              today's tradebook + holdings (SmartAPI has no history API)
-//   upstox   — OAuth: user logs in with credentials ON UPSTOX'S PAGE →
+//   upstox - OAuth: user logs in with credentials ON UPSTOX'S PAGE →
 //              90-day trade report (Compass app key, env)
-//   dhan     — partner consent flow (env) → 90-day trade history
-//   groww    — no credential/OAuth API exists; honest guidance returned
+//   dhan - partner consent flow (env) → 90-day trade history
+//   groww - no credential/OAuth API exists; honest guidance returned
 
 export interface NormTrade {
   symbol: string;
@@ -69,7 +69,7 @@ class Jar {
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 
-// ── TOTP (RFC 6238, HMAC-SHA1) — matches the desktop app's pyotp behavior ────
+// ── TOTP (RFC 6238, HMAC-SHA1) - matches the desktop app's pyotp behavior ────
 // Users supply their 2FA *secret* (base32) once; the code is generated here,
 // exactly as NevUp Desk does. A live 6-digit code is also accepted as-is.
 function base32Decode(s: string): Uint8Array {
@@ -123,7 +123,7 @@ async function jfetch(url: string, init: RequestInit): Promise<any> {
   return body;
 }
 
-// ── Zerodha — credential login → enctoken → Console tradebook (90 days) ─────
+// ── Zerodha - credential login → enctoken → Console tradebook (90 days) ─────
 
 async function pullZerodha(creds: Record<string, string>): Promise<BrokerResult> {
   const { user_id, password, totp } = creds;
@@ -147,14 +147,14 @@ async function pullZerodha(creds: Record<string, string>): Promise<BrokerResult>
         ok: false,
         error: 'Zerodha is asking this login for a CAPTCHA, which a server '
           + 'cannot solve. Use the official Kite Connect sign-in (one tap on '
-          + 'Zerodha’s own page) — being provisioned for launch. Angel One '
+          + 'Zerodha’s own page) - being provisioned for launch. Angel One '
           + 'password connect works today.',
       };
     }
-    return { ok: false, error: msg || 'Zerodha login rejected — check user ID and password' };
+    return { ok: false, error: msg || 'Zerodha login rejected - check user ID and password' };
   }
 
-  // step 2: TOTP — accepts a live 6-digit code or a stored base32 2FA secret
+  // step 2: TOTP - accepts a live 6-digit code or a stored base32 2FA secret
   const code = await resolveTotp(totp);
   if (!code) return { ok: false, needsTotp: true, error: 'Enter your 2FA code or authenticator secret key' };
   const twofaRes = await fetch('https://kite.zerodha.com/api/twofa', {
@@ -196,7 +196,7 @@ async function pullZerodha(creds: Record<string, string>): Promise<BrokerResult>
     warnings.push(`today's fills: ${e instanceof Error ? e.message : 'failed'}`);
   }
 
-  // Console tradebook — 90 days, date-level (Console reports carry the
+  // Console tradebook - 90 days, date-level (Console reports carry the
   // trade date; intraday time is not part of the report)
   try {
     // establish the Console session off the kite cookies (SSO redirect chain)
@@ -246,19 +246,19 @@ async function pullZerodha(creds: Record<string, string>): Promise<BrokerResult>
       }
     }
   } catch (e) {
-    warnings.push(`90-day tradebook (Console): ${e instanceof Error ? e.message : 'failed'} — today's fills still included`);
+    warnings.push(`90-day tradebook (Console): ${e instanceof Error ? e.message : 'failed'} - today's fills still included`);
   }
 
   return {
     ok: true, broker: 'zerodha', trades,
     coverage: trades.some(t => !t.hasTime)
-      ? 'Zerodha Console tradebook — last 90 days (date-level) + today with exact timestamps'
-      : "Zerodha — today's fills (Console 90-day report unavailable this session)",
+      ? 'Zerodha Console tradebook - last 90 days (date-level) + today with exact timestamps'
+      : "Zerodha - today's fills (Console 90-day report unavailable this session)",
     warnings: warnings.length ? warnings : undefined,
   };
 }
 
-// ── Angel One — client creds against the Compass SmartAPI app key ───────────
+// ── Angel One - client creds against the Compass SmartAPI app key ───────────
 
 async function pullAngelOne(creds: Record<string, string>): Promise<BrokerResult> {
   const apiKey = process.env.COMPASS_SMARTAPI_KEY;
@@ -305,11 +305,11 @@ async function pullAngelOne(creds: Record<string, string>): Promise<BrokerResult
   });
   return {
     ok: true, broker: 'angelone', trades,
-    coverage: "Angel One SmartAPI — TODAY's fills (SmartAPI exposes no historical tradebook). Reconnect on trading days to build history; the desktop app accumulates automatically.",
+    coverage: "Angel One SmartAPI - TODAY's fills (SmartAPI exposes no historical tradebook). Reconnect on trading days to build history; the desktop app accumulates automatically.",
   };
 }
 
-// ── Upstox — OAuth (user logs in with credentials on Upstox's page) ─────────
+// ── Upstox - OAuth (user logs in with credentials on Upstox's page) ─────────
 
 function upstoxLoginUrl(): string | null {
   const key = process.env.UPSTOX_API_KEY;
@@ -378,12 +378,12 @@ async function pullUpstox(creds: Record<string, string>): Promise<BrokerResult> 
   }
   return {
     ok: true, broker: 'upstox', trades,
-    coverage: 'Upstox trade report — last 90 days (EQ + F&O)',
+    coverage: 'Upstox trade report - last 90 days (EQ + F&O)',
     warnings: warnings.length ? warnings : undefined,
   };
 }
 
-// ── Dhan / Groww — honest gating ─────────────────────────────────────────────
+// ── Dhan / Groww - honest gating ─────────────────────────────────────────────
 
 async function pullDhan(creds: Record<string, string>): Promise<BrokerResult> {
   // Dhan's consent (partner) flow needs a Compass partner registration; a
@@ -416,13 +416,13 @@ async function pullDhan(creds: Record<string, string>): Promise<BrokerResult> {
     }
     if (rows.length < 100) break;
   }
-  return { ok: true, broker: 'dhan', trades, coverage: 'Dhan Trade History — last 90 days with exchange timestamps' };
+  return { ok: true, broker: 'dhan', trades, coverage: 'Dhan Trade History - last 90 days with exchange timestamps' };
 }
 
 async function pullGroww(): Promise<BrokerResult> {
   return {
     ok: false,
-    error: 'Groww has no password-login or OAuth API — their Trade API only '
+    error: 'Groww has no password-login or OAuth API - their Trade API only '
       + 'issues tokens inside the Groww app settings. Being pursued as a '
       + 'partner integration; Zerodha connect is live today.',
   };

@@ -1,4 +1,4 @@
-// XData — everything the explorer renders for one instrument, all sections
+// XData - everything the explorer renders for one instrument, all sections
 // optional beyond the header. A section that the data source cannot supply
 // is simply absent and the UI omits it (never fabricated).
 

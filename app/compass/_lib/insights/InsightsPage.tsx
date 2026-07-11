@@ -34,12 +34,29 @@ export default function InsightsPage() {
     return computeInsights(report.trades as NormTrade[]);
   }, [report]);
 
+  // Persist the upload + computed analysis to the user's account (server
+  // recomputes accuracy). Fire-and-forget; a persistence failure never blocks
+  // the on-device analysis the user sees.
+  const persist = (rawCsv: string, trades: NormTrade[], filename: string) => {
+    const user = (window as unknown as { __compassUser?: { userId?: string } }).__compassUser;
+    if (!user?.userId) return;
+    try {
+      const computed = computeInsights(trades);
+      const payload = 'insufficient' in computed ? {} : computed;
+      void fetch('/api/ingest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.userId, filename, rawCsv, trades, insights: payload }),
+      });
+    } catch { /* never block the UI */ }
+  };
+
   const ingest = (file: File) => {
     setError('');
     setReport(null);
     setFileName(file.name);
     if (file.size > MAX_BYTES) {
-      setError(`File is ${(file.size / 1e6).toFixed(1)} MB — cap is ${(MAX_BYTES / 1e6).toFixed(0)} MB.`);
+      setError(`File is ${(file.size / 1e6).toFixed(1)} MB - cap is ${(MAX_BYTES / 1e6).toFixed(0)} MB.`);
       return;
     }
     if (!/\.(csv|txt|tsv)$/i.test(file.name) && file.type && !/csv|text|excel/.test(file.type)) {
@@ -47,13 +64,14 @@ export default function InsightsPage() {
       return;
     }
     const reader = new FileReader();
-    reader.onerror = () => setError('Could not read the file — try re-downloading it from your broker.');
+    reader.onerror = () => setError('Could not read the file - try re-downloading it from your broker.');
     reader.onload = () => {
       try {
         const text = String(reader.result ?? '');
         const r = parseTradeCsv(text);
         setReport(r);
         if (!r.ok) setError(r.error ?? 'Could not parse this file.');
+        else persist(text, r.trades as NormTrade[], file.name);
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Unexpected error parsing the file.');
       }
@@ -81,7 +99,7 @@ export default function InsightsPage() {
           </h1>
           <p style={{ fontFamily: T.serif, fontSize: 15, color: T.mutedStrong, lineHeight: 1.6 }}>
             Export your executed trades from any broker and drop the CSV here. Compass pairs
-            every round-trip and shows the habits hiding in your numbers — hold-time asymmetry,
+            every round-trip and shows the habits hiding in your numbers - hold-time asymmetry,
             danger hours, revenge entries, and exactly where your edge is versus where the leak is.
           </p>
 
@@ -182,7 +200,7 @@ function ResultView({ report, insights, onReset, fileName }: {
       ))}
       {report.skipped > 0 && (
         <div style={{ ...mono(10, T.faint) }}>
-          {report.skipped} row(s) skipped{report.skipSamples.length ? ` — e.g. ${report.skipSamples.slice(0, 3).map(s => `row ${s.row}: ${s.reason}`).join('; ')}` : ''}.
+          {report.skipped} row(s) skipped{report.skipSamples.length ? ` - e.g. ${report.skipSamples.slice(0, 3).map(s => `row ${s.row}: ${s.reason}`).join('; ')}` : ''}.
         </div>
       )}
 
@@ -212,12 +230,12 @@ function InsightsView({ x }: { x: Insights }) {
           ) : x.totalPnl >= 0 ? (
             <>Net <b style={{ color: T.green }}>{inr(x.totalPnl)}</b> over {x.roundTrips} closed trades.</>
           ) : (
-            <>Net <b style={{ color: T.red }}>{inr(x.totalPnl)}</b> over {x.roundTrips} closed trades — the sections below show exactly where.</>
+            <>Net <b style={{ color: T.red }}>{inr(x.totalPnl)}</b> over {x.roundTrips} closed trades - the sections below show exactly where.</>
           )}
         </div>
       </div>
 
-      {/* debrief + discipline score — the app's process-first read */}
+      {/* debrief + discipline score - the app's process-first read */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,1fr) minmax(220px,.62fr)', gap: 14 }}>
         <Card title="Debrief">
           <div style={{ fontFamily: T.serif, fontSize: 15, color: T.ink, lineHeight: 1.55 }}>{x.debrief.summary}</div>
@@ -278,7 +296,7 @@ function InsightsView({ x }: { x: Insights }) {
       {/* behavioral verdicts */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 14 }}>
         {x.holdAsymmetry && (
-          <Card title="Hold-time asymmetry — the disposition effect">
+          <Card title="Hold-time asymmetry - the disposition effect">
             <div style={{ display: 'flex', gap: 26 }}>
               <Metric k="Winners held" v={`${Math.round(x.holdAsymmetry.avgWinHoldMin)}m`} c={T.green} />
               <Metric k="Losers held" v={`${Math.round(x.holdAsymmetry.avgLossHoldMin)}m`} c={T.red} />
@@ -286,13 +304,13 @@ function InsightsView({ x }: { x: Insights }) {
             </div>
             <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 13.5, color: T.body, lineHeight: 1.55, marginTop: 12 }}>
               {x.holdAsymmetry.ratio > 1.5
-                ? `You hold losers ${x.holdAsymmetry.ratio.toFixed(1)}× longer than winners — the classic disposition effect. Cutting losers at your winners' pace is usually the single cheapest fix in a book like this.`
-                : 'You cut losers about as fast as you take winners — no disposition-effect signature in this window.'}
+                ? `You hold losers ${x.holdAsymmetry.ratio.toFixed(1)}× longer than winners - the classic disposition effect. Cutting losers at your winners' pace is usually the single cheapest fix in a book like this.`
+                : 'You cut losers about as fast as you take winners - no disposition-effect signature in this window.'}
             </div>
           </Card>
         )}
         {x.revenge && (
-          <Card title={`Revenge entries — re-entry within ${x.revenge.windowMin}m of a loss, same symbol`}>
+          <Card title={`Revenge entries - re-entry within ${x.revenge.windowMin}m of a loss, same symbol`}>
             <div style={{ display: 'flex', gap: 26 }}>
               <Metric k="Count" v={String(x.revenge.count)} c={x.revenge.count > 3 ? T.red : T.ink} />
               <Metric k="Their P&L" v={inr(x.revenge.pnl)} c={g(x.revenge.pnl)} />
@@ -300,8 +318,8 @@ function InsightsView({ x }: { x: Insights }) {
             </div>
             <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 13.5, color: T.body, lineHeight: 1.55, marginTop: 12 }}>
               {x.revenge.pnl < 0
-                ? `These are the trades taken while the loss was still hot. They cost ${inr(Math.abs(x.revenge.pnl))} in this window — the desktop engine blocks them live with a cooldown.`
-                : 'Your quick re-entries held up in this window — worth watching, not yet a leak.'}
+                ? `These are the trades taken while the loss was still hot. They cost ${inr(Math.abs(x.revenge.pnl))} in this window - the desktop engine blocks them live with a cooldown.`
+                : 'Your quick re-entries held up in this window - worth watching, not yet a leak.'}
             </div>
           </Card>
         )}
@@ -310,7 +328,7 @@ function InsightsView({ x }: { x: Insights }) {
       {/* hours + weekdays */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 14 }}>
         {(x.dangerHours?.length || x.bestHours?.length) ? (
-          <Card title="Your hours — where the money moves">
+          <Card title="Your hours - where the money moves">
             {x.dangerHours?.map(h => (
               <div key={h.hour} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${T.borderSoft}` }}>
                 <span style={mono(11.5, T.red, 700)}>{hourLabel(h.hour)}</span>
@@ -342,7 +360,7 @@ function InsightsView({ x }: { x: Insights }) {
 
       {/* edge vs leak */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-        <Card title={`Your edge — ${inr(x.edgePnl)}`}>
+        <Card title={`Your edge - ${inr(x.edgePnl)}`}>
           {x.edge.length ? x.edge.slice(0, 6).map(s => (
             <div key={s.symbol} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${T.borderSoft}` }}>
               <span style={mono(11.5, T.ink, 700)}>{s.symbol}</span>
@@ -351,14 +369,14 @@ function InsightsView({ x }: { x: Insights }) {
             </div>
           )) : <div style={mono(11, T.faint)}>No consistently profitable symbols in this window.</div>}
         </Card>
-        <Card title={`Your leak — ${inr(x.leakPnl)}`}>
+        <Card title={`Your leak - ${inr(x.leakPnl)}`}>
           {x.leak.length ? x.leak.slice(0, 6).map(s => (
             <div key={s.symbol} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${T.borderSoft}` }}>
               <span style={mono(11.5, T.ink, 700)}>{s.symbol}</span>
               <span style={mono(10.5, T.muted)}>{s.trades}t · {pctF(s.winRate)}{s.avgHoldMin != null ? ` · ${Math.round(s.avgHoldMin)}m` : ''}</span>
               <span style={mono(11.5, T.red, 700)}>{inr(s.pnl)}</span>
             </div>
-          )) : <div style={mono(11, T.faint)}>No consistent losers — clean book in this window.</div>}
+          )) : <div style={mono(11, T.faint)}>No consistent losers - clean book in this window.</div>}
         </Card>
       </div>
 
@@ -371,9 +389,9 @@ function InsightsView({ x }: { x: Insights }) {
         </div>
       </Card>
 
-      {/* ghost trade — the rule-following self, from their own fills */}
+      {/* ghost trade - the rule-following self, from their own fills */}
       <div style={{ border: `1px solid ${T.ghost}`, background: T.panel }}>
-        <div style={{ padding: '10px 14px 0' }}><span style={{ ...statLabel, color: T.ghost }}>Ghost trade — your rule-following self</span></div>
+        <div style={{ padding: '10px 14px 0' }}><span style={{ ...statLabel, color: T.ghost }}>Ghost trade - your rule-following self</span></div>
         <div style={{ padding: '10px 14px 14px' }}>
           <div style={{ display: 'flex', gap: 26, flexWrap: 'wrap' }}>
             <Metric k="You made" v={inr(x.ghost.actualPnl)} c={g(x.ghost.actualPnl)} />
@@ -406,10 +424,10 @@ function InsightsView({ x }: { x: Insights }) {
         </div>
       </div>
 
-      {/* why it compounds — real extrapolation from the observed gap */}
+      {/* why it compounds - real extrapolation from the observed gap */}
       {x.compounding && (
         <div style={{ border: `1px solid ${T.ink}`, background: T.panelAlt, padding: '18px 22px' }}>
-          <div style={statLabel}>Why it compounds — the gap at your current rate</div>
+          <div style={statLabel}>Why it compounds - the gap at your current rate</div>
           <div style={{ fontFamily: T.serif, fontSize: 'clamp(16px,2.4vw,22px)', color: T.ink, lineHeight: 1.4, margin: '8px 0 14px' }}>
             Over {x.compounding.windowDays} days the discipline gap was <b style={{ color: T.red }}>{inr(x.ghost.gap)}</b>.
             At this rate that&rsquo;s what it costs you:
@@ -420,7 +438,7 @@ function InsightsView({ x }: { x: Insights }) {
             <Metric k="Per year" v={inr(-x.compounding.perYear)} c={T.red} />
           </div>
           <div style={{ ...mono(9.5, T.faint), marginTop: 10 }}>
-            Straight-line extrapolation of your own {x.compounding.windowDays}-day gap — not a forecast, a run-rate.
+            Straight-line extrapolation of your own {x.compounding.windowDays}-day gap - not a forecast, a run-rate.
           </div>
         </div>
       )}
@@ -432,8 +450,7 @@ function InsightsView({ x }: { x: Insights }) {
           <ul style={{ margin: '8px 0 0', paddingLeft: 18 }}>
             {x.timestampedShare < 0.9 && (
               <li style={{ fontFamily: T.serif, fontSize: 12.5, color: T.faint, lineHeight: 1.6 }}>
-                {Math.round((1 - x.timestampedShare) * 100)}% of fills came date-only from the broker —
-                time-of-day metrics use only the timestamped portion.
+                {Math.round((1 - x.timestampedShare) * 100)}% of fills came date-only from the broker - time-of-day metrics use only the timestamped portion.
               </li>
             )}
             {x.notes.map((nn, i) => (
@@ -448,7 +465,7 @@ function InsightsView({ x }: { x: Insights }) {
         <div style={{ ...statLabel, color: T.ghost }}>This is one snapshot. The terminal watches live.</div>
         <div style={{ fontFamily: T.serif, fontSize: 15, color: T.body, lineHeight: 1.6, marginTop: 8 }}>
           Everything above was reconstructed from your broker&rsquo;s records after the fact.
-          The Compass desktop terminal runs these checks <em>while you trade</em> — nudges before
+          The Compass desktop terminal runs these checks <em>while you trade</em> - nudges before
           the revenge entry, a ghost of your rule-following self on the chart, and a process
           score on every close. <a href="#waitlist" style={{ color: T.ghost }}>Join the waitlist →</a>
         </div>

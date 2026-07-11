@@ -1,4 +1,4 @@
-// Live instrument loader — real data via the Compass Yahoo proxy.
+// Live instrument loader - real data via the Compass Yahoo proxy.
 // Maps quoteSummary + chart into XData; every missing upstream field stays
 // undefined so the UI can omit it honestly.
 import { XData, FYRowX, SearchHit } from './types';
@@ -25,7 +25,7 @@ const fmtDate = (epoch?: number) =>
 
 let lastStale = false;
 /** True when the most recent load was served from a stale cache copy
- * (upstream throttling) — surfaced in the UI, never hidden. */
+ * (upstream throttling) - surfaced in the UI, never hidden. */
 export function wasStale(): boolean { return lastStale; }
 
 async function proxy(params: Record<string, string>): Promise<any> {
@@ -193,8 +193,8 @@ export async function loadInstrument(symbol: string): Promise<XData> {
   const ud: any[] = r.upgradeDowngradeHistory?.history ?? [];
   if (ud.length) {
     x.actions = ud.slice(0, 12).map(a => ({
-      firm: s(a.firm) ?? '—',
-      toGrade: s(a.toGrade) ?? '—',
+      firm: s(a.firm) ?? ' - ',
+      toGrade: s(a.toGrade) ?? ' - ',
       fromGrade: s(a.fromGrade) ?? '',
       action: s(a.action) ?? '',
       date: fmtDate(n(a.epochGradeDate)) ?? '',
@@ -273,7 +273,7 @@ export async function loadInstrument(symbol: string): Promise<XData> {
     });
   }
 
-  // earnings quality per FY — all real ratios, only when inputs exist
+  // earnings quality per FY - all real ratios, only when inputs exist
   if (x.fy?.length) {
     const qual = x.fy
       .filter(f => f.netIncome != null && f.ocf != null)
@@ -287,7 +287,7 @@ export async function loadInstrument(symbol: string): Promise<XData> {
     if (qual.length) x.quality = qual;
   }
 
-  // quarterly income — timeseries primary, legacy fallback
+  // quarterly income - timeseries primary, legacy fallback
   const qDates = [...ts.keys()]
     .filter(d => ts.get(d)!.quarterlyTotalRevenue != null)
     .sort()
@@ -346,7 +346,7 @@ export async function loadInstrument(symbol: string): Promise<XData> {
       insiderPct: n(mh.insidersPercentHeld) != null ? n(mh.insidersPercentHeld)! * 100 : undefined,
       institutionsCount: n(mh.institutionsCount),
       top: io.slice(0, 12).map(h => ({
-        name: s(h.organization) ?? '—',
+        name: s(h.organization) ?? ' - ',
         pctHeld: n(h.pctHeld) != null ? n(h.pctHeld)! * 100 : undefined,
         position: n(h.position),
         value: n(h.value),

@@ -1,4 +1,4 @@
-// Compass broker connect — stateless credential relay. POST only, no-store.
+// Compass broker connect - stateless credential relay. POST only, no-store.
 import { handleBroker } from '../_lib/brokerHandler';
 
 export const runtime = 'nodejs';

@@ -1,6 +1,6 @@
 // Onboarding gate for /compass. Unauthenticated visitors land here and must
 // continue with Google before the app renders. The form uses an Auth.js
-// server action — no client JS needed to start the OAuth redirect.
+// server action, so no client JS is needed to start the OAuth redirect.
 import { signIn } from '../../../auth';
 
 const INK = '#14171d';
@@ -25,9 +25,7 @@ export default function Onboarding() {
           Your trading behavior, analyzed.
         </h1>
         <p style={{ fontSize: 17, lineHeight: 1.5, color: MUTED, margin: '0 0 32px' }}>
-          Continue with Google to begin. We use it only to identify your account
-          and save your analysis — nothing is posted, and your broker credentials
-          are never stored.
+          Continue with Google to begin.
         </p>
 
         <form action={async () => {
@@ -49,10 +47,6 @@ export default function Onboarding() {
             Continue with Google
           </button>
         </form>
-
-        <p style={{ fontSize: 13, color: MUTED, marginTop: 24 }}>
-          By continuing you agree to have your analysis saved to your account.
-        </p>
       </div>
     </main>
   );

@@ -19,7 +19,7 @@ const big = (v: number, cur: string) => {
 };
 
 const NA = (what: string): Answer => ({
-  text: `${what} isn't available from the data source for this instrument — nothing to compute from, so no answer rather than a guess.`,
+  text: `${what} isn't available from the data source for this instrument - nothing to compute from, so no answer rather than a guess.`,
   sources: [],
 });
 
@@ -35,7 +35,7 @@ export function answer(q: string, x: XData): Answer {
       `${r.label}: ${big(r.revenue!, cur)}${r.revenueG != null ? ` (${pct(r.revenueG)})` : ''}`);
     const qLatest = x.quarterly?.find(r => r.revenue != null);
     return {
-      text: `${x.symbol} revenue — FY${latest.label}: ${big(latest.revenue!, cur)}${latest.revenueG != null ? `, ${pct(latest.revenueG)} YoY` : ''}.` +
+      text: `${x.symbol} revenue - FY${latest.label}: ${big(latest.revenue!, cur)}${latest.revenueG != null ? `, ${pct(latest.revenueG)} YoY` : ''}.` +
         (qLatest ? ` Latest quarter (${qLatest.label}): ${big(qLatest.revenue!, cur)}${qLatest.grossPct != null ? `, gross margin ${f(qLatest.grossPct)}%` : ''}.` : ''),
       sources: lines,
     };
@@ -51,7 +51,7 @@ export function answer(q: string, x: XData): Answer {
     return {
       text: `${x.symbol} trailing-twelve-month margins: ${parts.join(', ')}.` +
         (m.roe != null ? ` Return on equity ${f(m.roe)}%.` : ''),
-      sources: parts.map(p => `financialData (TTM) — ${p}`),
+      sources: parts.map(p => `financialData (TTM) - ${p}`),
     };
   }
   if (/(eps|earnings per|beat|miss|surprise)/.test(s)) {
@@ -69,7 +69,7 @@ export function answer(q: string, x: XData): Answer {
     if (!x.nextEarnings) return NA('The next earnings date');
     return {
       text: `${x.symbol} reports next on ${x.nextEarnings}.`,
-      sources: [`calendarEvents — ${x.nextEarnings}`],
+      sources: [`calendarEvents - ${x.nextEarnings}`],
     };
   }
   if (/(hold|institut|insider|own|13f)/.test(s)) {
@@ -80,7 +80,7 @@ export function answer(q: string, x: XData): Answer {
     return {
       text: `${x.symbol}:${h.instPct != null ? ` ${f(h.instPct)}% institutional` : ''}${h.insiderPct != null ? `, ${f(h.insiderPct, 2)}% insider` : ''} ownership.` +
         (top ? ` Largest 13F holders: ${top}.` : ''),
-      sources: h.top.slice(0, 5).map(t => `${t.name}${t.pctHeld != null ? ` — ${f(t.pctHeld, 2)}%` : ''}`),
+      sources: h.top.slice(0, 5).map(t => `${t.name}${t.pctHeld != null ? ` - ${f(t.pctHeld, 2)}%` : ''}`),
     };
   }
   if (/(analyst|rating|target|upgrade|downgrade|consensus)/.test(s)) {
@@ -95,7 +95,7 @@ export function answer(q: string, x: XData): Answer {
     return {
       text: `${parts.join(' / ')}${c.analysts ? ` across ${c.analysts} analysts` : ''}.${tgt}`,
       sources: [
-        `recommendationTrend — ${parts.join(' · ')}`,
+        `recommendationTrend - ${parts.join(' · ')}`,
         ...(c.targetMean != null ? [`targets: low ${c.targetLow} · mean ${c.targetMean} · high ${c.targetHigh}`] : []),
       ],
     };
@@ -118,7 +118,7 @@ export function answer(q: string, x: XData): Answer {
     const a = x.analytics;
     if (!a) return NA('Price-derived risk metrics');
     return {
-      text: `${x.symbol}: 30-day realized volatility ${a.vol30d != null ? f(a.vol30d) : '—'}% (annualized)${x.beta != null ? `, beta ${f(x.beta, 2)}` : ''}${a.maxDd1y != null ? `, max drawdown over the last year ${f(a.maxDd1y)}%` : ''}. Computed from the actual price series.`,
+      text: `${x.symbol}: 30-day realized volatility ${a.vol30d != null ? f(a.vol30d) : ' - '}% (annualized)${x.beta != null ? `, beta ${f(x.beta, 2)}` : ''}${a.maxDd1y != null ? `, max drawdown over the last year ${f(a.maxDd1y)}%` : ''}. Computed from the actual price series.`,
       sources: [
         ...(a.vol30d != null ? [`vol30d ${f(a.vol30d)}%`] : []),
         ...(a.maxDd1y != null ? [`maxDD ${f(a.maxDd1y)}%`] : []),
@@ -132,7 +132,7 @@ export function answer(q: string, x: XData): Answer {
     if (a.sma200 != null) bits.push(`${x.price > a.sma200 ? 'above' : 'below'} its 200-day (${f(a.sma200)})`);
     if (a.sma50 != null) bits.push(`${x.price > a.sma50 ? 'above' : 'below'} its 50-day (${f(a.sma50)})`);
     return {
-      text: `${x.symbol} at ${f(x.price)} is ${bits.join(' and ')}. RSI-14: ${a.rsi14 ?? '—'}. Returns: 1m ${a.ret1m != null ? pct(a.ret1m) : '—'}, 6m ${a.ret6m != null ? pct(a.ret6m) : '—'}, 1y ${a.ret1y != null ? pct(a.ret1y) : '—'}.`,
+      text: `${x.symbol} at ${f(x.price)} is ${bits.join(' and ')}. RSI-14: ${a.rsi14 ?? ' - '}. Returns: 1m ${a.ret1m != null ? pct(a.ret1m) : ' - '}, 6m ${a.ret6m != null ? pct(a.ret6m) : ' - '}, 1y ${a.ret1y != null ? pct(a.ret1y) : ' - '}.`,
       sources: [`computed from ${x.priceHistory?.close.length ?? 0} daily closes`],
     };
   }
@@ -151,7 +151,7 @@ export function answer(q: string, x: XData): Answer {
   if (/(what|who|about|overview|describe|company|business)/.test(s)) {
     const p = x.profile;
     return {
-      text: `${x.name} (${x.exchange}: ${x.symbol})${p?.sector ? ` — ${p.sector}${p.industry ? ` / ${p.industry}` : ''}` : ''}. ${p?.description ? p.description.split('. ').slice(0, 2).join('. ') + '.' : ''} Price ${f(x.price, 2)}${x.changePct != null ? ` (${pct(x.changePct, 2)} today)` : ''}${x.marketCap != null ? `, market cap ${big(x.marketCap, cur)}` : ''}.`,
+      text: `${x.name} (${x.exchange}: ${x.symbol})${p?.sector ? ` - ${p.sector}${p.industry ? ` / ${p.industry}` : ''}` : ''}. ${p?.description ? p.description.split('. ').slice(0, 2).join('. ') + '.' : ''} Price ${f(x.price, 2)}${x.changePct != null ? ` (${pct(x.changePct, 2)} today)` : ''}${x.marketCap != null ? `, market cap ${big(x.marketCap, cur)}` : ''}.`,
       sources: [`assetProfile · price`],
     };
   }

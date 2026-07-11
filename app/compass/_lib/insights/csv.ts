@@ -1,4 +1,4 @@
-// CSV trade-book parser — turns any broker's export into NormTrade[].
+// CSV trade-book parser - turns any broker's export into NormTrade[].
 // Runs entirely in the browser (the file never leaves the user's machine).
 //
 // Built to survive real-world broker CSVs: BOMs, preamble/title rows,
@@ -123,7 +123,7 @@ function parseDate(dateRaw: string, timeRaw?: string): { iso: string; hasTime: b
   if (isoMatch) {
     const ymd = `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
     if (isoMatch[4]) return { iso: `${ymd}T${isoMatch[5]}:${isoMatch[6]}${isoMatch[7] ?? ':00'}`, hasTime: true };
-    // date-only ISO — fold in a separate time column if provided
+    // date-only ISO - fold in a separate time column if provided
     const tr = (timeRaw ?? '').match(/(\d{1,2}):(\d{2})(:(\d{2}))?/);
     if (tr) return { iso: `${ymd}T${tr[1].padStart(2, '0')}:${tr[2]}:${tr[4] ?? '00'}`, hasTime: true };
     return { iso: ymd, hasTime: false };
@@ -209,14 +209,14 @@ export function parseTradeCsv(text: string): ParseReport {
   const delimiter = sniffDelimiter(text);
   const lines = text.split(/\r?\n/);
   const rows = lines.map(l => splitLine(l, delimiter)).filter(r => r.some(c => c !== ''));
-  if (rows.length < 2) return { ...base, delimiter, error: 'No data rows found — this doesn\'t look like a trade export.' };
+  if (rows.length < 2) return { ...base, delimiter, error: 'No data rows found - this doesn\'t look like a trade export.' };
 
   const header = findHeaderRow(rows);
   if (!header) {
     return {
       ...base, delimiter,
       error: 'Could not find the trade columns. A trade CSV needs recognizable '
-        + 'symbol, buy/sell, quantity and price columns — this file has none of them. '
+        + 'symbol, buy/sell, quantity and price columns - this file has none of them. '
         + `Headers seen: ${rows[0].slice(0, 8).join(', ')}`,
     };
   }
@@ -242,7 +242,7 @@ export function parseTradeCsv(text: string): ParseReport {
     try {
       // ignore repeated header rows / total/summary rows brokers append
       const first = (r[0] ?? '').toLowerCase();
-      if (/^(total|grand total|net|summary|—|-)$/.test(first.trim())) return;
+      if (/^(total|grand total|net|summary| - |-)$/.test(first.trim())) return;
 
       const sym = (r[iSym] ?? '').trim();
       const side = toSide(r[iSide] ?? '');
@@ -273,11 +273,11 @@ export function parseTradeCsv(text: string): ParseReport {
   });
 
   const warnings: string[] = [];
-  if (noDate > 0) warnings.push(`${noDate} row(s) had no readable date — those trades count toward totals but not time-based metrics.`);
+  if (noDate > 0) warnings.push(`${noDate} row(s) had no readable date - those trades count toward totals but not time-based metrics.`);
   // trades without any timestamp can't be chronologically paired reliably;
   // synthesize a stable order by preserving file order for undated rows
   if (trades.every(t => !t.ts)) {
-    warnings.push('No dates found in this file — round-trips are paired in file order and time-of-day insights are unavailable.');
+    warnings.push('No dates found in this file - round-trips are paired in file order and time-of-day insights are unavailable.');
     trades.forEach((t, i) => { t.ts = `1970-01-01T00:${String(Math.floor(i / 60) % 60).padStart(2, '0')}:${String(i % 60).padStart(2, '0')}`; });
   }
 

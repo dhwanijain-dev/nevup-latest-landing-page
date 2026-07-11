@@ -1,6 +1,5 @@
-// Design tokens lifted from the Compass app mirror (Ghost Page.dc.html) —
-// black editorial terminal: Newsreader serif voice, Spline Sans Mono data.
-// White "ink on paper" edition — light tokens from the mirror's ink mocks
+// Design tokens lifted from the Compass app mirror (Ghost Page.dc.html) - // black editorial terminal: Newsreader serif voice, Spline Sans Mono data.
+// White "ink on paper" edition - light tokens from the mirror's ink mocks
 // (premarket-ink): paper background, near-black ink, same serif/mono voice.
 export const T = {
   bg: '#ffffff',

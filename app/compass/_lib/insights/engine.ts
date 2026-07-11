@@ -1,4 +1,4 @@
-// Behavioral insights engine — pure functions over the trader's own fills.
+// Behavioral insights engine - pure functions over the trader's own fills.
 // Ports the desktop engine's core math: FIFO round-trip pairing, hold-time
 // asymmetry (Odean disposition effect), danger hours, revenge-entry
 // detection, overtrading bursts, edge-vs-leak P&L attribution.
@@ -57,12 +57,12 @@ export interface Insights {
   // day-of-week (works from date-only data)
   byWeekday?: { day: string; trades: number; pnl: number; winRate: number }[];
 
-  // discipline score (0–100) + narrative debrief — the app's process-first lens
+  // discipline score (0–100) + narrative debrief - the app's process-first lens
   disciplineScore: number;
   scoreParts: { label: string; score: number; max: number; note: string }[];
   debrief: { summary: string; wentWell: string[]; leaks: string[]; focus: string };
 
-  // ghost trade — the rule-following version of the trader, reconstructed
+  // ghost trade - the rule-following version of the trader, reconstructed
   // from THEIR OWN trades (cap losers at avg-win size, skip revenge entries).
   // No price paths needed; purely counterfactual on realized fills.
   ghost: {
@@ -72,7 +72,7 @@ export interface Insights {
     explanation: string;
   };
 
-  // why it compounds — the gap extrapolated at the observed rate (labeled)
+  // why it compounds - the gap extrapolated at the observed rate (labeled)
   compounding: { windowDays: number; perMonth: number; perQuarter: number; perYear: number } | null;
 
   notes: string[];               // honest caveats about what couldn't be computed
@@ -145,7 +145,7 @@ export function computeInsights(fills: NormTrade[]): Insights | { insufficient: 
   if (trips.length < MIN_TRIPS) {
     return {
       insufficient: `Only ${trips.length} completed round-trips found (need ${MIN_TRIPS}+). `
-        + `${fills.length} fills pulled, ${openLegs} still-open position legs excluded — `
+        + `${fills.length} fills pulled, ${openLegs} still-open position legs excluded - `
         + 'insights on open positions would be guesses.',
     };
   }
@@ -161,7 +161,7 @@ export function computeInsights(fills: NormTrade[]): Insights | { insufficient: 
   const grossWin = wins.reduce((s, t) => s + t.pnl, 0);
   const grossLoss = Math.abs(losses.reduce((s, t) => s + t.pnl, 0));
 
-  // hold asymmetry — needs timestamps
+  // hold asymmetry - needs timestamps
   let holdAsymmetry: Insights['holdAsymmetry'];
   const timedWins = timed.filter(t => t.pnl > 0);
   const timedLosses = timed.filter(t => t.pnl < 0);
@@ -170,11 +170,11 @@ export function computeInsights(fills: NormTrade[]): Insights | { insufficient: 
     const al = timedLosses.reduce((s, t) => s + t.holdMinutes!, 0) / timedLosses.length;
     holdAsymmetry = { avgWinHoldMin: aw, avgLossHoldMin: al, ratio: aw > 0 ? al / aw : 0 };
   } else {
-    notes.push('Hold-time asymmetry needs 3+ timed wins and losses — '
+    notes.push('Hold-time asymmetry needs 3+ timed wins and losses - '
       + (timestampedShare < 0.5 ? 'this broker reports most fills date-only.' : 'not enough timed round-trips yet.'));
   }
 
-  // hourly buckets — needs timestamps
+  // hourly buckets - needs timestamps
   let dangerHours: HourBucket[] | undefined;
   let bestHours: HourBucket[] | undefined;
   if (timed.length >= 10) {
@@ -258,7 +258,7 @@ export function computeInsights(fills: NormTrade[]): Insights | { insufficient: 
   const edge = bySymbol.filter(s => s.pnl > 0 && s.trades >= 2);
   const leak = bySymbol.filter(s => s.pnl < 0 && s.trades >= 2).reverse();
 
-  // weekday split — works with date-only data
+  // weekday split - works with date-only data
   let byWeekday: Insights['byWeekday'];
   const wd = new Map<number, { trades: number; pnl: number; wins: number }>();
   for (const t of trips) {
@@ -316,33 +316,33 @@ export function computeInsights(fills: NormTrade[]): Insights | { insufficient: 
 
   const disciplineScore = Math.round(rrScore + cutScore + revScore + behaveScore);
 
-  // ── narrative debrief — synthesized from the real signals ──────────────────
+  // ── narrative debrief - synthesized from the real signals ──────────────────
   const wentWell: string[] = [];
   const leaks: string[] = [];
   const money = (v: number) => `${v < 0 ? '−' : ''}₹${Math.abs(v).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 
   if (winRate >= 0.5) wentWell.push(`Win rate ${Math.round(winRate * 100)}% across ${trips.length} closed trades.`);
-  if (profitFactor && profitFactor >= 1.3) wentWell.push(`Profit factor ${profitFactor.toFixed(2)} — winners meaningfully outrun losers.`);
+  if (profitFactor && profitFactor >= 1.3) wentWell.push(`Profit factor ${profitFactor.toFixed(2)} - winners meaningfully outrun losers.`);
   if (edge.length) wentWell.push(`${edge[0].symbol} is your standout: ${money(edge[0].pnl)} over ${edge[0].trades} trades.`);
-  if (holdAsymmetry && holdAsymmetry.ratio <= 1.2) wentWell.push('You cut losers about as fast as winners — no disposition drag.');
-  if (!wentWell.length) wentWell.push(`You closed ${trips.length} round-trips in the window — enough to read the patterns below.`);
+  if (holdAsymmetry && holdAsymmetry.ratio <= 1.2) wentWell.push('You cut losers about as fast as winners - no disposition drag.');
+  if (!wentWell.length) wentWell.push(`You closed ${trips.length} round-trips in the window - enough to read the patterns below.`);
 
-  if (holdAsymmetry && holdAsymmetry.ratio > 1.5) leaks.push(`You hold losers ${holdAsymmetry.ratio.toFixed(1)}× longer than winners (${Math.round(holdAsymmetry.avgLossHoldMin)}m vs ${Math.round(holdAsymmetry.avgWinHoldMin)}m) — the disposition effect.`);
+  if (holdAsymmetry && holdAsymmetry.ratio > 1.5) leaks.push(`You hold losers ${holdAsymmetry.ratio.toFixed(1)}× longer than winners (${Math.round(holdAsymmetry.avgLossHoldMin)}m vs ${Math.round(holdAsymmetry.avgWinHoldMin)}m) - the disposition effect.`);
   if (revenge && revenge.pnl < 0) leaks.push(`${revenge.count} revenge entries within ${revenge.windowMin}m of a loss cost ${money(revenge.pnl)}.`);
   if (leak.length) leaks.push(`${leak[0].symbol} is your biggest leak: ${money(leak[0].pnl)} over ${leak[0].trades} trades.`);
   if (dangerHours && dangerHours.length) leaks.push(`Your worst window is ${String(dangerHours[0].hour).padStart(2, '0')}:00–${String(dangerHours[0].hour + 1).padStart(2, '0')}:00 (${money(dangerHours[0].pnl)}).`);
-  if (bursts && bursts.count > 1) leaks.push(`${bursts.count} overtrading bursts — up to ${bursts.largest} orders inside ${bursts.windowMin} minutes.`);
-  if (!leaks.length) leaks.push('No structural leak stands out in this window — a clean book.');
+  if (bursts && bursts.count > 1) leaks.push(`${bursts.count} overtrading bursts - up to ${bursts.largest} orders inside ${bursts.windowMin} minutes.`);
+  if (!leaks.length) leaks.push('No structural leak stands out in this window - a clean book.');
 
   const summary = totalPnl >= 0
     ? `Net ${money(totalPnl)} over ${trips.length} closed trades, discipline ${disciplineScore}/100. `
       + (leakPnl < 0 ? `Your edge earned ${money(edgePnl)} while a leak returned ${money(leakPnl)} of it.` : 'The book is broadly clean.')
-    : `Net ${money(totalPnl)} over ${trips.length} closed trades, discipline ${disciplineScore}/100 — the leaks below are where it went.`;
+    : `Net ${money(totalPnl)} over ${trips.length} closed trades, discipline ${disciplineScore}/100 - the leaks below are where it went.`;
 
   const focus = leaks[0]?.startsWith('You hold losers')
     ? 'Set and honor a time-stop: cut losers at the pace you cut winners.'
     : revenge && revenge.pnl < 0
-      ? 'Impose a cooldown after any loss — the revenge re-entries are the clearest fixable leak.'
+      ? 'Impose a cooldown after any loss - the revenge re-entries are the clearest fixable leak.'
       : dangerHours && dangerHours.length
         ? `Sit out ${String(dangerHours[0].hour).padStart(2, '0')}:00–${String(dangerHours[0].hour + 1).padStart(2, '0')}:00 for two weeks and re-measure.`
         : leak.length
@@ -351,7 +351,7 @@ export function computeInsights(fills: NormTrade[]): Insights | { insufficient: 
 
   // ── ghost trade: the rule-following self, from their own fills ─────────────
   // Two concrete disciplines applied counterfactually (no future prices, no
-  // guessing about unrealized upside — only realized numbers):
+  // guessing about unrealized upside - only realized numbers):
   //   1. cap every loss at the trader's own average winning size (1:1 risk)
   //   2. skip revenge entries (already flagged from the data)
   const avgWinAbs = wins.length ? grossWin / wins.length : 0;
@@ -386,7 +386,7 @@ export function computeInsights(fills: NormTrade[]): Insights | { insufficient: 
     explanation:
       'Your rule-following self caps every loss at the size of your average winner '
       + '(1:1 risk) and skips revenge re-entries. Both are computed from your own '
-      + 'realized trades — no future prices assumed.',
+      + 'realized trades - no future prices assumed.',
   };
 
   // ── compounding: the gap at the observed rate (honest extrapolation) ───────

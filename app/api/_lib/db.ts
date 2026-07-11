@@ -1,14 +1,14 @@
 // Postgres access for the Compass API (Azure Database for PostgreSQL).
 // A single module-scoped pool is reused across warm serverless invocations.
 // Everything that flows through the product is persisted here EXCEPT broker
-// credentials — see sanitize() below, which strips credential-shaped fields
+// credentials - see sanitize() below, which strips credential-shaped fields
 // before anything is written to io_log.
 import { Pool, type QueryResultRow } from 'pg';
 
 let pool: Pool | null = null;
 
 /** Lazily build the pool. Returns null if DATABASE_URL is unset, so the app
- *  runs (degraded — no persistence) rather than crashing when unconfigured. */
+ *  runs (degraded - no persistence) rather than crashing when unconfigured. */
 export function getPool(): Pool | null {
   if (pool) return pool;
   const cs = process.env.DATABASE_URL;
@@ -16,7 +16,7 @@ export function getPool(): Pool | null {
   pool = new Pool({
     connectionString: cs,
     ssl: { rejectUnauthorized: false }, // Azure PG public endpoint over TLS
-    max: 4,                              // small — serverless fan-out friendly
+    max: 4,                              // small - serverless fan-out friendly
     idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 8_000,
   });
@@ -41,7 +41,7 @@ export async function q<T extends QueryResultRow = QueryResultRow>(
   }
 }
 
-// ── credential sanitizer — the ONE hard exclusion ────────────────────────────
+// ── credential sanitizer - the ONE hard exclusion ────────────────────────────
 const CREDENTIAL_KEYS = /^(password|pin|pwd|totp|twofa|twofa_value|secret|api[_-]?key|apikey|token|access[_-]?token|enctoken|request_token|client_secret|user_id|userid|client_code|dhan_token|auth|authorization)$/i;
 
 /** Recursively strip credential-shaped fields from any object before it is

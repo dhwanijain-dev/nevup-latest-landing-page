@@ -1,4 +1,4 @@
-// Instrument Explorer — LIVE data for any US or Indian listed instrument
+// Instrument Explorer - LIVE data for any US or Indian listed instrument
 // via the Compass market-data proxy (Yahoo Finance). Sections whose data the
 // source cannot supply are omitted, never fabricated.
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -23,7 +23,7 @@ function curSym(c: string): string {
   return c === 'INR' ? '₹' : c === 'USD' ? '$' : c === 'EUR' ? '€' : c === 'GBP' ? '£' : `${c} `;
 }
 function big(v: number | undefined, c: string): string {
-  if (v == null) return '—';
+  if (v == null) return ' - ';
   const sym = curSym(c);
   const a = Math.abs(v);
   if (a >= 1e12) return `${sym}${(v / 1e12).toFixed(2)}T`;
@@ -32,15 +32,15 @@ function big(v: number | undefined, c: string): string {
   if (a >= 1e6) return `${sym}${(v / 1e6).toFixed(1)}M`;
   return `${sym}${v.toFixed(0)}`;
 }
-const px = (v: number | undefined, c: string, d = 2) => (v == null ? '—' : `${curSym(c)}${v.toFixed(d)}`);
-const numF = (v: number | undefined, suffix = '', d = 1) => (v == null ? '—' : `${v.toFixed(d)}${suffix}`);
+const px = (v: number | undefined, c: string, d = 2) => (v == null ? ' - ' : `${curSym(c)}${v.toFixed(d)}`);
+const numF = (v: number | undefined, suffix = '', d = 1) => (v == null ? ' - ' : `${v.toFixed(d)}${suffix}`);
 
-// Behavioral sample notes for the pitch panel — clearly labeled sample.
+// Behavioral sample notes for the pitch panel - clearly labeled sample.
 const COMPASS_SAMPLES: Record<string, string> = {
-  AAPL: 'Sample: 23 trades, 61% win rate, process score 72. Your edge is early — 5 of 6 losses came after 13:00.',
-  NVDA: 'Sample: 31 trades, 48% win rate. 9 entries within 60s of social exposure — win rate on those: 22%.',
+  AAPL: 'Sample: 23 trades, 61% win rate, process score 72. Your edge is early - 5 of 6 losses came after 13:00.',
+  NVDA: 'Sample: 31 trades, 48% win rate. 9 entries within 60s of social exposure - win rate on those: 22%.',
   TSLA: 'Sample: 41 trades, biggest leak −$2,340. 17 revenge entries; the engine cools you 30min after any TSLA loss.',
-  MSFT: 'Sample: 9 trades, 78% win rate, process score 84 — your calmest ticker. The DNA report says size these up.',
+  MSFT: 'Sample: 9 trades, 78% win rate, process score 84 - your calmest ticker. The DNA report says size these up.',
 };
 
 export default function Explorer() {
@@ -78,7 +78,7 @@ export default function Explorer() {
     <div style={{ maxWidth: 1560, margin: '0 auto', padding: '20px 20px 60px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, borderBottom: `2px solid ${T.ink}`, paddingBottom: 12, flexWrap: 'wrap' }}>
         <a href="#/" style={{ ...mono(15, T.ink, 700), letterSpacing: '0.08em', textDecoration: 'none' }}>COMPASS</a>
-        <span style={statLabel}>Explorer — live</span>
+        <span style={statLabel}>Explorer - live</span>
         <span style={{ ...statLabel, marginLeft: 'auto', color: T.faint }}>US · India (NSE/BSE) · data: Yahoo Finance, delayed</span>
       </div>
 
@@ -96,7 +96,7 @@ export default function Explorer() {
             }}>{sym}</button>
           ))}
           <div style={{ padding: 14, fontFamily: T.serif, fontStyle: 'italic', fontSize: 11.5, color: T.faint, lineHeight: 1.5 }}>
-            Search any US or Indian listing — try RELIANCE.NS, HDFCBANK.NS, or any ticker.
+            Search any US or Indian listing - try RELIANCE.NS, HDFCBANK.NS, or any ticker.
           </div>
         </div>
 
@@ -109,7 +109,7 @@ export default function Explorer() {
             <div style={{ padding: 40 }}>
               <div style={{ ...mono(12, T.red, 700) }}>Data source unavailable</div>
               <div style={{ fontFamily: T.serif, fontSize: 14, color: T.body, marginTop: 8, maxWidth: 480 }}>
-                {error}. Nothing is shown rather than showing stale or invented numbers — retry in a moment.
+                {error}. Nothing is shown rather than showing stale or invented numbers - retry in a moment.
               </div>
             </div>
           )}
@@ -117,7 +117,7 @@ export default function Explorer() {
             <>
               {stale && (
                 <div style={{ ...mono(10, T.gold, 700), background: 'rgba(232,184,75,0.1)', borderBottom: `1px solid ${T.gold}`, padding: '6px 22px' }}>
-                  ⚠ Data source is throttling — showing the last good snapshot (may be up to a day old).
+                  ⚠ Data source is throttling - showing the last good snapshot (may be up to a day old).
                 </div>
               )}
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '16px 22px 10px', flexWrap: 'wrap' }}>
@@ -250,7 +250,7 @@ function Metric({ k, v, sub, c }: { k: string; v: string; sub?: string; c?: stri
 function Missing({ what }: { what: string }) {
   return (
     <div style={{ border: `1px dashed ${T.border}`, padding: '14px 16px', fontFamily: T.serif, fontStyle: 'italic', fontSize: 13, color: T.faint }}>
-      {what} isn&rsquo;t published by the data source for this instrument — omitted rather than estimated.
+      {what} isn&rsquo;t published by the data source for this instrument - omitted rather than estimated.
     </div>
   );
 }
@@ -281,7 +281,7 @@ function PriceChart({ x }: { x: XData }) {
   );
 }
 
-// Kronos candlestick-model forecast — real when a KRONOS_ENDPOINT is wired,
+// Kronos candlestick-model forecast - real when a KRONOS_ENDPOINT is wired,
 // honest "not connected" otherwise. Draws the projected path off the last close.
 function KronosCard({ x }: { x: XData }) {
   const [state, setState] = useState<KronosForecast | null>(null);
@@ -351,11 +351,11 @@ function Overview({ x }: { x: XData }) {
             <KV k="Market Cap" v={big(x.marketCap, c)} />
             <KV k="Open" v={px(x.open, c)} />
             <KV k="P/E Ratio" v={numF(x.pe, '', 2)} />
-            <KV k="Day Range" v={x.dayLow != null && x.dayHigh != null ? `${x.dayLow.toFixed(2)} – ${x.dayHigh.toFixed(2)}` : '—'} />
+            <KV k="Day Range" v={x.dayLow != null && x.dayHigh != null ? `${x.dayLow.toFixed(2)} – ${x.dayHigh.toFixed(2)}` : ' - '} />
             <KV k="Div Yield" v={numF(x.divYield, '%', 2)} />
-            <KV k="52W Range" v={x.low52 != null && x.high52 != null ? `${x.low52.toFixed(2)} – ${x.high52.toFixed(2)}` : '—'} />
+            <KV k="52W Range" v={x.low52 != null && x.high52 != null ? `${x.low52.toFixed(2)} – ${x.high52.toFixed(2)}` : ' - '} />
             <KV k="EPS (TTM)" v={numF(x.epsTtm, '', 2)} />
-            <KV k="Volume" v={x.volume != null ? Intl.NumberFormat('en', { notation: 'compact' }).format(x.volume) : '—'} />
+            <KV k="Volume" v={x.volume != null ? Intl.NumberFormat('en', { notation: 'compact' }).format(x.volume) : ' - '} />
           </div>
         </Card>
         <Card>
@@ -383,7 +383,7 @@ function Overview({ x }: { x: XData }) {
       </div>
 
       {x.margins && (x.margins.gross != null || x.margins.operating != null) ? (
-        <Card title="Operating quality — trailing twelve months">
+        <Card title="Operating quality - trailing twelve months">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '14px 22px' }}>
             {x.margins.gross != null && <Metric k="Gross margin" v={`${x.margins.gross.toFixed(1)}%`} />}
             {x.margins.operating != null && <Metric k="Operating margin" v={`${x.margins.operating.toFixed(1)}%`} />}
@@ -412,11 +412,11 @@ function Overview({ x }: { x: XData }) {
       )}
 
       <div style={{ border: `1px solid ${T.ghost}`, background: T.panelAlt, padding: '14px 18px' }}>
-        <div style={{ ...statLabel, color: T.ghost }}>Compass only — your history with {x.symbol}</div>
+        <div style={{ ...statLabel, color: T.ghost }}>Compass only - your history with {x.symbol}</div>
         <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 13.5, lineHeight: 1.55, color: T.body, marginTop: 8 }}>
           {sample
-            ? `${sample} (Sample data — the desktop terminal builds this panel from your own fills.)`
-            : 'The desktop terminal fills this panel from your own trades on this instrument: win rate, process score, best window, and your specific behavioral leaks. No history here on the web demo — that data never leaves your machine.'}
+            ? `${sample} (Sample data - the desktop terminal builds this panel from your own fills.)`
+            : 'The desktop terminal fills this panel from your own trades on this instrument: win rate, process score, best window, and your specific behavioral leaks. No history here on the web demo - that data never leaves your machine.'}
         </div>
       </div>
     </div>
@@ -553,7 +553,7 @@ function Financials({ x }: { x: XData }) {
                 <td style={{ ...mono(11, T.body), padding: '7px 8px' }}>Street revenue est.</td>
                 {cols.map((col, i) => (
                   <td key={i} style={{ ...mono(11, T.muted), textAlign: 'right', padding: '7px 8px' }}>
-                    {col.est && col.e.revenue != null ? big(col.e.revenue, c) : '—'}
+                    {col.est && col.e.revenue != null ? big(col.e.revenue, c) : ' - '}
                   </td>
                 ))}
               </tr>
@@ -561,7 +561,7 @@ function Financials({ x }: { x: XData }) {
                 <td style={{ ...mono(11, T.body), padding: '7px 8px' }}>Street EPS est.</td>
                 {cols.map((col, i) => (
                   <td key={i} style={{ ...mono(11, T.muted), textAlign: 'right', padding: '7px 8px' }}>
-                    {col.est && col.e.eps != null ? col.e.eps.toFixed(2) : '—'}
+                    {col.est && col.e.eps != null ? col.e.eps.toFixed(2) : ' - '}
                   </td>
                 ))}
               </tr>
@@ -587,12 +587,12 @@ function FinRow({ name, cols, get, sub, subIsMargin, fmt, strong }: {
     <tr style={{ borderBottom: `1px solid ${T.borderSoft}`, background: strong ? T.panelAlt : 'transparent' }}>
       <td style={{ ...mono(11, strong ? T.ink : T.body, strong ? 700 : 400), padding: '7px 8px', whiteSpace: 'nowrap' }}>{name}</td>
       {cols.map((col, i) => {
-        if (col.est) return <td key={i} style={{ ...mono(11, T.faint), textAlign: 'right', padding: '7px 8px' }}>—</td>;
+        if (col.est) return <td key={i} style={{ ...mono(11, T.faint), textAlign: 'right', padding: '7px 8px' }}> - </td>;
         const v = get(col.f);
         const sv = sub?.(col.f);
         return (
           <td key={i} style={{ textAlign: 'right', padding: '7px 8px' }}>
-            <div style={mono(11, T.ink, strong ? 700 : 400)}>{v != null ? fmt(v) : '—'}</div>
+            <div style={mono(11, T.ink, strong ? 700 : 400)}>{v != null ? fmt(v) : ' - '}</div>
             {sv != null && <div style={mono(9, subIsMargin ? T.faint : g(sv))}>{subIsMargin ? `${sv.toFixed(1)}%` : sgn(sv)}</div>}
           </td>
         );
@@ -627,7 +627,7 @@ function Earnings({ x }: { x: XData }) {
         <div style={mono(16, T.ink, 700)}>{x.nextEarnings ?? 'Not scheduled / not published'}</div>
       </Card>
       {eh.length ? (
-        <Card title="Reported quarters — EPS vs estimate">
+        <Card title="Reported quarters - EPS vs estimate">
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {eh.map((e, i) => {
               const beat = e.actual! >= e.est!;
@@ -659,7 +659,7 @@ function Earnings({ x }: { x: XData }) {
                 <tr key={qr.endDate} style={{ borderBottom: `1px solid ${T.borderSoft}` }}>
                   <td style={{ ...mono(11, T.ink, 700), padding: 6 }}>{qr.label}</td>
                   <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 6 }}>{big(qr.revenue, x.currency)}</td>
-                  <td style={{ ...mono(10.5, qr.revenueG != null ? g(qr.revenueG) : T.faint), textAlign: 'right', padding: 6 }}>{qr.revenueG != null ? sgn(qr.revenueG) : '—'}</td>
+                  <td style={{ ...mono(10.5, qr.revenueG != null ? g(qr.revenueG) : T.faint), textAlign: 'right', padding: 6 }}>{qr.revenueG != null ? sgn(qr.revenueG) : ' - '}</td>
                   <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 6 }}>{numF(qr.grossPct, '%')}</td>
                   <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 6 }}>{big(qr.netIncome, x.currency)}</td>
                   <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 6 }}>{numF(qr.netPct, '%')}</td>
@@ -710,10 +710,10 @@ function Holders({ x }: { x: XData }) {
                         </div>
                       )}
                     </td>
-                    <td style={{ ...mono(11, T.ink, 700), textAlign: 'right', padding: 8 }}>{t.pctHeld != null ? `${t.pctHeld.toFixed(2)}%` : '—'}</td>
-                    <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 8 }}>{t.position != null ? Intl.NumberFormat('en', { notation: 'compact' }).format(t.position) : '—'}</td>
-                    <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 8 }}>{t.value != null ? big(t.value, x.currency) : '—'}</td>
-                    <td style={{ ...mono(10, T.faint), textAlign: 'right', padding: 8 }}>{t.reportDate ?? '—'}</td>
+                    <td style={{ ...mono(11, T.ink, 700), textAlign: 'right', padding: 8 }}>{t.pctHeld != null ? `${t.pctHeld.toFixed(2)}%` : ' - '}</td>
+                    <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 8 }}>{t.position != null ? Intl.NumberFormat('en', { notation: 'compact' }).format(t.position) : ' - '}</td>
+                    <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 8 }}>{t.value != null ? big(t.value, x.currency) : ' - '}</td>
+                    <td style={{ ...mono(10, T.faint), textAlign: 'right', padding: 8 }}>{t.reportDate ?? ' - '}</td>
                   </tr>
                 ))}
               </tbody>
@@ -733,7 +733,7 @@ function Analysis({ x }: { x: XData }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {x.consensus ? <ConsensusCard x={x} /> : <Missing what="Analyst consensus" />}
       {rt.length > 1 ? (
-        <Card title="Ratings trend — monthly mix">
+        <Card title="Ratings trend - monthly mix">
           <div style={{ display: 'flex', gap: 8, height: 110 }}>
             {rt.map(m => {
               const total = Math.max(m.strongBuy + m.buy + m.hold + m.sell + m.strongSell, 1);
@@ -755,7 +755,7 @@ function Analysis({ x }: { x: XData }) {
             {x.fwdEstimates.map(e => (
               <div key={e.period}>
                 <div style={statLabel}>{e.label} ({e.period === '0y' ? 'current FY' : 'next FY'})</div>
-                <div style={{ ...mono(15, T.ink, 700), marginTop: 4 }}>{e.revenue != null ? big(e.revenue, x.currency) : '—'} rev</div>
+                <div style={{ ...mono(15, T.ink, 700), marginTop: 4 }}>{e.revenue != null ? big(e.revenue, x.currency) : ' - '} rev</div>
                 {e.revenueG != null && <div style={mono(10, g(e.revenueG))}>{sgn(e.revenueG)} growth</div>}
                 {e.eps != null && <div style={mono(10, T.muted)}>EPS est {e.eps.toFixed(2)}</div>}
               </div>
@@ -781,7 +781,7 @@ function Analysis({ x }: { x: XData }) {
                     <td style={{ padding: 8 }}>
                       <span style={{ ...mono(9.5, /buy|out|over|strong|accum/i.test(a.toGrade) ? T.green : /hold|neutral|equal|market/i.test(a.toGrade) ? T.muted : T.red, 700), border: `1px solid ${T.borderSoft}`, padding: '2px 8px' }}>{a.toGrade}</span>
                     </td>
-                    <td style={{ ...mono(10.5, a.fromGrade ? T.faint : T.faint), padding: 8 }}>{a.fromGrade || '—'}</td>
+                    <td style={{ ...mono(10.5, a.fromGrade ? T.faint : T.faint), padding: 8 }}>{a.fromGrade || ' - '}</td>
                     <td style={{ ...mono(10.5, /down/i.test(a.action) ? T.red : /up/i.test(a.action) ? T.green : T.body), textAlign: 'right', padding: 8, textTransform: 'capitalize' }}>{a.action}</td>
                     <td style={{ ...mono(10, T.faint), textAlign: 'right', padding: 8 }}>{a.date}</td>
                   </tr>
@@ -804,7 +804,7 @@ function Analytics({ x }: { x: XData }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {a ? (
-        <Card title="Price-derived analytics — computed from the actual series">
+        <Card title="Price-derived analytics - computed from the actual series">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '16px 22px' }}>
             {a.ret1m != null && <Metric k="1-month return" v={sgn(a.ret1m)} c={g(a.ret1m)} />}
             {a.ret6m != null && <Metric k="6-month return" v={sgn(a.ret6m)} c={g(a.ret6m)} />}
@@ -820,7 +820,7 @@ function Analytics({ x }: { x: XData }) {
       ) : <Missing what="Price history for computed analytics" />}
 
       {cl && (cl.totalDebt != null || cl.currentRatio != null) ? (
-        <Card title="Credit & liquidity — trailing twelve months">
+        <Card title="Credit & liquidity - trailing twelve months">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '16px 22px' }}>
             {cl.totalDebt != null && <Metric k="Total debt" v={big(cl.totalDebt, c)} />}
             {cl.totalCash != null && <Metric k="Total cash" v={big(cl.totalCash, c)} />}
@@ -834,7 +834,7 @@ function Analytics({ x }: { x: XData }) {
       ) : null}
 
       {x.quality?.length ? (
-        <Card title="Earnings quality — from reported statements">
+        <Card title="Earnings quality - from reported statements">
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: `1px solid ${T.ink}` }}>
@@ -848,9 +848,9 @@ function Analytics({ x }: { x: XData }) {
                 <tr key={qr.label} style={{ borderBottom: `1px solid ${T.borderSoft}` }}>
                   <td style={{ ...mono(11, T.ink, 700), padding: 6 }}>{qr.label}</td>
                   <td style={{ ...mono(11, qr.accrualsPct != null ? (qr.accrualsPct > 0 ? T.red : T.green) : T.faint), textAlign: 'right', padding: 6 }}>{numF(qr.accrualsPct, '%')}</td>
-                  <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 6 }}>{qr.fcfNi != null ? `${qr.fcfNi.toFixed(2)}x` : '—'}</td>
-                  <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 6 }}>{qr.cfoCapex != null ? `${qr.cfoCapex.toFixed(1)}x` : '—'}</td>
-                  <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 6 }}>{qr.dso != null ? `${Math.round(qr.dso)}d` : '—'}</td>
+                  <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 6 }}>{qr.fcfNi != null ? `${qr.fcfNi.toFixed(2)}x` : ' - '}</td>
+                  <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 6 }}>{qr.cfoCapex != null ? `${qr.cfoCapex.toFixed(1)}x` : ' - '}</td>
+                  <td style={{ ...mono(11, T.body), textAlign: 'right', padding: 6 }}>{qr.dso != null ? `${Math.round(qr.dso)}d` : ' - '}</td>
                 </tr>
               ))}
             </tbody>
@@ -859,7 +859,7 @@ function Analytics({ x }: { x: XData }) {
       ) : null}
 
       {x.capitalAllocation?.some(ca => ca.buyback != null || ca.dividends != null) ? (
-        <Card title="Capital allocation — from cash-flow statements">
+        <Card title="Capital allocation - from cash-flow statements">
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', height: 100 }}>
             {(() => {
               const rows = x.capitalAllocation!.filter(ca => ca.buyback != null || ca.dividends != null);
@@ -897,11 +897,11 @@ function ChatDock({ x }: { x: XData }) {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const endpoint = process.env.NEXT_PUBLIC_CHAT_ENDPOINT as string | undefined;
+  const endpoint = (process.env.NEXT_PUBLIC_CHAT_ENDPOINT as string | undefined) ?? '/api/chat';
 
   useEffect(() => {
     setPinned(null);
-    setMsgs([{ role: 'assistant', text: `Ask me anything about ${x.symbol} — the answers are computed from the live data on this page.` }]);
+    setMsgs([{ role: 'assistant', text: `Ask me anything about ${x.symbol} - the answers are computed from the live data on this page.` }]);
   }, [x.symbol]);
 
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }); }, [msgs, busy]);
@@ -912,21 +912,35 @@ function ChatDock({ x }: { x: XData }) {
     setMsgs(m => [...m, { role: 'user', text: q }]);
     setInput('');
     setBusy(true);
+    // real figures for THIS instrument - the model is grounded on these only
+    const facts = {
+      symbol: x.symbol, name: x.name, currency: x.currency, price: x.price, changePct: x.changePct,
+      fiscalYears: x.fy, quarterly: x.quarterly, forwardEstimates: x.fwdEstimates,
+      holders: x.holders?.top, institutionalPct: x.holders?.instPct, insiderPct: x.holders?.insiderPct,
+      analytics: x.analytics,
+      priceStats: x.priceHistory?.close.length ? {
+        closes: x.priceHistory.close.length,
+        last: x.priceHistory.close.at(-1),
+        low: Math.min(...x.priceHistory.close), high: Math.max(...x.priceHistory.close),
+      } : null,
+    };
+    const user = (window as unknown as { __compassUser?: { userId?: string } }).__compassUser;
     try {
-      if (endpoint) {
-        const r = await fetch(endpoint, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ symbol: x.symbol, question: q }),
-        });
-        const data = await r.json();
-        setMsgs(m => [...m, { role: 'assistant', text: data.answer ?? 'No answer.', sources: data.sources, steps: data.steps }]);
+      const r = await fetch(endpoint, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symbol: x.symbol, question: q, facts, userId: user?.userId }),
+      });
+      const data = await r.json();
+      if (data?.ok && data.text) {
+        setMsgs(m => [...m, { role: 'assistant', text: data.text, sources: data.sources, steps: stepsFor(q, x.symbol, x) }]);
       } else {
-        await new Promise(res => setTimeout(res, 400));
+        // model unconfigured or errored - fall back to the on-device analyst
         const a = answer(q, x);
         setMsgs(m => [...m, { role: 'assistant', text: a.text, sources: a.sources, steps: stepsFor(q, x.symbol, x) }]);
       }
     } catch {
-      setMsgs(m => [...m, { role: 'assistant', text: 'Assistant unreachable — try again.' }]);
+      const a = answer(q, x);
+      setMsgs(m => [...m, { role: 'assistant', text: a.text, sources: a.sources, steps: stepsFor(q, x.symbol, x) }]);
     } finally { setBusy(false); }
   };
 

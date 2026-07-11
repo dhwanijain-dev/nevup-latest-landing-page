@@ -32,7 +32,7 @@ export function Hero() {
         color: T.mutedStrong, maxWidth: 660, margin: '22px 0 0',
       }}>
         Every chart platform shows you the market. None of them show you the trader.
-        Compass runs a behavioral engine beside every trade you take — and proves,
+        Compass runs a behavioral engine beside every trade you take - and proves,
         in your own numbers, exactly where your discipline breaks and what it costs.
       </p>
       <div style={{ display: 'flex', gap: 30, marginTop: 34, flexWrap: 'wrap' }}>
@@ -50,7 +50,7 @@ export function Hero() {
 export function DnaSection() {
   return (
     <section style={{ maxWidth: 1120, margin: '0 auto', padding: '50px 24px' }}>
-      <div style={statLabel}>Illustration — a Trading DNA report (upload your trades for yours)</div>
+      <div style={statLabel}>Illustration - a Trading DNA report (upload your trades for yours)</div>
       <div style={{
         display: 'grid', gridTemplateColumns: 'minmax(300px, 1.2fr) minmax(260px, .8fr)',
         gap: 0, border: `1px solid ${T.border}`, background: T.panel, marginTop: 14,
@@ -114,12 +114,12 @@ export function Moat() {
     ['1 week', 'Nothing significant'],
     ['1 month', 'Your rules, your watchlists, the first shape of your behavioral profile'],
     ['3 months', 'Your Trading DNA report, your setup vocabulary, your danger hours'],
-    ['6 months', 'Your personal edge, quantified — process scores, override accuracy, ghost-trade ledger'],
+    ['6 months', 'Your personal edge, quantified - process scores, override accuracy, ghost-trade ledger'],
     ['1 year', 'A digital twin of your trading psychology. A competitor starts cold.'],
   ];
   return (
     <section style={{ maxWidth: 1120, margin: '0 auto', padding: '50px 24px' }}>
-      <div style={statLabel}>Why this compounds — what you&rsquo;d lose by leaving</div>
+      <div style={statLabel}>Why this compounds - what you&rsquo;d lose by leaving</div>
       <div style={{ border: `1px solid ${T.border}`, marginTop: 14 }}>
         {rows.map(([t, w], i) => (
           <div key={t} style={{
@@ -133,8 +133,7 @@ export function Moat() {
         ))}
       </div>
       <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 16, color: T.mutedStrong, marginTop: 18, maxWidth: 720 }}>
-        Charts and order forms can be copied. Twelve months of your own recorded psychology cannot —
-        that is the moat, and it deepens every session.
+        Charts and order forms can be copied. Twelve months of your own recorded psychology cannot - that is the moat, and it deepens every session.
       </div>
     </section>
   );
@@ -168,12 +167,12 @@ export function Waitlist() {
   return (
     <section id="waitlist" style={{ maxWidth: 1120, margin: '0 auto', padding: '50px 24px 30px' }}>
       <div style={{ border: `1px solid ${T.ink}`, background: T.panel, padding: 'clamp(28px, 5vw, 52px)', textAlign: 'center' }}>
-        <div style={statLabel}>Early access — US launch</div>
+        <div style={statLabel}>Early access - US launch</div>
         <h2 style={{ fontFamily: T.serif, fontWeight: 500, fontSize: 'clamp(24px, 4vw, 38px)', color: T.ink, margin: '12px auto 6px', maxWidth: 640, lineHeight: 1.2 }}>
           Find out what <em style={{ fontStyle: 'italic', color: T.red }}>your</em> discipline is costing you.
         </h2>
         <p style={{ fontFamily: T.serif, fontSize: 15, color: T.muted, margin: '0 0 26px' }}>
-          The full terminal — charts, one broker connection, and the behavioral engine — opens to the waitlist first.
+          The full terminal - charts, one broker connection, and the behavioral engine - opens to the waitlist first.
         </p>
         {state === 'done' ? (
           <div style={{ fontFamily: T.mono, fontSize: 14, color: T.green }}>You&rsquo;re on the list. Watch your inbox.</div>
@@ -198,7 +197,7 @@ export function Waitlist() {
         )}
         {state === 'error' && (
           <div style={{ fontFamily: T.mono, fontSize: 11, color: T.red, marginTop: 10 }}>
-            Something failed — email us at early-access@nevup.in
+            Something failed - email us at early-access@nevup.in
           </div>
         )}
       </div>

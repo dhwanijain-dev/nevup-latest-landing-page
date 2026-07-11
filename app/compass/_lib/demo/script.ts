@@ -1,4 +1,4 @@
-// Deterministic demo session — one real-shaped trade, replayed.
+// Deterministic demo session - one real-shaped trade, replayed.
 // Numbers mirror the engine's actual outputs (ghost trades, process score,
 // past-self reminder); the price path is seeded so every demo is identical.
 
@@ -6,7 +6,7 @@ export interface Bar {
   t: number; o: number; h: number; l: number; c: number; v: number;
 }
 
-// Mulberry32 — tiny seeded PRNG, deterministic across runs
+// Mulberry32 - tiny seeded PRNG, deterministic across runs
 function rng(seed: number) {
   return () => {
     seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
@@ -26,7 +26,7 @@ export const N_BARS = 84;
 
 export const ENTRY = 623.4;
 export const TRADER_EXIT = 625.5;   // +$210 on 100 shares
-export const GHOST_EXIT = 629.8;    // +$640 — the 2:1 target per the rules
+export const GHOST_EXIT = 629.8;    // +$640 - the 2:1 target per the rules
 export const STOP = 620.9;
 
 export function buildBars(): Bar[] {
@@ -66,7 +66,7 @@ export const NUDGE = {
     'same symbol. Your plan calls for one confirmed setup per session leg. ' +
     'This entry has no signal behind it.',
   pastSelf:
-    'Your history with this rule: May 28 — re-entry on SPY four minutes after a ' +
+    'Your history with this rule: May 28 - re-entry on SPY four minutes after a ' +
     'stop-out. Result: −$412, three times your average loss. That session ended −$980.',
 };
 
@@ -76,7 +76,7 @@ export const PROCESS_SCORE = {
     { name: 'Entry quality', score: 9, max: 10, note: 'clean break, volume confirmed' },
     { name: 'Position size', score: 10, max: 10, note: 'exactly 1R per your rules' },
     { name: 'Stop placement', score: 8, max: 10, note: 'at structure, slightly tight' },
-    { name: 'Exit', score: 3, max: 10, note: 'sold the shakeout — plan said hold to 2:1' },
+    { name: 'Exit', score: 3, max: 10, note: 'sold the shakeout - plan said hold to 2:1' },
     { name: 'Rule adherence', score: 31, max: 60, note: 'early exit + attempted re-entry' },
   ],
   outcome: '+$210',

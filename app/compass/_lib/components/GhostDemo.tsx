@@ -1,6 +1,6 @@
 // The centerpiece: a scripted replay of one real-shaped trade. The trader
-// exits early; the ghost — the version of them that followed their own rules
-// — holds to target. Every number on screen is the gap between the two.
+// exits early; the ghost - the version of them that followed their own rules
+// - holds to target. Every number on screen is the gap between the two.
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { T, statLabel } from '../theme';
 import {
@@ -119,7 +119,7 @@ export default function GhostDemo() {
 
   return (
     <section id="demo" style={{ maxWidth: 1120, margin: '0 auto', padding: '90px 24px 40px' }}>
-      <div style={statLabel}>Illustration — how the ghost trade works</div>
+      <div style={statLabel}>Illustration - how the ghost trade works</div>
       <h2 style={{
         fontFamily: T.serif, fontWeight: 500, fontSize: 'clamp(26px, 4vw, 40px)',
         lineHeight: 1.15, color: T.ink, margin: '10px 0 12px', maxWidth: 780,
@@ -189,7 +189,7 @@ export default function GhostDemo() {
                 fontFamily: T.serif, fontSize: 20, lineHeight: 1.45, fontStyle: 'italic',
                 color: T.body, marginTop: 10,
               }}>
-                You sold a routine shakeout. The plan said hold to 2:1 — the ghost did,
+                You sold a routine shakeout. The plan said hold to 2:1 - the ghost did,
                 and collected. This is your 14th early exit this month. Running cost: $3,120.
               </div>
             </div>
@@ -229,7 +229,7 @@ function NudgeOverlay({ onDismiss }: { onDismiss: () => void }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C0392B', animation: 'gpulse 1.6s infinite' }} />
           <span style={{ fontFamily: T.serif, fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', color: '#4A4540' }}>
-            COMPASS NUDGE — {NUDGE.rule.toUpperCase()}
+            COMPASS NUDGE - {NUDGE.rule.toUpperCase()}
           </span>
         </div>
         <p style={{ fontFamily: T.serif, fontSize: 13.5, lineHeight: 1.6, color: '#1A1A1A', margin: 0 }}>
@@ -248,7 +248,7 @@ function NudgeOverlay({ onDismiss }: { onDismiss: () => void }) {
           marginTop: 12, width: '100%', padding: '8px 0', background: '#1A1A1A', color: '#FAF6EE',
           border: 'none', borderRadius: 7, fontFamily: T.serif, fontSize: 12, cursor: 'pointer',
         }}>
-          Understood — stand down
+          Understood - stand down
         </button>
       </div>
     </div>
@@ -259,7 +259,7 @@ function ScoreCard() {
   return (
     <div style={{ border: `1px solid ${T.border}`, borderTop: 0, background: T.panel, padding: '20px 24px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
-        <div style={statLabel}>Process score — shown before P&amp;L, always</div>
+        <div style={statLabel}>Process score - shown before P&amp;L, always</div>
         <div style={{ marginLeft: 'auto', fontFamily: T.mono, fontSize: 12, color: T.muted }}>
           outcome <b style={{ color: T.green }}>{PROCESS_SCORE.outcome}</b> · ghost <b style={{ color: T.ghost }}>{PROCESS_SCORE.ghostOutcome}</b>
         </div>
@@ -296,7 +296,7 @@ const ctlBtn: React.CSSProperties = {
   fontFamily: T.mono, fontSize: 11, padding: '5px 12px', cursor: 'pointer',
 };
 
-// ── canvas painter — fractional progress, smooth ghost overlay ──────────────
+// ── canvas painter - fractional progress, smooth ghost overlay ──────────────
 // Matches the desktop app's ghost: a translucent purple track the trader's
 // rule-following self walks, diverging from where they actually exited.
 function paint(ctx: CanvasRenderingContext2D, w: number, h: number,
