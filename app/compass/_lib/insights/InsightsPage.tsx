@@ -74,7 +74,13 @@ export default function InsightsPage() {
         if (!r.ok) setError(r.error ?? 'Could not parse this file.');
         else {
           // a real CSV was processed: unlock the rest of the app (Explorer)
-          try { sessionStorage.setItem('compass_unlocked', '1'); } catch { /* ignore */ }
+          try {
+            sessionStorage.setItem('compass_unlocked', '1');
+            // stash the parsed trades so the Explorer chat can personalize per
+            // symbol (skip if unusually large to stay within storage limits)
+            const packed = JSON.stringify(r.trades);
+            if (packed.length < 3_000_000) sessionStorage.setItem('compass_trades', packed);
+          } catch { /* ignore */ }
           persist(text, r.trades as NormTrade[], file.name);
         }
       } catch (e) {

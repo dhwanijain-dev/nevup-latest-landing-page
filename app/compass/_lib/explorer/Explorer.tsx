@@ -6,6 +6,36 @@ import { T, statLabel } from '../theme';
 import { XData, SearchHit, FYRowX } from './types';
 import { searchInstruments, loadInstrument, wasStale, resetStale, kronosForecast, KronosForecast } from './live';
 import { answer } from './answerer';
+import type { NormTrade } from '../insights/types';
+import { pairTrades } from '../insights/engine';
+
+// The trader's OWN executed trades on the viewed instrument, from the CSV they
+// uploaded (stashed in sessionStorage). Matched on the base symbol (ignoring
+// exchange suffix). Returns null if they never traded it - so the chat can
+// personalize: what THEY did vs what the stock is doing. All real, from the CSV.
+function userSymbolContext(symbol: string): Record<string, unknown> | null {
+  try {
+    const raw = sessionStorage.getItem('compass_trades');
+    if (!raw) return null;
+    const all = JSON.parse(raw) as NormTrade[];
+    const base = symbol.split('.')[0].toUpperCase();
+    const mine = all.filter(t => (t.symbol || '').split('.')[0].toUpperCase() === base);
+    if (!mine.length) return null;
+    const { trips } = pairTrades(mine);
+    const net = trips.reduce((a, t) => a + t.pnl, 0);
+    const wins = trips.filter(t => t.pnl > 0).length;
+    const holds = trips.filter(t => t.holdMinutes != null).map(t => t.holdMinutes as number);
+    return {
+      youTradedThisSymbol: true,
+      fills: mine.length,
+      roundTrips: trips.length,
+      netPnl: Math.round(net),
+      winRate: trips.length ? Math.round((wins / trips.length) * 100) : null,
+      avgHoldMinutes: holds.length ? Math.round(holds.reduce((a, b) => a + b, 0) / holds.length) : null,
+      trades: mine.slice(0, 25).map(t => ({ side: t.side, qty: t.qty, price: t.price, ts: t.ts })),
+    };
+  } catch { return null; }
+}
 
 const TABS = ['Overview', 'Financials', 'Earnings', 'Holders', 'Analysis', 'Analytics'] as const;
 type Tab = typeof TABS[number];
@@ -150,7 +180,13 @@ export default function Explorer() {
           )}
         </div>
 
-        {x ? <ChatDock x={x} /> : <div style={{ borderLeft: `1px solid ${T.border}`, background: T.panel }} />}
+        {x ? (
+          <div style={{ borderLeft: `1px solid ${T.border}` }}>
+            <div style={{ position: 'sticky', top: 12, height: 'calc(100vh - 24px)' }}>
+              <ChatDock x={x} />
+            </div>
+          </div>
+        ) : <div style={{ borderLeft: `1px solid ${T.border}`, background: T.panel }} />}
       </div>
     </div>
   );
@@ -923,6 +959,7 @@ function ChatDock({ x }: { x: XData }) {
         last: x.priceHistory.close.at(-1),
         low: Math.min(...x.priceHistory.close), high: Math.max(...x.priceHistory.close),
       } : null,
+      yourHistoryOnThisSymbol: userSymbolContext(x.symbol),
     };
     const user = (window as unknown as { __compassUser?: { userId?: string } }).__compassUser;
     try {
@@ -947,7 +984,7 @@ function ChatDock({ x }: { x: XData }) {
   const chips = ['Revenue trend?', 'EPS beats?', 'Who owns it?', 'Price targets?', 'How volatile is it?'];
 
   return (
-    <div style={{ borderLeft: `1px solid ${T.border}`, display: 'flex', flexDirection: 'column', background: T.panel, minHeight: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', background: T.panel, height: '100%', minHeight: 0 }}>
       {pinned ? (
         <div style={{ padding: '12px 14px', borderBottom: `1px solid ${T.borderSoft}`, background: T.panelAlt }}>
           <div style={{ ...mono(11, T.ink, 700), letterSpacing: '0.04em', lineHeight: 1.5 }}>{pinned}</div>
@@ -956,7 +993,7 @@ function ChatDock({ x }: { x: XData }) {
         <div style={{ padding: '12px 14px', borderBottom: `1px solid ${T.borderSoft}` }}>
           <div style={mono(11, T.ink, 700)}>ASK YOUR ANALYST</div>
           <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 11.5, color: T.faint, marginTop: 3 }}>
-            Answers computed from this page&rsquo;s live data, sources cited. The desktop AI adds your own trading history.
+            Grounded in this page&rsquo;s live data and your own trades on this stock from your upload.
           </div>
         </div>
       )}
