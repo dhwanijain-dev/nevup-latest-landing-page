@@ -6,7 +6,7 @@ import ClientApp from './_lib/ClientApp';
 import Onboarding from './_lib/Onboarding';
 
 export const metadata = {
-  title: 'Compass - trading behavior, analyzed',
+  title: 'Compass',
   robots: { index: false, follow: false },
 };
 
