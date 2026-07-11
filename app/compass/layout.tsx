@@ -1,4 +1,4 @@
-// Isolated layout for /compass — loads Compass's fonts and a white canvas,
+// Isolated layout for /compass - loads Compass's fonts and a white canvas,
 // independent of the landing site's theme.
 import type { ReactNode } from 'react';
 

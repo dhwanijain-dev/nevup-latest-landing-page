@@ -71,7 +71,11 @@ export default function InsightsPage() {
         const r = parseTradeCsv(text);
         setReport(r);
         if (!r.ok) setError(r.error ?? 'Could not parse this file.');
-        else persist(text, r.trades as NormTrade[], file.name);
+        else {
+          // a real CSV was processed: unlock the rest of the app (Explorer)
+          try { sessionStorage.setItem('compass_unlocked', '1'); } catch { /* ignore */ }
+          persist(text, r.trades as NormTrade[], file.name);
+        }
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Unexpected error parsing the file.');
       }
@@ -85,7 +89,7 @@ export default function InsightsPage() {
   return (
     <div style={{ maxWidth: 1120, margin: '0 auto', padding: '20px 20px 80px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, borderBottom: `2px solid ${T.ink}`, paddingBottom: 12, flexWrap: 'wrap' }}>
-        <a href="#/" style={{ ...mono(15, T.ink, 700), letterSpacing: '0.08em', textDecoration: 'none' }}>COMPASS</a>
+        <a href="#/insights" style={{ ...mono(15, T.ink, 700), letterSpacing: '0.08em', textDecoration: 'none' }}>COMPASS</a>
         <span style={statLabel}>Your trading, analyzed</span>
         <span style={{ ...statLabel, marginLeft: 'auto', color: T.faint }}>
           your file never leaves this browser · analyzed on your device

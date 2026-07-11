@@ -77,7 +77,7 @@ export default function Explorer() {
   return (
     <div style={{ maxWidth: 1560, margin: '0 auto', padding: '20px 20px 60px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, borderBottom: `2px solid ${T.ink}`, paddingBottom: 12, flexWrap: 'wrap' }}>
-        <a href="#/" style={{ ...mono(15, T.ink, 700), letterSpacing: '0.08em', textDecoration: 'none' }}>COMPASS</a>
+        <a href="#/insights" style={{ ...mono(15, T.ink, 700), letterSpacing: '0.08em', textDecoration: 'none' }}>COMPASS</a>
         <span style={statLabel}>Explorer - live</span>
         <span style={{ ...statLabel, marginLeft: 'auto', color: T.faint }}>US · India (NSE/BSE) · data: Yahoo Finance, delayed</span>
       </div>
