@@ -6,8 +6,8 @@ import { T, statLabel } from '../theme';
 import type { NormTrade } from './types';
 import { computeInsights, pairTrades, Insights, RoundTrip } from './engine';
 import { parseTradeCsv, ParseReport, MAX_BYTES } from './csv';
-import GhostDemo from '../components/GhostDemo';
-import { Moat, Hero, DnaSection } from '../components/Sections';
+import GhostRace from '../components/GhostRace';
+import { Hero, DnaSection } from '../components/Sections';
 
 const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
   ({ fontFamily: T.mono, fontSize: size, color, fontWeight: weight });
@@ -247,7 +247,7 @@ function buildDNA(x: Insights): { headline: string; facts: [string, string][]; r
 
 // Post-upload view = the original demo page (Hero, animated GhostDemo, DNA
 // report, moat), with every value computed from the uploaded trades.
-function InsightsView({ x }: { x: Insights; trips: RoundTrip[] }) {
+function InsightsView({ x, trips }: { x: Insights; trips: RoundTrip[] }) {
   const gap = x.ghost.gap;
   const dna = buildDNA(x);
   const heroHeadline = (
@@ -260,19 +260,51 @@ function InsightsView({ x }: { x: Insights; trips: RoundTrip[] }) {
     [pctF(x.winRate), 'win rate'],
     [`${x.disciplineScore}/100`, 'discipline score'],
   ];
-  const verdictLine =
-    `Across ${x.roundTrips} round-trips you netted ${inr(x.ghost.actualPnl)}. ` +
-    `Capping oversized losers at your average winner and skipping revenge entries, ` +
-    `your rule-following self would have made ${inr(x.ghost.ghostPnl)} - a gap of ${inr(gap)}.`;
 
   return (
     <>
       <Hero embedded headline={heroHeadline}
         sub="Compass paired every round-trip in your book and rebuilt the version of you that cut losers at your average winner and skipped revenge entries. The gap is what discipline cost you."
         stats={stats} />
-      <GhostDemo real={{ you: x.ghost.actualPnl, ghost: x.ghost.ghostPnl, gap, line: verdictLine }} />
+      <div style={{ maxWidth: 1120, margin: '0 auto', padding: '10px 24px' }}>
+        <GhostRace trips={trips} x={x} />
+      </div>
       <DnaSection dna={dna} caption="Your Trading DNA - computed from this upload" />
-      <Moat />
+      <Compounding x={x} />
     </>
+  );
+}
+
+// Real compounding: the observed discipline gap extrapolated at its own
+// run-rate (straight-line, honestly labeled - not a forecast). Null when the
+// window is too short or there is no gap to project.
+function Compounding({ x }: { x: Insights }) {
+  const c = x.compounding;
+  if (!c) return null;
+  const rows: [string, number][] = [
+    ['Per month', c.perMonth],
+    ['Per quarter', c.perQuarter],
+    ['Per year', c.perYear],
+  ];
+  return (
+    <section style={{ maxWidth: 1120, margin: '0 auto', padding: '40px 24px 20px' }}>
+      <div style={statLabel}>Why it compounds - your discipline gap at this run-rate</div>
+      <div style={{ border: `1px solid ${T.ink}`, background: T.panel, marginTop: 14, padding: '22px 26px' }}>
+        <div style={{ fontFamily: T.serif, fontSize: 'clamp(18px, 2.4vw, 24px)', color: T.ink, lineHeight: 1.4 }}>
+          Over {c.windowDays} days the discipline gap was <b style={{ color: T.red }}>{inr(x.ghost.gap)}</b>. At this rate:
+        </div>
+        <div style={{ display: 'flex', gap: 44, marginTop: 20, flexWrap: 'wrap' }}>
+          {rows.map(([k, v]) => (
+            <div key={k}>
+              <div style={statLabel}>{k}</div>
+              <div style={{ fontFamily: T.mono, fontSize: 24, fontWeight: 700, color: T.red, marginTop: 4 }}>{inr(-v)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ ...mono(10, T.faint), marginTop: 10 }}>
+        Straight-line extrapolation of your own {c.windowDays}-day gap - a run-rate, not a forecast.
+      </div>
+    </section>
   );
 }
