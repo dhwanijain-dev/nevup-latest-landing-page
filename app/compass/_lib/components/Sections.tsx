@@ -13,7 +13,7 @@ interface HeroProps {
 export function Hero({ embedded, headline, sub, stats }: HeroProps = {}) {
   const strip = stats ?? [['17', 'behavioral rules watching live'], ['9', 'feedback loops, closing in seconds'], ['90 days', 'to a Trading DNA no rival can copy']];
   return (
-    <header style={{ maxWidth: 1120, margin: '0 auto', padding: embedded ? '30px 4px 10px' : '68px 24px 10px' }}>
+    <header style={{ maxWidth: 1120, margin: '0 auto', padding: embedded ? '44px 24px 10px' : '68px 24px 10px' }}>
       {!embedded && (
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, borderBottom: `2px solid ${T.ink}`, paddingBottom: 22, flexWrap: 'wrap' }}>
           <span style={{ fontFamily: T.mono, fontWeight: 700, fontSize: 15, color: T.ink, letterSpacing: '0.08em' }}>COMPASS</span>
@@ -102,16 +102,19 @@ function Radar({ radar = DNA.radar }: { radar?: { axis: string; v: number }[] })
     return `${cx + R * f * Math.cos(a)},${cy + R * f * Math.sin(a)}`;
   }).join(' ');
   return (
-    <svg width={S} height={S} role="img" aria-label="Behavioral trait radar">
+    <svg viewBox="-56 -30 372 320" width="100%" style={{ maxWidth: 300, height: 'auto', overflow: 'visible' }}
+      role="img" aria-label="Behavioral trait radar">
       {[0.33, 0.66, 1].map(f => (
         <polygon key={f} points={pts(f)} fill="none" stroke={T.border} strokeWidth={1} />
       ))}
       <polygon points={poly} fill="rgba(122,90,245,0.14)" stroke={T.ghost} strokeWidth={1.5} />
       {radar.map((d, i) => {
         const a = step * i - Math.PI / 2;
+        const lx = cx + (R + 20) * Math.cos(a);
+        const anchor = Math.cos(a) > 0.2 ? 'start' : Math.cos(a) < -0.2 ? 'end' : 'middle';
         return (
-          <text key={d.axis} x={cx + (R + 24) * Math.cos(a)} y={cy + (R + 16) * Math.sin(a)}
-            textAnchor="middle" fontSize={9} fill={T.muted} fontFamily={T.mono}>
+          <text key={d.axis} x={lx} y={cy + (R + 16) * Math.sin(a)}
+            textAnchor={anchor} fontSize={9} fill={T.muted} fontFamily={T.mono}>
             {d.axis} {d.v}
           </text>
         );

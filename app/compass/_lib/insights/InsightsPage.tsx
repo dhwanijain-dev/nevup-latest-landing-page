@@ -6,7 +6,7 @@ import { T, statLabel } from '../theme';
 import type { NormTrade } from './types';
 import { computeInsights, pairTrades, Insights, RoundTrip } from './engine';
 import { parseTradeCsv, ParseReport, MAX_BYTES } from './csv';
-import GhostRace from '../components/GhostRace';
+import GhostDemo from '../components/GhostDemo';
 import { Hero, DnaSection } from '../components/Sections';
 
 const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
@@ -273,15 +273,17 @@ function InsightsView({ x, trips }: { x: Insights; trips: RoundTrip[] }) {
     [pctF(x.winRate), 'win rate'],
     [`${x.disciplineScore}/100`, 'discipline score'],
   ];
+  const verdictLine =
+    `Across ${x.roundTrips} round-trips you netted ${inr(x.ghost.actualPnl)}. ` +
+    `Capping oversized losers at your average winner and skipping revenge entries, ` +
+    `your rule-following self would have made ${inr(x.ghost.ghostPnl)} - a gap of ${inr(gap)}.`;
 
   return (
     <>
       <Hero embedded headline={heroHeadline}
         sub="Compass paired every round-trip in your book and rebuilt the version of you that cut losers at your average winner and skipped revenge entries. The gap is what discipline cost you."
         stats={stats} />
-      <div style={{ maxWidth: 1120, margin: '0 auto', padding: '10px 24px' }}>
-        <GhostRace trips={trips} x={x} />
-      </div>
+      <GhostDemo real={{ you: x.ghost.actualPnl, ghost: x.ghost.ghostPnl, gap, line: verdictLine, trips: x.roundTrips }} />
       <DnaSection dna={dna} caption="Your Trading DNA - computed from this upload" />
       <Compounding x={x} />
     </>

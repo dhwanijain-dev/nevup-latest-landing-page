@@ -19,7 +19,7 @@ const inrG = (v: number) => `${v < 0 ? '−' : ''}₹${Math.abs(Math.round(v)).t
 // `real`, when provided, replaces the illustration's verdict numbers/line with
 // the user's own computed ghost figures. The animation stays a labeled
 // illustration of the mechanic; the takeaway below it is their real data.
-export default function GhostDemo({ real }: { real?: { you: number; ghost: number; gap: number; line: string } } = {}) {
+export default function GhostDemo({ real }: { real?: { you: number; ghost: number; gap: number; line: string; trips: number } } = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [phase, setPhase] = useState<Phase>('idle');
   const [speed, setSpeed] = useState(1);
@@ -133,9 +133,9 @@ export default function GhostDemo({ real }: { real?: { you: number; ghost: numbe
         alongside the version that didn&rsquo;t.
       </h2>
       <p style={{ fontFamily: T.serif, fontSize: 14.5, color: T.mutedStrong, lineHeight: 1.55, margin: '0 0 22px', maxWidth: 720 }}>
-        This is a worked example of the mechanic.{' '}
-        <a href="#/insights" style={{ color: T.ghost, fontWeight: 600 }}>Upload your own trade export</a>{' '}
-        to see the ghost, the debrief, and the compounding cost computed from your real trades.
+        {real
+          ? <>The chart is an illustration of the mechanic. The figures below are computed from your {real.trips} round-trips - your rule-following self netted {inrG(real.ghost)} versus your {inrG(real.you)}.</>
+          : <>This is a worked example of the mechanic. <a href="#/insights" style={{ color: T.ghost, fontWeight: 600 }}>Upload your own trade export</a> to see the ghost, the debrief, and the compounding cost computed from your real trades.</>}
       </p>
 
       {/* chart card */}
