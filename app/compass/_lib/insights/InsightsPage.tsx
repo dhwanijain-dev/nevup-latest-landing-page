@@ -4,8 +4,9 @@
 import { useMemo, useRef, useState } from 'react';
 import { T, statLabel } from '../theme';
 import type { NormTrade } from './types';
-import { computeInsights, Insights } from './engine';
+import { computeInsights, pairTrades, Insights } from './engine';
 import { parseTradeCsv, ParseReport, MAX_BYTES } from './csv';
+import GhostRace from '../components/GhostRace';
 
 const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
   ({ fontFamily: T.mono, fontSize: size, color, fontWeight: weight });
@@ -215,7 +216,10 @@ function ResultView({ report, insights, onReset, fileName }: {
           <p style={{ fontFamily: T.serif, fontSize: 14, color: T.body, lineHeight: 1.6, margin: 0 }}>{insights.insufficient}</p>
         </Card>
       ) : (
-        <InsightsView x={insights} />
+        <>
+          <GhostRace trips={pairTrades(report.trades as NormTrade[]).trips} />
+          <InsightsView x={insights} />
+        </>
       )}
     </div>
   );
