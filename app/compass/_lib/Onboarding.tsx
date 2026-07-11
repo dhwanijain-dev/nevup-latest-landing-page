@@ -14,13 +14,13 @@ export default function Onboarding() {
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
       fontFamily: 'Newsreader, Georgia, serif',
     }}>
-      <div style={{ maxWidth: 460, width: '100%', textAlign: 'center' }}>
-        <div style={{
-          fontFamily: '"Spline Sans Mono", monospace', fontSize: 12, letterSpacing: 3,
-          textTransform: 'uppercase', color: GHOST, marginBottom: 20,
-        }}>
-          NevUp Compass
-        </div>
+      <div style={{ maxWidth: 560, width: '100%', textAlign: 'center' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/nevup-ai-banner.png"
+          alt="NevUp AI"
+          style={{ width: '100%', height: 'auto', borderRadius: 14, marginBottom: 28, display: 'block' }}
+        />
         <h1 style={{ fontSize: 34, lineHeight: 1.15, fontWeight: 600, margin: '0 0 14px' }}>
           Your trading behavior, analyzed.
         </h1>
