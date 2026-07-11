@@ -216,23 +216,36 @@ function ResultView({ report, insights, onReset, fileName }: {
 // Real Trading DNA - the same designed report from the original demo page, but
 // every number and every radar axis is computed from the uploaded trades.
 function buildDNA(x: Insights): { headline: string; facts: [string, string][]; radar: { axis: string; v: number }[] } {
-  const clamp = (v: number) => Math.max(4, Math.min(100, Math.round(v)));
-  const part = (needle: string) => x.scoreParts.find(p => p.label.toLowerCase().includes(needle));
-  const risk = part('risk')?.score ?? 0;
-  const cutting = part('cutting')?.score ?? 0;
-  const revengeScore = part('revenge')?.score ?? 0;
-  const consistency = part('consist')?.score ?? 0;
-  const ratio = x.holdAsymmetry?.ratio ?? 1;
-  const edgeN = x.edge?.length ?? 0, leakN = x.leak?.length ?? 0;
+  // Every radar axis is a direct percentage computed from the real trades - no
+  // proxy scores, no invented constants. Each is a genuine ratio of real values.
+  const pctClamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
+  const radar: { axis: string; v: number }[] = [];
 
-  const radar = [
-    { axis: 'Aggression', v: clamp(35 + (x.bursts?.count ?? 0) * 10 + (x.revenge?.count ?? 0) * 7) },
-    { axis: 'Patience', v: clamp(110 - ratio * 25) },
-    { axis: 'Risk discipline', v: clamp((risk + cutting) / 50 * 100) },
-    { axis: 'Consistency', v: clamp(consistency / 25 * 100) },
-    { axis: 'Adaptability', v: clamp(30 + (edgeN / Math.max(1, edgeN + leakN)) * 55 + (x.winRate - 0.5) * 40) },
-    { axis: 'Emotional stability', v: clamp(revengeScore / 25 * 100) },
-  ];
+  // 1. Win rate: winning round-trips / all round-trips
+  radar.push({ axis: 'Win rate', v: pctClamp(x.winRate * 100) });
+
+  // 2. Reward:risk: average winner as a share of (avg winner + avg loser)
+  const rr = x.avgWin + x.avgLoss;
+  radar.push({ axis: 'Reward:risk', v: pctClamp(rr > 0 ? (x.avgWin / rr) * 100 : 0) });
+
+  // 3. Loss control: share of losing trades that were NOT oversized
+  //    (oversized = a loss larger than the average winner; engine-counted)
+  const oversized = x.ghost.cappedLosers.count;
+  radar.push({ axis: 'Loss control', v: pctClamp(x.losses > 0 ? ((x.losses - oversized) / x.losses) * 100 : 100) });
+
+  // 4. Revenge-free: share of round-trips that were not revenge entries
+  const rev = x.revenge?.count ?? 0;
+  radar.push({ axis: 'Revenge-free', v: pctClamp(x.roundTrips > 0 ? ((x.roundTrips - rev) / x.roundTrips) * 100 : 100) });
+
+  // 5. Winner holding (anti-disposition): time spent in winners vs total hold
+  if (x.holdAsymmetry) {
+    const w = x.holdAsymmetry.avgWinHoldMin, l = x.holdAsymmetry.avgLossHoldMin;
+    radar.push({ axis: 'Winner holding', v: pctClamp(w + l > 0 ? (w / (w + l)) * 100 : 50) });
+  }
+
+  // 6. Edge focus: profit from edge symbols as a share of gross moved P&L
+  const denom = x.edgePnl + Math.abs(x.leakPnl);
+  radar.push({ axis: 'Edge focus', v: pctClamp(denom > 0 ? (x.edgePnl / denom) * 100 : 0) });
 
   const facts: [string, string][] = [];
   facts.push(['Left on the table', inr(x.ghost.gap)]);

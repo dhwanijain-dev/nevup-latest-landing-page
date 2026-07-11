@@ -91,12 +91,13 @@ export function DnaSection({ dna, caption }: { dna?: DnaData; caption?: string }
 
 function Radar({ radar = DNA.radar }: { radar?: { axis: string; v: number }[] }) {
   const S = 260, cx = S / 2, cy = S / 2, R = 92;
+  const step = (2 * Math.PI) / Math.max(3, radar.length);
   const pts = (f: number) => radar.map((_, i) => {
-    const a = (Math.PI / 3) * i - Math.PI / 2;
+    const a = step * i - Math.PI / 2;
     return `${cx + R * f * Math.cos(a)},${cy + R * f * Math.sin(a)}`;
   }).join(' ');
   const poly = radar.map((d, i) => {
-    const a = (Math.PI / 3) * i - Math.PI / 2;
+    const a = step * i - Math.PI / 2;
     const f = d.v / 100;
     return `${cx + R * f * Math.cos(a)},${cy + R * f * Math.sin(a)}`;
   }).join(' ');
@@ -107,7 +108,7 @@ function Radar({ radar = DNA.radar }: { radar?: { axis: string; v: number }[] })
       ))}
       <polygon points={poly} fill="rgba(122,90,245,0.14)" stroke={T.ghost} strokeWidth={1.5} />
       {radar.map((d, i) => {
-        const a = (Math.PI / 3) * i - Math.PI / 2;
+        const a = step * i - Math.PI / 2;
         return (
           <text key={d.axis} x={cx + (R + 24) * Math.cos(a)} y={cy + (R + 16) * Math.sin(a)}
             textAnchor="middle" fontSize={9} fill={T.muted} fontFamily={T.mono}>
