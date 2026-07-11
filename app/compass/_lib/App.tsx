@@ -55,9 +55,8 @@ export default function App() {
           COMPASS
         </div>
 
-        <NavItem label="Insights" active={route.startsWith('#/insights') || !wantsExplorer} onClick={() => go('#/insights')} />
-        <NavItem label="Explorer" active={wantsExplorer} locked={!unlocked}
-          onClick={() => go('#/explorer')} />{/* clickable: shows the gate if locked */}
+        <NavItem label="Insights" active={!wantsExplorer} onClick={() => go('#/insights')} />
+        <NavItem label="Explorer" active={wantsExplorer} onClick={() => go('#/explorer')} />
 
         <div style={{ marginTop: 'auto', fontFamily: T.mono, fontSize: 10, color: T.faint, lineHeight: 1.6 }}>
           {email && <div style={{ wordBreak: 'break-all' }}>{email}</div>}
@@ -106,22 +105,20 @@ function ExplorerGate({ onUpload }: { onUpload: () => void }) {
   );
 }
 
-function NavItem({ label, active, locked, onClick }:
-  { label: string; active?: boolean; locked?: boolean; onClick: () => void }) {
+function NavItem({ label, active, onClick }:
+  { label: string; active?: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      disabled={locked}
       style={{
         textAlign: 'left', background: active ? T.panelAlt : 'transparent',
         border: 'none', borderLeft: `2px solid ${active ? T.ghost : 'transparent'}`,
-        padding: '9px 12px', cursor: locked ? 'not-allowed' : 'pointer',
+        padding: '9px 12px', cursor: 'pointer',
         fontFamily: T.mono, fontSize: 12, letterSpacing: '0.04em',
-        color: locked ? T.faint : (active ? T.ink : T.muted), fontWeight: active ? 700 : 500,
-        opacity: locked ? 0.6 : 1,
+        color: active ? T.ink : T.muted, fontWeight: active ? 700 : 500,
       }}
     >
-      {label}{locked ? ' 🔒' : ''}
+      {label}
     </button>
   );
 }
