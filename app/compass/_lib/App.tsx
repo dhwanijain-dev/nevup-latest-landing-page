@@ -41,11 +41,6 @@ export default function App() {
     return () => clearInterval(iv);
   }, [route]);
 
-  // Explorer is reachable only after a real upload
-  useEffect(() => {
-    if (wantsExplorer && !unlocked) window.location.hash = '#/insights';
-  }, [wantsExplorer, unlocked]);
-
   const go = (hash: string) => { window.location.hash = hash; };
   const showExplorer = wantsExplorer && unlocked;
 
@@ -60,9 +55,9 @@ export default function App() {
           COMPASS
         </div>
 
-        <NavItem label="Insights" active={!showExplorer} onClick={() => go('#/insights')} />
-        <NavItem label="Explorer" active={showExplorer} locked={!unlocked}
-          onClick={() => unlocked && go('#/explorer')} />
+        <NavItem label="Insights" active={route.startsWith('#/insights') || !wantsExplorer} onClick={() => go('#/insights')} />
+        <NavItem label="Explorer" active={wantsExplorer} locked={!unlocked}
+          onClick={() => go('#/explorer')} />{/* clickable: shows the gate if locked */}
 
         <div style={{ marginTop: 'auto', fontFamily: T.mono, fontSize: 10, color: T.faint, lineHeight: 1.6 }}>
           {email && <div style={{ wordBreak: 'break-all' }}>{email}</div>}
@@ -74,8 +69,39 @@ export default function App() {
       </aside>
 
       <main style={{ flex: 1, minWidth: 0 }}>
-        {showExplorer ? <Explorer /> : <InsightsPage />}
+        {wantsExplorer
+          ? (unlocked ? <Explorer /> : <ExplorerGate onUpload={() => go('#/insights')} />)
+          : <InsightsPage />}
       </main>
+    </div>
+  );
+}
+
+// Shown when Explorer is opened before any CSV has been uploaded.
+function ExplorerGate({ onUpload }: { onUpload: () => void }) {
+  return (
+    <div style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div style={{
+        maxWidth: 440, textAlign: 'center', border: `1px solid ${T.border}`,
+        borderRadius: 4, padding: '34px 30px', background: T.panel,
+      }}>
+        <div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: T.ghost }}>
+          Explorer locked
+        </div>
+        <h2 style={{ fontFamily: T.serif, fontSize: 24, fontWeight: 500, color: T.ink, margin: '12px 0 8px', lineHeight: 1.25 }}>
+          Please upload your trading CSV first
+        </h2>
+        <p style={{ fontFamily: T.serif, fontSize: 15, color: T.mutedStrong, lineHeight: 1.6, margin: '0 0 22px' }}>
+          The Explorer opens once Compass has processed your trade book. Upload
+          your broker CSV as proof of trading to unlock it.
+        </p>
+        <button onClick={onUpload} style={{
+          background: T.ink, color: '#fff', border: 'none', borderRadius: 8,
+          padding: '12px 22px', fontFamily: T.mono, fontSize: 13, cursor: 'pointer', fontWeight: 600,
+        }}>
+          Upload trade CSV
+        </button>
+      </div>
     </div>
   );
 }
