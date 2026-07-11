@@ -3,40 +3,47 @@ import { useState } from 'react';
 import { T, kicker, statLabel } from '../theme';
 import { DNA } from '../demo/script';
 
-export function Hero() {
+interface HeroProps {
+  embedded?: boolean;                     // hide the top nav bar (sidebar handles it)
+  headline?: React.ReactNode;             // real headline
+  sub?: string;                           // real subtext
+  stats?: [string, string][];             // real stat strip
+}
+
+export function Hero({ embedded, headline, sub, stats }: HeroProps = {}) {
+  const strip = stats ?? [['17', 'behavioral rules watching live'], ['9', 'feedback loops, closing in seconds'], ['90 days', 'to a Trading DNA no rival can copy']];
   return (
-    <header style={{ maxWidth: 1120, margin: '0 auto', padding: '68px 24px 10px' }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, borderBottom: `2px solid ${T.ink}`, paddingBottom: 22, flexWrap: 'wrap' }}>
-        <span style={{ fontFamily: T.mono, fontWeight: 700, fontSize: 15, color: T.ink, letterSpacing: '0.08em' }}>COMPASS</span>
-        <span style={{ ...kicker }}>The terminal that knows your trading psychology</span>
-        <a href="#/insights" style={{
-          marginLeft: 'auto', fontFamily: T.mono, fontSize: 11, color: T.ink,
-          border: `1px solid ${T.ink}`, padding: '6px 15px', textDecoration: 'none',
-          fontWeight: 700, letterSpacing: '0.08em',
-        }}>EXPLORER →</a>
-        <a href="#/insights" style={{
-          fontFamily: T.mono, fontSize: 11, color: '#000',
-          background: T.gold, padding: '7px 16px', textDecoration: 'none', fontWeight: 700, letterSpacing: '0.08em',
-        }}>ANALYZE MY TRADES →</a>
-      </div>
+    <header style={{ maxWidth: 1120, margin: '0 auto', padding: embedded ? '30px 4px 10px' : '68px 24px 10px' }}>
+      {!embedded && (
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, borderBottom: `2px solid ${T.ink}`, paddingBottom: 22, flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: T.mono, fontWeight: 700, fontSize: 15, color: T.ink, letterSpacing: '0.08em' }}>COMPASS</span>
+          <span style={{ ...kicker }}>The terminal that knows your trading psychology</span>
+          <a href="#/insights" style={{
+            marginLeft: 'auto', fontFamily: T.mono, fontSize: 11, color: T.ink,
+            border: `1px solid ${T.ink}`, padding: '6px 15px', textDecoration: 'none',
+            fontWeight: 700, letterSpacing: '0.08em',
+          }}>EXPLORER →</a>
+          <a href="#/insights" style={{
+            fontFamily: T.mono, fontSize: 11, color: '#000',
+            background: T.gold, padding: '7px 16px', textDecoration: 'none', fontWeight: 700, letterSpacing: '0.08em',
+          }}>ANALYZE MY TRADES →</a>
+        </div>
+      )}
 
       <h1 style={{
         fontFamily: T.serif, fontWeight: 500, fontSize: 'clamp(34px, 6vw, 62px)',
-        lineHeight: 1.1, color: T.ink, margin: '44px 0 0', maxWidth: 900,
+        lineHeight: 1.1, color: T.ink, margin: embedded ? '10px 0 0' : '44px 0 0', maxWidth: 900,
       }}>
-        Your plan made <em style={{ fontStyle: 'italic', color: T.red }}>$3,120 more</em> than
-        you did last month.
+        {headline ?? (<>Your plan made <em style={{ fontStyle: 'italic', color: T.red }}>$3,120 more</em> than you did last month.</>)}
       </h1>
       <p style={{
         fontFamily: T.serif, fontSize: 'clamp(16px, 2vw, 20px)', lineHeight: 1.6,
         color: T.mutedStrong, maxWidth: 660, margin: '22px 0 0',
       }}>
-        Every chart platform shows you the market. None of them show you the trader.
-        Compass runs a behavioral engine beside every trade you take - and proves,
-        in your own numbers, exactly where your discipline breaks and what it costs.
+        {sub ?? 'Every chart platform shows you the market. None of them show you the trader. Compass runs a behavioral engine beside every trade you take - and proves, in your own numbers, exactly where your discipline breaks and what it costs.'}
       </p>
       <div style={{ display: 'flex', gap: 30, marginTop: 34, flexWrap: 'wrap' }}>
-        {[['17', 'behavioral rules watching live'], ['9', 'feedback loops, closing in seconds'], ['90 days', 'to a Trading DNA no rival can copy']].map(([v, k]) => (
+        {strip.map(([v, k]) => (
           <div key={k}>
             <div style={{ fontFamily: T.mono, fontSize: 26, fontWeight: 700, color: T.ink }}>{v}</div>
             <div style={{ ...statLabel, marginTop: 4 }}>{k}</div>
@@ -47,20 +54,23 @@ export function Hero() {
   );
 }
 
-export function DnaSection() {
+interface DnaData { headline: string; facts: [string, string][]; radar: { axis: string; v: number }[] }
+
+export function DnaSection({ dna, caption }: { dna?: DnaData; caption?: string } = {}) {
+  const d = dna ?? DNA as DnaData;
   return (
     <section style={{ maxWidth: 1120, margin: '0 auto', padding: '50px 24px' }}>
-      <div style={statLabel}>Illustration - a Trading DNA report (upload your trades for yours)</div>
+      <div style={statLabel}>{caption ?? 'Illustration - a Trading DNA report (upload your trades for yours)'}</div>
       <div style={{
         display: 'grid', gridTemplateColumns: 'minmax(300px, 1.2fr) minmax(260px, .8fr)',
         gap: 0, border: `1px solid ${T.border}`, background: T.panel, marginTop: 14,
       }}>
         <div style={{ padding: '28px 30px', borderRight: `1px solid ${T.borderSoft}` }}>
           <div style={{ fontFamily: T.serif, fontSize: 'clamp(19px, 2.4vw, 25px)', fontStyle: 'italic', lineHeight: 1.5, color: T.body }}>
-            &ldquo;{DNA.headline}&rdquo;
+            &ldquo;{d.headline}&rdquo;
           </div>
           <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 26px' }}>
-            {DNA.facts.map(([k, v]) => (
+            {d.facts.map(([k, v]) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, fontFamily: T.mono, fontSize: 12, borderBottom: `1px dashed ${T.border}`, paddingBottom: 7 }}>
                 <span style={{ color: T.muted }}>{k}</span>
                 <b style={{ color: T.ink, textAlign: 'right' }}>{v}</b>
@@ -68,24 +78,24 @@ export function DnaSection() {
             ))}
           </div>
           <div style={{ fontFamily: T.mono, fontSize: 10.5, color: T.faint, marginTop: 18, letterSpacing: '0.06em' }}>
-            GENERATED FROM 90 DAYS OF ONE TRADER&rsquo;S OWN FILLS · A COMPETITOR STARTS AT ZERO
+            {dna ? 'GENERATED FROM YOUR OWN FILLS' : 'GENERATED FROM 90 DAYS OF ONE TRADER’S OWN FILLS · A COMPETITOR STARTS AT ZERO'}
           </div>
         </div>
         <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Radar />
+          <Radar radar={d.radar} />
         </div>
       </div>
     </section>
   );
 }
 
-function Radar() {
+function Radar({ radar = DNA.radar }: { radar?: { axis: string; v: number }[] }) {
   const S = 260, cx = S / 2, cy = S / 2, R = 92;
-  const pts = (f: number) => DNA.radar.map((_, i) => {
+  const pts = (f: number) => radar.map((_, i) => {
     const a = (Math.PI / 3) * i - Math.PI / 2;
     return `${cx + R * f * Math.cos(a)},${cy + R * f * Math.sin(a)}`;
   }).join(' ');
-  const poly = DNA.radar.map((d, i) => {
+  const poly = radar.map((d, i) => {
     const a = (Math.PI / 3) * i - Math.PI / 2;
     const f = d.v / 100;
     return `${cx + R * f * Math.cos(a)},${cy + R * f * Math.sin(a)}`;
@@ -96,7 +106,7 @@ function Radar() {
         <polygon key={f} points={pts(f)} fill="none" stroke={T.border} strokeWidth={1} />
       ))}
       <polygon points={poly} fill="rgba(122,90,245,0.14)" stroke={T.ghost} strokeWidth={1.5} />
-      {DNA.radar.map((d, i) => {
+      {radar.map((d, i) => {
         const a = (Math.PI / 3) * i - Math.PI / 2;
         return (
           <text key={d.axis} x={cx + (R + 24) * Math.cos(a)} y={cy + (R + 16) * Math.sin(a)}

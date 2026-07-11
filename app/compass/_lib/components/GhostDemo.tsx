@@ -14,7 +14,12 @@ type Phase = 'idle' | 'playing' | 'nudge' | 'done';
 
 const BARS_PER_SEC = 6; // smooth playback cadence (fractional, rAF-driven)
 
-export default function GhostDemo() {
+const inrG = (v: number) => `${v < 0 ? '−' : ''}₹${Math.abs(Math.round(v)).toLocaleString('en-IN')}`;
+
+// `real`, when provided, replaces the illustration's verdict numbers/line with
+// the user's own computed ghost figures. The animation stays a labeled
+// illustration of the mechanic; the takeaway below it is their real data.
+export default function GhostDemo({ real }: { real?: { you: number; ghost: number; gap: number; line: string } } = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [phase, setPhase] = useState<Phase>('idle');
   const [speed, setSpeed] = useState(1);
@@ -189,15 +194,16 @@ export default function GhostDemo() {
                 fontFamily: T.serif, fontSize: 20, lineHeight: 1.45, fontStyle: 'italic',
                 color: T.body, marginTop: 10,
               }}>
-                You sold a routine shakeout. The plan said hold to 2:1 - the ghost did,
-                and collected. This is your 14th early exit this month. Running cost: $3,120.
+                {real
+                  ? real.line
+                  : `You sold a routine shakeout. The plan said hold to 2:1 - the ghost did, and collected. This is your 14th early exit this month. Running cost: $3,120.`}
               </div>
             </div>
             <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 9, justifyContent: 'center', fontFamily: T.mono }}>
-              <Row k="You took" v="+$210" c={T.ink} />
-              <Row k="The ghost took" v="+$640" c={T.ghost} />
+              <Row k="You took" v={real ? inrG(real.you) : '+$210'} c={T.ink} />
+              <Row k="The ghost took" v={real ? inrG(real.ghost) : '+$640'} c={T.ghost} />
               <div style={{ borderTop: `1px dashed ${T.border}`, margin: '4px 0' }} />
-              <Row k="Left on the table" v="$430" c={T.red} />
+              <Row k="Left on the table" v={real ? inrG(real.gap) : '$430'} c={T.red} />
             </div>
           </div>
           <ScoreCard />
