@@ -11,9 +11,43 @@
 // override attempts are flagged. The model's job is fixed at the system layer
 // and cannot be re-tasked by anything in the message body.
 import { q, sanitize, dbEnabled } from '../_lib/db';
+import { pairTrades } from '../../compass/_lib/insights/engine';
+import type { NormTrade } from '../../compass/_lib/insights/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+// The user's OWN trades on this instrument, read from Postgres (persistent,
+// cross-device). Matched on the base symbol (ignoring exchange suffix). Returns
+// null if they have no stored trades on it. Everything is real, from their CSV.
+async function serverSymbolContext(userId: string, symbol: string): Promise<Record<string, unknown> | null> {
+  const base = symbol.split('.')[0].toUpperCase();
+  const rows = await q<{ symbol: string; side: string; qty: number; price: number; ts: string | null; has_time: boolean }>(
+    `select symbol, side, qty, price, ts, has_time from trades
+       where user_id = $1 and upper(split_part(symbol,'.',1)) = $2
+       order by ts nulls last limit 20000`,
+    [userId, base],
+  );
+  if (!rows.length) return null;
+  const mine: NormTrade[] = rows.map(r => ({
+    symbol: r.symbol, side: r.side === 'SELL' ? 'SELL' : 'BUY',
+    qty: Number(r.qty), price: Number(r.price),
+    ts: r.ts ? new Date(r.ts).toISOString() : '', hasTime: !!r.has_time,
+  }));
+  const { trips } = pairTrades(mine);
+  const net = trips.reduce((a, t) => a + t.pnl, 0);
+  const wins = trips.filter(t => t.pnl > 0).length;
+  const holds = trips.filter(t => t.holdMinutes != null).map(t => t.holdMinutes as number);
+  return {
+    youTradedThisSymbol: true,
+    fills: mine.length,
+    roundTrips: trips.length,
+    netPnl: Math.round(net),
+    winRate: trips.length ? Math.round((wins / trips.length) * 100) : null,
+    avgHoldMinutes: holds.length ? Math.round(holds.reduce((a, b) => a + b, 0) / holds.length) : null,
+    trades: mine.slice(0, 25).map(t => ({ side: t.side, qty: t.qty, price: t.price, ts: t.ts })),
+  };
+}
 
 interface ChatBody {
   question?: string;
@@ -46,11 +80,21 @@ export async function POST(req: Request) {
   try { body = await req.json(); } catch { /* empty */ }
 
   const question = (body.question ?? '').trim().slice(0, MAX_QUESTION);
-  const facts = body.facts ?? {};
+  const facts: Record<string, unknown> = body.facts ?? {};
   if (!question) {
     return Response.json({ ok: false, error: 'Empty question' }, { status: 400 });
   }
   const flaggedInjection = INJECTION_RE.test(question);
+
+  // Authoritative, persistent personalization: pull the user's own trades on
+  // this symbol from Postgres. Overrides the session-only version the client
+  // may have sent, so it works across devices and page reloads.
+  if (body.userId && body.symbol && dbEnabled()) {
+    try {
+      const ctx = await serverSymbolContext(body.userId, body.symbol);
+      if (ctx) facts.yourHistoryOnThisSymbol = ctx;
+    } catch { /* fall back to whatever the client sent */ }
+  }
 
   const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
   const key = process.env.AZURE_OPENAI_KEY;

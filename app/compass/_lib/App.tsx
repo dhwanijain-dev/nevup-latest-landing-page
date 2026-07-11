@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { T } from './theme';
 import Explorer from './explorer/Explorer';
 import InsightsPage from './insights/InsightsPage';
+import { useNarrow } from './useViewport';
 
 // Post-onboarding shell: a left sidebar with two tabs (Insights, Explorer) and
 // the active view on the right. The entry is always Insights (the upload +
@@ -42,28 +43,35 @@ export default function App() {
   }, [route]);
 
   const go = (hash: string) => { window.location.hash = hash; };
-  const showExplorer = wantsExplorer && unlocked;
+  const narrow = useNarrow();
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: T.bg, color: T.ink }}>
-      <aside style={{
+    <div style={{ display: 'flex', flexDirection: narrow ? 'column' : 'row', minHeight: '100vh', background: T.bg, color: T.ink }}>
+      <aside style={narrow ? {
+        // mobile/tablet: a slim top bar
+        borderBottom: `1px solid ${T.border}`, padding: '10px 16px',
+        display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+        position: 'sticky', top: 0, background: T.bg, zIndex: 20,
+      } : {
         width: 190, flexShrink: 0, borderRight: `1px solid ${T.border}`,
         padding: '22px 16px', position: 'sticky', top: 0, height: '100vh',
         display: 'flex', flexDirection: 'column', gap: 4,
       }}>
-        <div style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 700, letterSpacing: '0.08em', color: T.ink, marginBottom: 22 }}>
+        <div style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 700, letterSpacing: '0.08em', color: T.ink, marginBottom: narrow ? 0 : 22, marginRight: narrow ? 8 : 0 }}>
           COMPASS
         </div>
 
         <NavItem label="Insights" active={!wantsExplorer} onClick={() => go('#/insights')} />
         <NavItem label="Explorer" active={wantsExplorer} onClick={() => go('#/explorer')} />
 
-        <div style={{ marginTop: 'auto', fontFamily: T.mono, fontSize: 10, color: T.faint, lineHeight: 1.6 }}>
-          {email && <div style={{ wordBreak: 'break-all' }}>{email}</div>}
+        <div style={narrow
+          ? { marginLeft: 'auto', fontFamily: T.mono, fontSize: 10, color: T.faint }
+          : { marginTop: 'auto', fontFamily: T.mono, fontSize: 10, color: T.faint, lineHeight: 1.6 }}>
+          {email && !narrow && <div style={{ wordBreak: 'break-all' }}>{email}</div>}
           {email.toLowerCase() === ADMIN_EMAIL && (
-            <a href="/admin" style={{ color: T.ghost, textDecoration: 'none', display: 'block', marginTop: 6 }}>Admin dashboard →</a>
+            <a href="/admin" style={{ color: T.ghost, textDecoration: 'none', display: 'block', marginTop: narrow ? 0 : 6 }}>Admin →</a>
           )}
-          {!unlocked && <div style={{ marginTop: 8 }}>Upload a CSV to unlock Explorer.</div>}
+          {!unlocked && !narrow && <div style={{ marginTop: 8 }}>Upload a CSV to unlock Explorer.</div>}
         </div>
       </aside>
 

@@ -8,6 +8,7 @@ import { searchInstruments, loadInstrument, wasStale, resetStale, kronosForecast
 import { answer } from './answerer';
 import type { NormTrade } from '../insights/types';
 import { pairTrades } from '../insights/engine';
+import { useNarrow } from '../useViewport';
 
 // The trader's OWN executed trades on the viewed instrument, from the CSV they
 // uploaded (stashed in sessionStorage). Matched on the base symbol (ignoring
@@ -81,6 +82,7 @@ export default function Explorer() {
   const [tab, setTab] = useState<Tab>('Overview');
   const [recent, setRecent] = useState<string[]>(['AAPL', 'RELIANCE.NS', 'NVDA', 'TCS.NS']);
   const loadSeq = useRef(0);
+  const narrow = useNarrow();
 
   const load = useCallback(async (symbol: string) => {
     const seq = ++loadSeq.current;
@@ -112,7 +114,7 @@ export default function Explorer() {
         <span style={{ ...statLabel, marginLeft: 'auto', color: T.faint }}>US · India (NSE/BSE) · data: Yahoo Finance, delayed</span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '210px minmax(0,1fr) 360px', border: `1px solid ${T.border}`, borderTop: 'none', minHeight: 700 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '210px minmax(0,1fr) 360px', border: `1px solid ${T.border}`, borderTop: 'none', minHeight: narrow ? 0 : 700 }}>
         {/* rail: search + recents */}
         <div style={{ borderRight: `1px solid ${T.border}`, background: T.panel, minWidth: 0 }}>
           <SearchBox onPick={load} />
@@ -181,8 +183,10 @@ export default function Explorer() {
         </div>
 
         {x ? (
-          <div style={{ borderLeft: `1px solid ${T.border}` }}>
-            <div style={{ position: 'sticky', top: 12, height: 'calc(100vh - 24px)' }}>
+          <div style={narrow ? { borderTop: `1px solid ${T.border}` } : { borderLeft: `1px solid ${T.border}` }}>
+            <div style={narrow
+              ? { height: '72vh' }
+              : { position: 'sticky', top: 12, height: 'calc(100vh - 24px)' }}>
               <ChatDock x={x} />
             </div>
           </div>

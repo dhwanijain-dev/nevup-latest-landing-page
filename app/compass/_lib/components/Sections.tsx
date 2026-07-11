@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { T, kicker, statLabel } from '../theme';
 import { DNA } from '../demo/script';
+import { useNarrow } from '../useViewport';
 
 interface HeroProps {
   embedded?: boolean;                     // hide the top nav bar (sidebar handles it)
@@ -58,18 +59,19 @@ interface DnaData { headline: string; facts: [string, string][]; radar: { axis: 
 
 export function DnaSection({ dna, caption }: { dna?: DnaData; caption?: string } = {}) {
   const d = dna ?? DNA as DnaData;
+  const narrow = useNarrow();
   return (
     <section style={{ maxWidth: 1120, margin: '0 auto', padding: '40px 24px' }}>
       <div style={statLabel}>{caption ?? 'Illustration - a Trading DNA report (upload your trades for yours)'}</div>
       <div style={{
-        display: 'grid', gridTemplateColumns: 'minmax(300px, 1.2fr) minmax(260px, .8fr)',
+        display: 'grid', gridTemplateColumns: narrow ? '1fr' : 'minmax(300px, 1.2fr) minmax(260px, .8fr)',
         gap: 0, border: `1px solid ${T.border}`, background: T.panel, marginTop: 14,
       }}>
-        <div style={{ padding: '28px 30px', borderRight: `1px solid ${T.borderSoft}` }}>
+        <div style={{ padding: narrow ? '22px 20px' : '28px 30px', borderRight: narrow ? 'none' : `1px solid ${T.borderSoft}`, borderBottom: narrow ? `1px solid ${T.borderSoft}` : 'none' }}>
           <div style={{ fontFamily: T.serif, fontSize: 'clamp(19px, 2.4vw, 25px)', fontStyle: 'italic', lineHeight: 1.5, color: T.body }}>
             &ldquo;{d.headline}&rdquo;
           </div>
-          <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 26px' }}>
+          <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: '10px 26px' }}>
             {d.facts.map(([k, v]) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, fontFamily: T.mono, fontSize: 12, borderBottom: `1px dashed ${T.border}`, paddingBottom: 7 }}>
                 <span style={{ color: T.muted }}>{k}</span>
