@@ -6,7 +6,7 @@ import { T, statLabel } from '../theme';
 import type { NormTrade } from './types';
 import { computeInsights, pairTrades, Insights, RoundTrip } from './engine';
 import { parseTradeCsv, ParseReport, MAX_BYTES } from './csv';
-import GhostDemo from '../components/GhostDemo';
+import RealGhostTrade from '../components/RealGhostTrade';
 import { Hero, DnaSection } from '../components/Sections';
 
 const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
@@ -290,11 +290,6 @@ function InsightsView({ x, trips }: { x: Insights; trips: RoundTrip[] }) {
     [pctF(x.winRate), 'win rate'],
     [`${x.disciplineScore}/100`, 'discipline score'],
   ];
-  const verdictLine =
-    `Across ${x.roundTrips} round-trips you netted ${inr(x.ghost.actualPnl)}. ` +
-    `Capping oversized losers at your average winner and skipping revenge entries, ` +
-    `your rule-following self would have made ${inr(x.ghost.ghostPnl)} - a gap of ${inr(gap)}.`;
-
   const p = x.profile;
   const chips = [
     p.style,
@@ -318,7 +313,7 @@ function InsightsView({ x, trips }: { x: Insights; trips: RoundTrip[] }) {
         ))}
         <span style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 12, color: T.faint }}>{p.styleReason}</span>
       </div>
-      <GhostDemo real={{ you: x.ghost.actualPnl, ghost: x.ghost.ghostPnl, gap, line: verdictLine, trips: x.roundTrips }} />
+      <RealGhostTrade x={x} cur={x.profile.currencySymbol} />
       <DnaSection dna={dna} caption="Your Trading DNA - computed from this upload" />
       <Compounding x={x} />
     </>
