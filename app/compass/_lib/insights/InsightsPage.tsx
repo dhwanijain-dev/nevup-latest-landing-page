@@ -225,10 +225,105 @@ function ResultView({ report, insights, onReset, fileName }: {
   );
 }
 
+// Real Trading DNA - the same designed report from the original demo page, but
+// every number and every radar axis is computed from the uploaded trades.
+function buildDNA(x: Insights): { headline: string; facts: [string, string][]; radar: { axis: string; v: number }[] } {
+  const clamp = (v: number) => Math.max(4, Math.min(100, Math.round(v)));
+  const part = (needle: string) => x.scoreParts.find(p => p.label.toLowerCase().includes(needle));
+  const risk = part('risk')?.score ?? 0;
+  const cutting = part('cutting')?.score ?? 0;
+  const revengeScore = part('revenge')?.score ?? 0;
+  const consistency = part('consist')?.score ?? 0;
+  const ratio = x.holdAsymmetry?.ratio ?? 1;
+  const edgeN = x.edge?.length ?? 0, leakN = x.leak?.length ?? 0;
+
+  const radar = [
+    { axis: 'Aggression', v: clamp(35 + (x.bursts?.count ?? 0) * 10 + (x.revenge?.count ?? 0) * 7) },
+    { axis: 'Patience', v: clamp(110 - ratio * 25) },
+    { axis: 'Risk discipline', v: clamp((risk + cutting) / 50 * 100) },
+    { axis: 'Consistency', v: clamp(consistency / 25 * 100) },
+    { axis: 'Adaptability', v: clamp(30 + (edgeN / Math.max(1, edgeN + leakN)) * 55 + (x.winRate - 0.5) * 40) },
+    { axis: 'Emotional stability', v: clamp(revengeScore / 25 * 100) },
+  ];
+
+  const facts: [string, string][] = [];
+  facts.push(['Left on the table', inr(x.ghost.gap)]);
+  facts.push(['Win rate', pctF(x.winRate)]);
+  if (x.holdAsymmetry) facts.push(['Disposition ratio', `${x.holdAsymmetry.ratio.toFixed(1)}× (losers held longer)`]);
+  if (x.revenge && x.revenge.count > 0) facts.push(['Revenge entries', `${x.revenge.count} · ${inr(x.revenge.pnl)}`]);
+  if (x.dangerHours?.[0]) facts.push(['Most expensive hour', `${String(x.dangerHours[0].hour).padStart(2, '0')}:00 (${inr(x.dangerHours[0].pnl)})`]);
+  if (x.edge?.[0]) facts.push(['Your edge', `${x.edge[0].symbol} · ${inr(x.edge[0].pnl)}`]);
+
+  return { headline: x.debrief.summary, facts, radar };
+}
+
+function DnaRadar({ radar }: { radar: { axis: string; v: number }[] }) {
+  const S = 260, cx = S / 2, cy = S / 2, R = 92;
+  const ring = (f: number) => radar.map((_, i) => {
+    const a = (Math.PI / 3) * i - Math.PI / 2;
+    return `${cx + R * f * Math.cos(a)},${cy + R * f * Math.sin(a)}`;
+  }).join(' ');
+  const poly = radar.map((d, i) => {
+    const a = (Math.PI / 3) * i - Math.PI / 2;
+    const f = d.v / 100;
+    return `${cx + R * f * Math.cos(a)},${cy + R * f * Math.sin(a)}`;
+  }).join(' ');
+  return (
+    <svg width={S} height={S} role="img" aria-label="Your behavioral trait radar">
+      {[0.33, 0.66, 1].map(f => <polygon key={f} points={ring(f)} fill="none" stroke={T.border} strokeWidth={1} />)}
+      <polygon points={poly} fill="rgba(122,90,245,0.14)" stroke={T.ghost} strokeWidth={1.5} />
+      {radar.map((d, i) => {
+        const a = (Math.PI / 3) * i - Math.PI / 2;
+        return (
+          <text key={d.axis} x={cx + (R + 24) * Math.cos(a)} y={cy + (R + 16) * Math.sin(a)}
+            textAnchor="middle" fontSize={9} fill={T.muted} fontFamily={T.mono}>
+            {d.axis} {d.v}
+          </text>
+        );
+      })}
+    </svg>
+  );
+}
+
+function TradingDNA({ x }: { x: Insights }) {
+  const dna = buildDNA(x);
+  return (
+    <section style={{ marginTop: 24 }}>
+      <div style={statLabel}>Your Trading DNA - computed from this upload</div>
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'minmax(300px, 1.2fr) minmax(260px, .8fr)',
+        gap: 0, border: `1px solid ${T.border}`, background: T.panel, marginTop: 14,
+      }}>
+        <div style={{ padding: '28px 30px', borderRight: `1px solid ${T.borderSoft}` }}>
+          <div style={{ fontFamily: T.serif, fontSize: 'clamp(18px, 2.2vw, 23px)', fontStyle: 'italic', lineHeight: 1.5, color: T.body }}>
+            &ldquo;{dna.headline}&rdquo;
+          </div>
+          <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 26px' }}>
+            {dna.facts.map(([k, v]) => (
+              <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, fontFamily: T.mono, fontSize: 12, borderBottom: `1px dashed ${T.border}`, paddingBottom: 7 }}>
+                <span style={{ color: T.muted }}>{k}</span>
+                <b style={{ color: T.ink, textAlign: 'right' }}>{v}</b>
+              </div>
+            ))}
+          </div>
+          <div style={{ fontFamily: T.mono, fontSize: 10.5, color: T.faint, marginTop: 18, letterSpacing: '0.06em' }}>
+            GENERATED FROM YOUR OWN FILLS · {x.roundTrips} ROUND-TRIPS
+          </div>
+        </div>
+        <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <DnaRadar radar={dna.radar} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function InsightsView({ x }: { x: Insights }) {
   const hourLabel = (h: number) => `${String(h).padStart(2, '0')}:00–${String(h + 1).padStart(2, '0')}:00`;
   return (
     <>
+      <TradingDNA x={x} />
+
       {/* headline */}
       <div style={{ border: `1px solid ${T.ink}`, background: T.panel, padding: '22px 26px' }}>
         <div style={statLabel}>{x.from} → {x.to} · {x.fills} fills · {x.roundTrips} round-trips{x.openLegs ? ` · ${x.openLegs} open legs excluded` : ''}</div>
