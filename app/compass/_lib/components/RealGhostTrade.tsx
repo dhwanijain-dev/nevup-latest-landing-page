@@ -47,13 +47,16 @@ export default function RealGhostTrade({ x, cur }: { x: Insights; cur: string })
           if (!ts.length || !cl.length) continue;
           const entryMs = Date.parse(pick.trip.entryTs), exitMs = Date.parse(pick.trip.exitTs);
           const all: Bar[] = ts.map((t, i) => ({ t: t * 1000, c: cl[i] })).filter(b => Number.isFinite(b.c));
+          if (all.length < 2) continue;   // no usable real prices; try next / sketch
           let lo = all.findIndex(b => b.t >= entryMs - 12 * 86400000);
           let hi = all.findIndex(b => b.t >= exitMs + 12 * 86400000);
           if (lo < 0) lo = 0;
           if (hi < 0) hi = all.length - 1;
           const win = all.slice(Math.max(0, lo), Math.min(all.length, hi + 1));
+          const use = win.length >= 4 ? win : all.slice(-40);
+          if (use.length < 2) continue;
           if (cancelled) return;
-          setBars(win.length >= 4 ? win : all.slice(-40));
+          setBars(use);
           setSketch(false);
           setLoading(false);
           return;
