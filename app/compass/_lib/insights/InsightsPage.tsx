@@ -1,7 +1,7 @@
 // Upload your broker trade CSV → real behavioral insights. Everything runs
 // in THIS browser: the file is parsed and analyzed client-side and never
 // uploaded anywhere. Any broker's executed-trades export works.
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { T, statLabel } from '../theme';
 import type { NormTrade } from './types';
 import { computeInsights, pairTrades, Insights, RoundTrip } from './engine';
@@ -33,6 +33,20 @@ export default function InsightsPage() {
   const [error, setError] = useState('');
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Rehydrate on load: if a CSV was uploaded earlier this session, re-parse the
+  // stored raw file so a page reload keeps the analysis instead of resetting.
+  useEffect(() => {
+    if (report) return;
+    try {
+      const raw = localStorage.getItem('compass_csv');
+      const name = localStorage.getItem('compass_csv_name') ?? 'your upload';
+      if (raw) {
+        const r = parseTradeCsv(raw);
+        if (r.ok) { setReport(r); setFileName(name); }
+      }
+    } catch { /* ignore */ }
+  }, [report]);
 
   const insights = useMemo(() => {
     if (!report?.ok || !report.trades.length) return null;
@@ -81,11 +95,16 @@ export default function InsightsPage() {
         else {
           // a real CSV was processed: unlock the rest of the app (Explorer)
           try {
-            sessionStorage.setItem('compass_unlocked', '1');
+            localStorage.setItem('compass_unlocked', '1');
             // stash the parsed trades so the Explorer chat can personalize per
             // symbol (skip if unusually large to stay within storage limits)
             const packed = JSON.stringify(r.trades);
-            if (packed.length < 3_000_000) sessionStorage.setItem('compass_trades', packed);
+            if (packed.length < 3_000_000) localStorage.setItem('compass_trades', packed);
+            // stash the raw file so a reload keeps the analysis (persistence)
+            if (text.length < 6_000_000) {
+              localStorage.setItem('compass_csv', text);
+              localStorage.setItem('compass_csv_name', file.name);
+            }
           } catch { /* ignore */ }
           persist(text, r.trades as NormTrade[], file.name, r.marketHint);
         }
@@ -96,7 +115,13 @@ export default function InsightsPage() {
     reader.readAsText(file);
   };
 
-  const reset = () => { setReport(null); setFileName(''); setError(''); if (inputRef.current) inputRef.current.value = ''; };
+  const reset = () => {
+    setReport(null); setFileName(''); setError('');
+    if (inputRef.current) inputRef.current.value = '';
+    try {
+      ['compass_csv', 'compass_csv_name', 'compass_trades', 'compass_unlocked'].forEach(k => localStorage.removeItem(k));
+    } catch { /* ignore */ }
+  };
   const showUpload = !report?.ok;
 
   return (

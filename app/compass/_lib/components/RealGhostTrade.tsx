@@ -23,6 +23,7 @@ export default function RealGhostTrade({ x, cur }: { x: Insights; cur: string })
   const sizeRef = useRef({ w: 0, h: 0 });
   const rafRef = useRef<number | null>(null);
   const [bars, setBars] = useState<Bar[] | null>(null);
+  const [sketch, setSketch] = useState(false);   // true when drawn from fills only (no feed)
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
@@ -53,11 +54,20 @@ export default function RealGhostTrade({ x, cur }: { x: Insights; cur: string })
           const win = all.slice(Math.max(0, lo), Math.min(all.length, hi + 1));
           if (cancelled) return;
           setBars(win.length >= 4 ? win : all.slice(-40));
+          setSketch(false);
           setLoading(false);
           return;
         } catch { /* try next candidate */ }
       }
-      if (!cancelled) { setBars(null); setLoading(false); }
+      // no live feed for this symbol: draw a rough sketch from the REAL fill
+      // prices (entry -> your exit), so the space is never blank.
+      if (!cancelled) {
+        const e = pick.trip.entryTs ? Date.parse(pick.trip.entryTs) : 0;
+        const xm = pick.trip.exitTs ? Date.parse(pick.trip.exitTs) : e + 86400000;
+        setBars([{ t: e, c: pick.trip.entryPrice }, { t: xm, c: pick.trip.exitPrice }]);
+        setSketch(true);
+        setLoading(false);
+      }
     };
     void run();
     return () => { cancelled = true; };
@@ -142,14 +152,15 @@ export default function RealGhostTrade({ x, cur }: { x: Insights; cur: string })
           <span style={{ fontSize: 10, color: pick.trip.direction === 'long' ? T.green : T.red, border: `1px solid ${pick.trip.direction === 'long' ? T.green : T.red}`, padding: '1px 7px' }}>
             {pick.trip.direction.toUpperCase()} {pick.trip.qty}
           </span>
-          <span style={{ fontSize: 10, color: T.faint }}>{pick.trip.entryTs.slice(0, 10)} → {pick.trip.exitTs.slice(0, 10)} · real daily prices</span>
+          <span style={{ fontSize: 10, color: T.faint }}>{pick.trip.entryTs.slice(0, 10)} → {pick.trip.exitTs.slice(0, 10)} · {sketch ? 'from your fill prices' : 'real daily prices'}</span>
         </div>
         <div style={{ position: 'relative', height: 300, background: T.panel }}>
           {loading
             ? <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', ...mono(11, T.muted) }}>Loading real price history…</div>
-            : !bars
-              ? <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', ...mono(11, T.muted), textAlign: 'center', padding: 20 }}>Price history for {pick.trip.symbol} is unavailable from the data source, so the chart is omitted rather than faked. The figures below are still real.</div>
-              : <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }} />}
+            : <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }} />}
+          {sketch && !loading && (
+            <div style={{ position: 'absolute', top: 10, left: 12, ...mono(9, T.faint) }}>schematic · entry &amp; exit are your real fills</div>
+          )}
         </div>
         <div style={{ display: 'flex', gap: 28, padding: '16px 20px', borderTop: `1px solid ${T.borderSoft}`, flexWrap: 'wrap' }}>
           <Stat label="You made on this trade" value={money(pick.trip.pnl)} color={pick.trip.pnl >= 0 ? T.green : T.red} />
@@ -209,8 +220,8 @@ function chooseTrade(x: Insights): {
     : candidate.entryPrice - perShare;
 
   const explanation = oversized
-    ? `This was your largest loss (${Math.abs(candidate.pnl).toFixed(0)} on ${candidate.symbol}). Your rule-following self caps a loss at your average winner, exiting near ${ghostPrice.toFixed(2)} instead - the dashed line. Real daily prices; your entry and exit are your actual fills.`
-    : `Your most significant trade on ${candidate.symbol}. On this one your exit already matched the disciplined plan, so the ghost result equals yours. Real daily prices; entry and exit are your actual fills.`;
+    ? `This was your largest loss (${Math.abs(candidate.pnl).toFixed(0)} on ${candidate.symbol}). Your rule-following self caps a loss at your average winner, exiting near ${ghostPrice.toFixed(2)} instead - the dashed line. Your entry and exit are your actual fills.`
+    : `Your most significant trade on ${candidate.symbol}. On this one your exit already matched the disciplined plan, so the ghost result equals yours. Your entry and exit are your actual fills.`;
 
   const bare = candidate.symbol.split('.')[0];
   const symbolCandidates = candidate.symbol.includes('.')

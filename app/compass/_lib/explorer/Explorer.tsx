@@ -16,7 +16,7 @@ import { useNarrow } from '../useViewport';
 // personalize: what THEY did vs what the stock is doing. All real, from the CSV.
 function userSymbolContext(symbol: string): Record<string, unknown> | null {
   try {
-    const raw = sessionStorage.getItem('compass_trades');
+    const raw = localStorage.getItem('compass_trades');
     if (!raw) return null;
     const all = JSON.parse(raw) as NormTrade[];
     const base = symbol.split('.')[0].toUpperCase();
@@ -256,7 +256,7 @@ function SearchBox({ onPick }: { onPick: (s: string) => void }) {
 
 function Card({ title, right, children }: { title?: string; right?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div style={{ border: `1px solid ${T.border}`, background: T.panel }}>
+    <div style={{ border: `1px solid ${T.border}`, background: T.panel, minWidth: 0, overflow: 'hidden' }}>
       {title && (
         <div style={{ display: 'flex', alignItems: 'baseline', padding: '10px 14px 0' }}>
           <span style={statLabel}>{title}</span>
@@ -382,11 +382,11 @@ function Overview({ x }: { x: XData }) {
   const sample = COMPASS_SAMPLES[x.symbol];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px,1.6fr) minmax(220px,1fr)', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 14 }}>
         <Card>
           {x.priceHistory ? <PriceChart x={x} /> : <Missing what="Price history" />}
           {x.priceHistory && <KronosCard x={x} />}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2px 22px', marginTop: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))', gap: '2px 22px', marginTop: 12 }}>
             <KV k="Prev Close" v={px(x.prevClose, c)} />
             <KV k="Market Cap" v={big(x.marketCap, c)} />
             <KV k="Open" v={px(x.open, c)} />
@@ -416,7 +416,7 @@ function Overview({ x }: { x: XData }) {
         </Card>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: 14 }}>
         {x.consensus ? <ConsensusCard x={x} /> : <Missing what="Analyst consensus" />}
         {x.epsHistory?.some(e => e.est != null && e.actual != null)
           ? <EpsScatter x={x} /> : <Missing what="EPS estimate history" />}
@@ -556,7 +556,7 @@ function Financials({ x }: { x: XData }) {
   const withEps = fy.filter(f => f.netIncome != null).reverse();
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: 14 }}>
         {withFcf.length > 1 ? (
           <MiniBars title="Free cash flow" bars={withFcf.map(f => ({ label: f.label, v: f.fcf! }))} fmt={v => big(v, c)} />
         ) : <Missing what="Cash-flow history" />}

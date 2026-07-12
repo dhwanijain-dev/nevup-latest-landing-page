@@ -21,7 +21,7 @@ function useRoute(): string {
 }
 
 const isUnlocked = () => {
-  try { return sessionStorage.getItem('compass_unlocked') === '1'; }
+  try { return localStorage.getItem('compass_unlocked') === '1'; }
   catch { return false; }
 };
 
