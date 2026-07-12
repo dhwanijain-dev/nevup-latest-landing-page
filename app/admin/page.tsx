@@ -49,6 +49,10 @@ export default async function AdminPage() {
   const io = await one<{ n: string; inj: string }>(
     `select count(*)::int n, count(*) filter (where (req->>'flaggedInjection')::boolean)::int inj from io_log`);
 
+  // Kronos model accuracy - real walk-forward backtest on held-out prices
+  const kronos = await one<{ windows: string; directional_accuracy: number; mape: number; dir_calls: string; created_at: string }>(
+    `select windows, directional_accuracy, mape, dir_calls, created_at from model_accuracy where model='kronos' order by created_at desc limit 1`);
+
   // fleet accuracy from stored per-user reports
   const fleet = await one<{
     users: string; kdir: number; kmape: number; bhold: number; dacc: number; gval: number; overall: number;
@@ -84,14 +88,32 @@ export default async function AdminPage() {
         <Card label="I/O log rows" value={num(Number(io?.n))} sub="all requests" />
       </Grid>
 
-      <h2 style={h2}>Fleet accuracy (real, averaged across users)</h2>
+      <h2 style={h2}>Kronos forecast model (real walk-forward backtest)</h2>
+      <p style={metaP}>
+        The forecasting model is scored out-of-sample: at each step it predicts the next {5} daily
+        closes from only past data, then we compare to the actual closes it never saw. Directional
+        accuracy = share of correct up/down calls at the horizon. MAPE = mean absolute percent error
+        per predicted point. Measured on {kronos ? num(Number(kronos.dir_calls)) : '-'} forecasts across liquid US and Indian symbols.
+      </p>
       <Grid>
-        <Card label="Kronos directional" value={pct(fleet?.kdir)} sub={`MAPE ${num(fleet?.kmape, 1)}%`} accent />
+        <Card label="Directional accuracy" value={pct(kronos?.directional_accuracy)} sub={`${num(Number(kronos?.windows))} held-out windows`} accent />
+        <Card label="MAPE (price error)" value={kronos ? `${num(kronos.mape, 2)}%` : '-'} sub="lower is better" accent />
+        <Card label="Forecasts scored" value={num(Number(kronos?.dir_calls))} sub="predicted vs actual" accent />
+      </Grid>
+
+      <h2 style={h2}>Behavioral engine accuracy (per user, averaged)</h2>
+      <p style={metaP}>
+        Each metric is computed from the user&rsquo;s own trades and validated, not assumed.
+        Behavioral thesis: do the trades we call disciplined actually earn more than the flagged
+        ones. Debrief: derive findings on the first half of the trades, test them on the unseen
+        second half. Ghost validity: are the ghost&rsquo;s assumptions (revenge is worse, oversized
+        losers exist) borne out in the real trades.
+      </p>
+      <Grid>
         <Card label="Behavioral thesis holds" value={pct(fleet?.bhold)} sub="disciplined earns more" accent />
-        <Card label="Debrief accuracy" value={pct(fleet?.dacc)} sub="out-of-sample" accent />
-        <Card label="Ghost validity" value={pct(fleet?.gval)} sub="assumptions borne out" accent />
-        <Card label="Overall" value={pct(fleet?.overall)} sub={`${num(Number(fleet?.users))} users scored`} accent />
-        <Card label="Kronos live evals" value={pct(evals?.dir)} sub={`${num(Number(evals?.n))} forecasts vs actual`} accent />
+        <Card label="Debrief accuracy" value={pct(fleet?.dacc)} sub="out-of-sample, first half → second half" accent />
+        <Card label="Ghost validity" value={pct(fleet?.gval)} sub="assumptions borne out in real trades" accent />
+        <Card label="Overall (behavioral)" value={pct(fleet?.overall)} sub={`${num(Number(fleet?.users))} users scored`} accent />
       </Grid>
 
       <h2 style={h2}>Trader types (classified from uploads)</h2>
@@ -118,7 +140,8 @@ export default async function AdminPage() {
 
 function fmt(s: string) { return s ? new Date(s).toISOString().slice(0, 16).replace('T', ' ') : '-'; }
 
-const h2: React.CSSProperties = { fontSize: 18, fontWeight: 600, margin: '36px 0 14px' };
+const h2: React.CSSProperties = { fontSize: 18, fontWeight: 600, margin: '36px 0 6px' };
+const metaP: React.CSSProperties = { fontFamily: 'Newsreader, Georgia, serif', fontSize: 13.5, color: MUTED, lineHeight: 1.55, margin: '0 0 14px', maxWidth: 760 };
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
