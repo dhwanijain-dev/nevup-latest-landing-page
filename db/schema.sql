@@ -98,6 +98,8 @@ create table if not exists accuracy_reports (
   kronos_mape      double precision,
   behavioral_holds boolean,
   behavioral_lift  double precision,
+  behavioral_accuracy  double precision,
+  behavioral_precision double precision,
   debrief_accuracy double precision,
   ghost_validity   double precision,
   overall          double precision,

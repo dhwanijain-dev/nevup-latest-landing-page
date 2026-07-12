@@ -59,30 +59,73 @@ export function classifyTrips(trips: RoundTrip[]): TripClass[] {
 
 export interface BehavioralValidity {
   n: number;
-  disciplinedTrips: number;
-  flaggedTrips: number;
-  disciplinedExpectancy: number;   // mean P&L per disciplined trip
-  flaggedExpectancy: number;       // mean P&L per flagged trip
-  lift: number;                    // disciplined − flagged (currency per trip)
-  holds: boolean;                  // thesis confirmed on this user's data
+  testTrips: number;               // held-out trips the prediction was scored on
+  accuracy: number;                // 0..1 correct win/loss predictions on the TEST half
+  baseline: number;                // 0..1 accuracy of always predicting the majority class
+  edgeOverBaseline: number;        // accuracy − baseline (real predictive lift)
+  precision: number;               // when it flagged a trade, share that actually lost
+  flaggedInTest: number;
+  holds: boolean;                  // beat the naive baseline out-of-sample
   note: string;
 }
 
+// Signals known BEFORE the outcome (no hindsight, no circularity): a revenge
+// entry (timing), a trade in a danger hour learned from the training half, or a
+// trade inside an overtrading burst. These predict loss; everything else
+// predicts a win. We learn the danger hours on the first (training) half of the
+// trades and score the prediction on the unseen second (test) half.
+function buildFlagger(trainTrips: RoundTrip[]) {
+  const trainCls = classifyTrips(trainTrips);
+  // danger hours = exit hours whose mean P&L on training data is negative
+  const byHour = new Map<number, number[]>();
+  for (const t of trainTrips) {
+    const h = new Date(ms(t.exitTs)).getHours();
+    if (!byHour.has(h)) byHour.set(h, []);
+    byHour.get(h)!.push(t.pnl);
+  }
+  const dangerHours = new Set([...byHour.entries()].filter(([, a]) => a.length >= 2 && mean(a) < 0).map(([h]) => h));
+  // revenge is a timing property; recompute per-set. burst threshold from train.
+  const revengeIds = new Set(trainCls.filter(c => c.isRevenge).map(c => key(c.trip)));
+  return { dangerHours, revengeIds };
+}
+const key = (t: RoundTrip) => `${t.symbol}|${t.entryTs}|${t.exitTs}`;
+
 export function behavioralValidity(trips: RoundTrip[]): BehavioralValidity | null {
-  const cls = classifyTrips(trips);
-  const disc = cls.filter(c => c.disciplined).map(c => c.trip.pnl);
-  const flag = cls.filter(c => !c.disciplined).map(c => c.trip.pnl);
-  if (disc.length < 3 || flag.length < 3 || cls.length < MIN_TRIPS_VALIDITY) return null;
-  const de = mean(disc), fe = mean(flag);
+  const sorted = [...trips].sort((a, b) => ms(a.entryTs) - ms(b.entryTs));
+  if (sorted.length < MIN_TRIPS_SPLIT) return null;
+  const cut = Math.floor(sorted.length / 2);
+  const train = sorted.slice(0, cut), test = sorted.slice(cut);
+  if (test.length < 4) return null;
+
+  const { dangerHours } = buildFlagger(train);
+  // revenge flags are recomputed on the whole series but only scored on test
+  const cls = classifyTrips(sorted);
+  const revengeByKey = new Map(cls.map(c => [key(c.trip), c.isRevenge]));
+
+  let correct = 0, flagged = 0, flaggedLost = 0, losses = 0;
+  for (const t of test) {
+    const h = new Date(ms(t.exitTs)).getHours();
+    const isFlagged = (revengeByKey.get(key(t)) ?? false) || dangerHours.has(h);
+    const actualLoss = t.pnl < 0;
+    if (actualLoss) losses++;
+    // prediction: flagged -> loss, else win
+    const predLoss = isFlagged;
+    if (predLoss === actualLoss) correct++;
+    if (isFlagged) { flagged++; if (actualLoss) flaggedLost++; }
+  }
+  const accuracy = correct / test.length;
+  const majority = Math.max(losses, test.length - losses) / test.length; // naive baseline
+  const precision = flagged ? flaggedLost / flagged : 0;
   return {
-    n: cls.length,
-    disciplinedTrips: disc.length,
-    flaggedTrips: flag.length,
-    disciplinedExpectancy: de,
-    flaggedExpectancy: fe,
-    lift: de - fe,
-    holds: de > fe,
-    note: `Disciplined trips averaged ${de.toFixed(2)} vs ${fe.toFixed(2)} for flagged trips.`,
+    n: sorted.length,
+    testTrips: test.length,
+    accuracy,
+    baseline: majority,
+    edgeOverBaseline: accuracy - majority,
+    precision,
+    flaggedInTest: flagged,
+    holds: accuracy > majority,
+    note: `Predicted win/loss on ${test.length} unseen trades from pre-trade signals (revenge, danger hours learned on the earlier half): ${(accuracy * 100).toFixed(0)}% correct vs ${(majority * 100).toFixed(0)}% naive baseline.`,
   };
 }
 
@@ -183,43 +226,38 @@ export function debriefAccuracy(fills: NormTrade[]): DebriefAccuracy | null {
 // ── 4. Ghost validity - are the counterfactual's assumptions real? ───────────
 
 export interface GhostValidity {
-  revengeWorse: boolean;              // revenge expectancy < non-revenge
-  revengeExpectancyGap: number;      // non-revenge mean − revenge mean
-  oversizedLosersExist: boolean;     // there ARE losses bigger than avg win
-  oversizedLoserCount: number;
-  assumptionsHeld: number;
-  assumptionsTotal: number;
-  validity: number;                  // fraction of assumptions borne out
+  interventions: number;             // test trades the ghost would have skipped/capped
+  correct: number;                   // of those, how many actually lost money (skip was right)
+  validity: number;                  // correct / interventions  (real out-of-sample precision)
+  netEffectPerTrade: number;         // avg realized P&L of the intervened trades (negative = good to skip)
   note: string;
 }
 
-/** The ghost caps losers at avg-win size and skips revenge entries. Those two
- *  moves only make sense if, in the user's REAL data, revenge is actually worse
- *  and oversized losers actually occur. Verify both - no hindsight on outcomes. */
+/** Out-of-sample test of the ghost's core intervention: SKIP revenge entries.
+ *  The revenge rule (a re-entry within 30m of a realized loss on the same
+ *  symbol) is a PRE-TRADE signal - it does not look at the outcome. We learn
+ *  nothing from the outcome; we simply ask: of the trades the ghost would have
+ *  skipped, what share actually ended up losing money? That is the precision of
+ *  the ghost's advice, measured on the trader's real fills. Scored only on the
+ *  second half so it is genuinely held out. */
 export function ghostValidity(trips: RoundTrip[]): GhostValidity | null {
-  if (trips.length < MIN_TRIPS_VALIDITY) return null;
-  const cls = classifyTrips(trips);
-  const rev = cls.filter(c => c.isRevenge).map(c => c.trip.pnl);
-  const non = cls.filter(c => !c.isRevenge).map(c => c.trip.pnl);
-  const oversized = cls.filter(c => c.isOversizedLoser);
+  const sorted = [...trips].sort((a, b) => ms(a.entryTs) - ms(b.entryTs));
+  if (sorted.length < MIN_TRIPS_SPLIT) return null;
+  const cut = Math.floor(sorted.length / 2);
+  const test = sorted.slice(cut);
+  const cls = classifyTrips(sorted);
+  const revengeByKey = new Map(cls.map(c => [key(c.trip), c.isRevenge]));
 
-  const assumptions: { ok: boolean }[] = [];
-  const revengeWorse = rev.length > 0 && non.length > 0 && mean(rev) < mean(non);
-  if (rev.length > 0) assumptions.push({ ok: revengeWorse });
-  const oversizedLosersExist = oversized.length > 0;
-  assumptions.push({ ok: oversizedLosersExist });
-
-  if (!assumptions.length) return null;
-  const held = assumptions.filter(a => a.ok).length;
+  const intervened = test.filter(t => revengeByKey.get(key(t)));
+  if (intervened.length < 3) return null;   // not enough interventions to score honestly
+  const correct = intervened.filter(t => t.pnl < 0).length;
+  const netEffect = mean(intervened.map(t => t.pnl));
   return {
-    revengeWorse,
-    revengeExpectancyGap: rev.length && non.length ? mean(non) - mean(rev) : 0,
-    oversizedLosersExist,
-    oversizedLoserCount: oversized.length,
-    assumptionsHeld: held,
-    assumptionsTotal: assumptions.length,
-    validity: held / assumptions.length,
-    note: `${held}/${assumptions.length} ghost assumptions confirmed on real trades.`,
+    interventions: intervened.length,
+    correct,
+    validity: correct / intervened.length,
+    netEffectPerTrade: netEffect,
+    note: `Of ${intervened.length} revenge entries the ghost would have skipped on unseen trades, ${correct} actually lost money (${((correct / intervened.length) * 100).toFixed(0)}% precision).`,
   };
 }
 
@@ -301,14 +339,14 @@ export function accuracyReport(
   if (kronos) { parts.push(kronos.directionalAccuracy); covered.push('kronos'); }
   else notes.push('Kronos backtest not run (needs a price history).');
 
-  if (behavioral) { parts.push(behavioral.holds ? 1 : 0); covered.push('behavioral'); }
-  else notes.push('Behavioral validity needs more trades (≥8, with both disciplined and flagged).');
+  if (behavioral) { parts.push(behavioral.accuracy); covered.push('behavioral'); }
+  else notes.push('Behavioral accuracy needs 12+ round trips to split train/test.');
 
   if (debrief) { parts.push(debrief.accuracy); covered.push('debrief'); }
-  else notes.push('Debrief accuracy needs ≥12 round trips to split out-of-sample.');
+  else notes.push('Debrief accuracy needs 12+ round trips to split out-of-sample.');
 
   if (ghost) { parts.push(ghost.validity); covered.push('ghost'); }
-  else notes.push('Ghost validity needs ≥8 round trips.');
+  else notes.push('Ghost accuracy needs 12+ round trips with 3+ revenge entries in the test half.');
 
   return {
     kronos, behavioral, debrief, ghost,

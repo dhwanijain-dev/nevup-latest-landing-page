@@ -55,10 +55,9 @@ export default async function AdminPage() {
 
   // fleet accuracy from stored per-user reports
   const fleet = await one<{
-    users: string; kdir: number; kmape: number; bhold: number; dacc: number; gval: number; overall: number;
+    users: string; bacc: number; bprec: number; dacc: number; gval: number; overall: number;
   }>(`select count(distinct user_id)::int users,
-        avg(kronos_dir_acc)::float kdir, avg(kronos_mape)::float kmape,
-        avg(case when behavioral_holds then 1 else 0 end)::float bhold,
+        avg(behavioral_accuracy)::float bacc, avg(behavioral_precision)::float bprec,
         avg(debrief_accuracy)::float dacc, avg(ghost_validity)::float gval,
         avg(overall)::float overall
       from accuracy_reports`);
@@ -101,19 +100,22 @@ export default async function AdminPage() {
         <Card label="Forecasts scored" value={num(Number(kronos?.dir_calls))} sub="predicted vs actual" accent />
       </Grid>
 
-      <h2 style={h2}>Behavioral engine accuracy (per user, averaged)</h2>
+      <h2 style={h2}>Behavioral engine accuracy (out-of-sample, per user, averaged)</h2>
       <p style={metaP}>
-        Each metric is computed from the user&rsquo;s own trades and validated, not assumed.
-        Behavioral thesis: do the trades we call disciplined actually earn more than the flagged
-        ones. Debrief: derive findings on the first half of the trades, test them on the unseen
-        second half. Ghost validity: are the ghost&rsquo;s assumptions (revenge is worse, oversized
-        losers exist) borne out in the real trades.
+        Every number is a real out-of-sample test on the user&rsquo;s own trades, using only signals
+        known before a trade&rsquo;s outcome (no hindsight). Behavioral accuracy: split the trades in
+        time, learn the leak signals (revenge timing, danger hours) on the first half, then predict
+        win or loss on the unseen second half and score the hit rate. Precision: when the engine
+        flags a trade as risky, how often it actually loses. Debrief: derive findings on the first
+        half, verify them on the unseen second half. Ghost: of the revenge entries the ghost would
+        have skipped on held-out trades, how many actually lost money.
       </p>
       <Grid>
-        <Card label="Behavioral thesis holds" value={pct(fleet?.bhold)} sub="disciplined earns more" accent />
-        <Card label="Debrief accuracy" value={pct(fleet?.dacc)} sub="out-of-sample, first half → second half" accent />
-        <Card label="Ghost validity" value={pct(fleet?.gval)} sub="assumptions borne out in real trades" accent />
-        <Card label="Overall (behavioral)" value={pct(fleet?.overall)} sub={`${num(Number(fleet?.users))} users scored`} accent />
+        <Card label="Behavioral accuracy" value={pct(fleet?.bacc)} sub="win/loss predicted out-of-sample" accent />
+        <Card label="Flag precision" value={pct(fleet?.bprec)} sub="flagged trades that did lose" accent />
+        <Card label="Debrief accuracy" value={pct(fleet?.dacc)} sub="findings held on unseen trades" accent />
+        <Card label="Ghost precision" value={pct(fleet?.gval)} sub="skipped revenge that did lose" accent />
+        <Card label="Overall" value={pct(fleet?.overall)} sub={`${num(Number(fleet?.users))} users scored`} accent />
       </Grid>
 
       <h2 style={h2}>Trader types (classified from uploads)</h2>

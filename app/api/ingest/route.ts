@@ -75,13 +75,16 @@ export async function POST(req: Request) {
   await q(
     `insert into accuracy_reports
        (user_id, kronos_dir_acc, kronos_mape, behavioral_holds, behavioral_lift,
+        behavioral_accuracy, behavioral_precision,
         debrief_accuracy, ghost_validity, overall, covered, payload)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
     [userId,
      report.kronos?.directionalAccuracy ?? null,
      report.kronos?.mape ?? null,
      report.behavioral?.holds ?? null,
-     report.behavioral?.lift ?? null,
+     report.behavioral?.edgeOverBaseline ?? null,
+     report.behavioral?.accuracy ?? null,
+     report.behavioral?.precision ?? null,
      report.debrief?.accuracy ?? null,
      report.ghost?.validity ?? null,
      report.overall ?? null,
