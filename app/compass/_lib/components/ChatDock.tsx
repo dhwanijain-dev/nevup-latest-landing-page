@@ -55,6 +55,7 @@ export default function ChatDock() {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const taRef = useRef<HTMLTextAreaElement>(null);
   const endpoint = (process.env.NEXT_PUBLIC_CHAT_ENDPOINT as string | undefined) ?? '/api/chat';
 
   // reset the conversation when the page/scope changes
@@ -71,6 +72,7 @@ export default function ChatDock() {
     const history = msgs.slice(-8).map(m => ({ role: m.role, content: m.text }));
     setMsgs(m => [...m, { role: 'user', text: q }]);
     setInput('');
+    if (taRef.current) taRef.current.style.height = 'auto';
     setBusy(true);
     const user = (window as unknown as { __compassUser?: { userId?: string } }).__compassUser;
     try {
@@ -125,10 +127,26 @@ export default function ChatDock() {
             }}>{cc}</button>
           ))}
         </div>
-        <form onSubmit={e => { e.preventDefault(); ask(input); }} style={{ display: 'flex' }}>
-          <input value={input} onChange={e => setInput(e.target.value)} placeholder="Ask your analyst…"
-            style={{ flex: 1, background: '#fff', border: `1px solid ${T.border}`, borderRight: 'none', padding: '9px 11px', ...mono(12, T.ink), outline: 'none' }} />
-          <button type="submit" style={{ background: T.ink, color: T.inverse, border: 'none', padding: '9px 14px', ...mono(11, T.inverse, 700), cursor: 'pointer' }}>↑</button>
+        <form onSubmit={e => { e.preventDefault(); ask(input); }} style={{ display: 'flex', alignItems: 'flex-end', gap: 0 }}>
+          <textarea
+            ref={taRef}
+            value={input}
+            onChange={e => {
+              setInput(e.target.value);
+              e.target.style.height = 'auto';
+              e.target.style.height = `${Math.min(e.target.scrollHeight, 140)}px`;
+            }}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(input); } }}
+            placeholder="Ask your analyst…  (Enter to send, Shift+Enter for a new line)"
+            rows={1}
+            style={{
+              flex: 1, minWidth: 0, resize: 'none', maxHeight: 140, overflowY: 'auto',
+              background: '#fff', border: `1px solid ${T.border}`, borderRight: 'none',
+              borderRadius: '6px 0 0 6px', padding: '9px 11px', lineHeight: 1.45,
+              whiteSpace: 'pre-wrap', wordBreak: 'break-word', ...mono(12, T.ink), outline: 'none',
+            }}
+          />
+          <button type="submit" style={{ alignSelf: 'stretch', background: T.ink, color: T.inverse, border: 'none', borderRadius: '0 6px 6px 0', padding: '0 14px', ...mono(13, T.inverse, 700), cursor: 'pointer' }}>↑</button>
         </form>
         <div style={{ ...mono(9, T.faint), marginTop: 6 }}>Compass Analyst · grounded in real data on this page</div>
       </div>
