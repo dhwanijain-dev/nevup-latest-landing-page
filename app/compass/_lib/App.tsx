@@ -144,23 +144,23 @@ export default function App() {
     <ChatProvider>
       <div style={{ display: 'flex', flexDirection: narrow ? 'column' : 'row', minHeight: '100vh', background: T.bg, color: T.ink }}>
         <aside style={narrow ? {
-          borderBottom: `1px solid ${T.border}`, padding: '8px 12px', display: 'flex', alignItems: 'center',
+          order: 1, borderBottom: `1px solid ${T.border}`, padding: '8px 12px', display: 'flex', alignItems: 'center',
           gap: 8, flexWrap: 'wrap', position: 'sticky', top: 0, background: T.bg, zIndex: 20,
         } : {
-          width: 210, flexShrink: 0, borderRight: `1px solid ${T.border}`, padding: '18px 8px 12px',
+          order: 1, width: 210, flexShrink: 0, borderRight: `1px solid ${T.border}`, padding: '18px 8px 12px',
           position: 'sticky', top: 0, height: '100vh', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto',
         }}>
           {rail}
         </aside>
 
-        <main style={{ flex: 1, minWidth: 0, order: narrow ? 2 : 1, display: 'flex', flexDirection: 'column' }}>
+        <main style={{ order: 2, flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
           {docTabs}
           <div style={{ flex: 1, minWidth: 0 }}>{main}</div>
         </main>
 
         <aside style={narrow
           ? { order: 3, borderTop: `1px solid ${T.border}`, height: '72vh' }
-          : { width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, height: '100vh' }}>
+          : { order: 3, width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, height: '100vh' }}>
           <ChatDock />
         </aside>
       </div>
