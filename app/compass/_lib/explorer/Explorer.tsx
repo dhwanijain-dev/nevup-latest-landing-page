@@ -81,6 +81,8 @@ export default function Explorer() {
   const [stale, setStale] = useState(false);
   const [tab, setTab] = useState<Tab>('Overview');
   const [recent, setRecent] = useState<string[]>(['AAPL', 'RELIANCE.NS', 'NVDA', 'TCS.NS']);
+  const [openTabs, setOpenTabs] = useState<string[]>(['AAPL']);   // terminal tabs (open instruments)
+  const [active, setActive] = useState<string>('AAPL');           // active tab symbol
   const loadSeq = useRef(0);
   const narrow = useNarrow();
 
@@ -95,6 +97,8 @@ export default function Explorer() {
       setX(data);
       setStale(wasStale());
       setTab('Overview');
+      setActive(data.symbol);
+      setOpenTabs(t => (t.includes(data.symbol) ? t : [...t, data.symbol]));
       setRecent(r => [data.symbol, ...r.filter(s => s !== data.symbol)].slice(0, 8));
     } catch (e) {
       if (seq !== loadSeq.current) return;
@@ -104,6 +108,14 @@ export default function Explorer() {
     }
   }, []);
 
+  const closeTab = useCallback((sym: string) => {
+    setOpenTabs(t => {
+      const next = t.filter(s => s !== sym);
+      if (sym === active && next.length) load(next[next.length - 1]);
+      return next.length ? next : t; // never close the last tab
+    });
+  }, [active, load]);
+
   useEffect(() => { load('AAPL'); }, [load]);
 
   return (
@@ -112,6 +124,25 @@ export default function Explorer() {
         <a href="#/insights" style={{ ...mono(15, T.ink, 700), letterSpacing: '0.08em', textDecoration: 'none' }}>COMPASS</a>
         <span style={statLabel}>Explorer - live</span>
         <span style={{ ...statLabel, marginLeft: 'auto', color: T.faint }}>US · India (NSE/BSE) · data: Yahoo Finance, delayed</span>
+      </div>
+
+      {/* terminal tab strip: every open instrument is a tab */}
+      <div style={{ display: 'flex', alignItems: 'stretch', gap: 2, borderLeft: `1px solid ${T.border}`, borderRight: `1px solid ${T.border}`, background: T.panelAlt, overflowX: 'auto' }}>
+        {openTabs.map(sym => (
+          <div key={sym} onClick={() => sym !== active && load(sym)} style={{
+            display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', cursor: 'pointer',
+            background: sym === active ? T.bg : 'transparent',
+            borderTop: sym === active ? `2px solid ${T.ghost}` : '2px solid transparent',
+            ...mono(11, sym === active ? T.ink : T.muted, sym === active ? 700 : 400), whiteSpace: 'nowrap',
+          }}>
+            {sym}
+            {openTabs.length > 1 && (
+              <span onClick={e => { e.stopPropagation(); closeTab(sym); }}
+                style={{ ...mono(12, T.faint), lineHeight: 1, padding: '0 2px' }} aria-label={`Close ${sym}`}>×</span>
+            )}
+          </div>
+        ))}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '0 10px', ...mono(15, T.muted), cursor: 'default' }} title="Search on the left to open a new tab">+</div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '210px minmax(0,1fr) 360px', border: `1px solid ${T.border}`, borderTop: 'none', minHeight: narrow ? 0 : 700 }}>
