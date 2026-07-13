@@ -74,10 +74,15 @@ export default function App() {
   // ── left rail ──────────────────────────────────────────────────────────────
   const rail = (
     <>
-      <div style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 700, letterSpacing: '0.06em', color: T.ink, padding: narrow ? 0 : '2px 10px 16px' }}>
-        Compass
+      <style>{`@keyframes compassBlink{0%,100%{opacity:1}50%{opacity:0.15}}`}</style>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: narrow ? 0 : '2px 10px 16px' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/darknevuplogo.png" alt="NevUp" style={{ height: 20, width: 'auto', display: 'block' }} />
+        <span style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 700, letterSpacing: '0.06em', color: T.ink }}>Compass</span>
       </div>
-      <RailItem icon="◉" label="Insights" active={!isSym(active)} onClick={() => setActive('insights')} />
+      <RailItem
+        icon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: T.ink, display: 'inline-block', animation: 'compassBlink 1.4s ease-in-out infinite' }} />}
+        label="Insights" active={!isSym(active)} onClick={() => setActive('insights')} />
       {/* on phones there is no room for the full workspace - keep a compact Explorer entry */}
       {narrow && <RailItem icon="◈" label="Explorer" active={isSym(active)} disabled={!unlocked} onClick={openExplorer} />}
 
@@ -189,7 +194,7 @@ export default function App() {
 const linkStyle: React.CSSProperties = { fontFamily: 'Quicksand, system-ui, sans-serif', fontSize: 11, color: '#14171d', textDecoration: 'none' };
 
 function RailItem({ icon, label, active, disabled, onClick }:
-  { icon: string; label: string; active?: boolean; disabled?: boolean; onClick: () => void }) {
+  { icon: React.ReactNode; label: string; active?: boolean; disabled?: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} disabled={disabled} style={{
       display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', width: '100%', textAlign: 'left',

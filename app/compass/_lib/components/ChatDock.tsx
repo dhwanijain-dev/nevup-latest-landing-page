@@ -170,7 +170,7 @@ export default function ChatDock() {
               e.target.style.height = `${Math.min(e.target.scrollHeight, 140)}px`;
             }}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(input); } }}
-            placeholder="Ask your analyst…  (Enter to send, Shift+Enter for a new line)"
+            placeholder="Ask Anything!"
             rows={1}
             style={{
               flex: 1, minWidth: 0, resize: 'none', maxHeight: 140, overflowY: 'auto',
