@@ -76,16 +76,6 @@ export default function ChatDock() {
     c.scrollTo({ top: Math.max(0, a.offsetTop - 12), behavior: 'smooth' });
   }, [msgs, busy]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Non-passive wheel handler so the cursor-in-chat wheel ALWAYS scrolls the
-  // chat and never the page (React's onWheel is passive and cannot do this).
-  useEffect(() => {
-    const c = scrollRef.current;
-    if (!c) return;
-    const onWheel = (e: WheelEvent) => { c.scrollTop += e.deltaY; e.preventDefault(); };
-    c.addEventListener('wheel', onWheel, { passive: false });
-    return () => c.removeEventListener('wheel', onWheel);
-  }, [ctx?.scope]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const ask = async (q: string) => {
     if (!q.trim() || busy || !ctx) return;
     // prior turns become conversation memory so follow-ups ("yes", "why?",

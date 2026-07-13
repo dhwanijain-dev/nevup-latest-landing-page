@@ -34,20 +34,8 @@ export default function App() {
   const [displayName, setDisplayName] = useState('');
   const [nameInput, setNameInput] = useState('');
   const userRef = useRef<HTMLDivElement>(null);
-  const mainScrollRef = useRef<HTMLDivElement>(null);
   const seededKey = useRef('');
   const narrow = useNarrow();
-
-  // guarantee the wheel scrolls the centre pane on desktop (the app-shell layout
-  // means the window itself does not scroll; native wheel routing can miss the
-  // inner container, so we drive it explicitly, non-passive)
-  useEffect(() => {
-    const c = mainScrollRef.current;
-    if (!c || narrow) return;
-    const onWheel = (e: WheelEvent) => { c.scrollTop += e.deltaY; e.preventDefault(); };
-    c.addEventListener('wheel', onWheel, { passive: false });
-    return () => c.removeEventListener('wheel', onWheel);
-  }, [narrow, active]);
 
   // load any saved display name; keep window.__compassUser + Insights in sync
   useEffect(() => {
@@ -278,7 +266,7 @@ export default function App() {
         } : {
           order: 1, width: 210, flexShrink: 0, borderRight: `1px solid ${T.border}`, padding: '18px 8px 12px',
           height: '100%', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto',
-        }}>
+        }} className="compass-scroll">
           {rail}
         </aside>
 
@@ -286,8 +274,8 @@ export default function App() {
           ? { order: 2, flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }
           : { order: 2, flex: 1, minWidth: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>
           {docTabs}
-          {/* the ONLY scroll region on desktop */}
-          <div ref={mainScrollRef} style={narrow ? { flex: 1, minWidth: 0 } : { flex: 1, minWidth: 0, minHeight: 0, overflowY: 'auto' }}>{main}</div>
+          {/* the ONLY scroll region on desktop; native (smooth) wheel, no scrollbar */}
+          <div className="compass-scroll" style={narrow ? { flex: 1, minWidth: 0 } : { flex: 1, minWidth: 0, minHeight: 0, overflowY: 'auto' }}>{main}</div>
         </main>
 
         {/* analyst chat: only once a CSV is analyzed, and not on the Portfolio teaser */}

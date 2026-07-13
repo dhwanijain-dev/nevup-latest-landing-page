@@ -25,6 +25,9 @@ export default function CompassLayout({ children }: { children: ReactNode }) {
         html, body { max-width: 100%; overflow-x: hidden; -webkit-text-size-adjust: 100%; }
         .compass-root, .compass-root * { box-sizing: border-box; }
         .compass-root { -webkit-tap-highlight-color: transparent; }
+        /* hide scrollbars but keep scrolling (wheel + touch), and smooth it */
+        .compass-scroll { scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; }
+        .compass-scroll::-webkit-scrollbar { width: 0; height: 0; display: none; }
       `}</style>
       {/* No overflow on this wrapper: setting overflow here would make it a
           scroll container and break position:sticky for the sidebar + chat.
