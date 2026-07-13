@@ -5,10 +5,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { T, statLabel } from '../theme';
 import { XData, SearchHit, FYRowX } from './types';
 import { searchInstruments, loadInstrument, wasStale, resetStale, kronosForecast, KronosForecast } from './live';
-import { answer } from './answerer';
 import type { NormTrade } from '../insights/types';
 import { pairTrades } from '../insights/engine';
 import { useNarrow } from '../useViewport';
+import { usePublishChat } from '../chatContext';
 
 // The trader's OWN executed trades on the viewed instrument, from the CSV they
 // uploaded (stashed in sessionStorage). Matched on the base symbol (ignoring
@@ -40,9 +40,6 @@ function userSymbolContext(symbol: string): Record<string, unknown> | null {
 
 const TABS = ['Overview', 'Financials', 'Earnings', 'Holders', 'Analysis', 'Analytics'] as const;
 type Tab = typeof TABS[number];
-
-interface Step { label: string; body: string }
-interface Msg { role: 'user' | 'assistant'; text: string; sources?: string[]; steps?: Step[] }
 
 const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
   ({ fontFamily: T.mono, fontSize: size, color, fontWeight: weight });
@@ -118,6 +115,27 @@ export default function Explorer() {
 
   useEffect(() => { load('AAPL'); }, [load]);
 
+  // publish this instrument's real figures to the shared analyst chat
+  usePublishChat(x ? {
+    scope: `explorer:${x.symbol}`,
+    title: `ASK ABOUT ${x.symbol}`,
+    subtitle: 'Grounded in this page’s live data and your own trades on this stock.',
+    symbol: x.symbol,
+    greeting: `Ask me anything about ${x.name} (${x.symbol}) - answers are computed from the live data on this page and your own history on it.`,
+    chips: ['Revenue trend?', 'EPS beats?', 'Who owns it?', 'How did I do on this?', 'How volatile is it?'],
+    facts: {
+      symbol: x.symbol, name: x.name, currency: x.currency, price: x.price, changePct: x.changePct,
+      fiscalYears: x.fy, quarterly: x.quarterly, forwardEstimates: x.fwdEstimates,
+      holders: x.holders?.top, institutionalPct: x.holders?.instPct, insiderPct: x.holders?.insiderPct,
+      analytics: x.analytics,
+      priceStats: x.priceHistory?.close.length ? {
+        closes: x.priceHistory.close.length, last: x.priceHistory.close.at(-1),
+        low: Math.min(...x.priceHistory.close), high: Math.max(...x.priceHistory.close),
+      } : null,
+      yourHistoryOnThisSymbol: userSymbolContext(x.symbol),
+    },
+  } : null);
+
   return (
     <div style={{ maxWidth: 1560, margin: '0 auto', padding: '20px 20px 60px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, borderBottom: `2px solid ${T.ink}`, paddingBottom: 12, flexWrap: 'wrap' }}>
@@ -145,7 +163,7 @@ export default function Explorer() {
         <div style={{ display: 'flex', alignItems: 'center', padding: '0 10px', ...mono(15, T.muted), cursor: 'default' }} title="Search on the left to open a new tab">+</div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '210px minmax(0,1fr) 360px', border: `1px solid ${T.border}`, borderTop: 'none', minHeight: narrow ? 0 : 700 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '210px minmax(0,1fr)', border: `1px solid ${T.border}`, borderTop: 'none', minHeight: narrow ? 0 : 700 }}>
         {/* rail: search + recents */}
         <div style={{ borderRight: `1px solid ${T.border}`, background: T.panel, minWidth: 0 }}>
           <SearchBox onPick={load} />
@@ -212,16 +230,6 @@ export default function Explorer() {
             </>
           )}
         </div>
-
-        {x ? (
-          <div style={narrow ? { borderTop: `1px solid ${T.border}` } : { borderLeft: `1px solid ${T.border}` }}>
-            <div style={narrow
-              ? { height: '72vh' }
-              : { position: 'sticky', top: 12, height: 'calc(100vh - 24px)' }}>
-              <ChatDock x={x} />
-            </div>
-          </div>
-        ) : <div style={{ borderLeft: `1px solid ${T.border}`, background: T.panel }} />}
       </div>
     </div>
   );
@@ -952,139 +960,3 @@ function Analytics({ x }: { x: XData }) {
   );
 }
 
-// ── analyst chat ────────────────────────────────────────────────────────────
-
-function stepsFor(q: string, sym: string, x: XData): Step[] {
-  return [
-    { label: 'Thought', body: `Parse "${q}" → route against ${sym}'s loaded modules (price, statements, estimates, ownership).` },
-    { label: 'Compute', body: `Figures pulled from live data: ${[x.fy?.length && `${x.fy.length} fiscal years`, x.quarterly?.length && `${x.quarterly.length} quarters`, x.priceHistory?.close.length && `${x.priceHistory.close.length} daily closes`, x.holders?.top.length && `${x.holders.top.length} 13F holders`].filter(Boolean).join(' · ') || 'header quote only'}.` },
-    { label: 'Get Quote', body: `${sym} ${x.price.toFixed(2)} ${x.currency}${x.changePct != null ? ` (${sgn(x.changePct, 2)} today)` : ''}.` },
-  ];
-}
-
-function ChatDock({ x }: { x: XData }) {
-  const [msgs, setMsgs] = useState<Msg[]>([]);
-  const [pinned, setPinned] = useState<string | null>(null);
-  const [input, setInput] = useState('');
-  const [busy, setBusy] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const endpoint = (process.env.NEXT_PUBLIC_CHAT_ENDPOINT as string | undefined) ?? '/api/chat';
-
-  useEffect(() => {
-    setPinned(null);
-    setMsgs([{ role: 'assistant', text: `Ask me anything about ${x.symbol} - the answers are computed from the live data on this page.` }]);
-  }, [x.symbol]);
-
-  useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }); }, [msgs, busy]);
-
-  const ask = async (q: string) => {
-    if (!q.trim() || busy) return;
-    if (!pinned) setPinned(q.toUpperCase());
-    setMsgs(m => [...m, { role: 'user', text: q }]);
-    setInput('');
-    setBusy(true);
-    // real figures for THIS instrument - the model is grounded on these only
-    const facts = {
-      symbol: x.symbol, name: x.name, currency: x.currency, price: x.price, changePct: x.changePct,
-      fiscalYears: x.fy, quarterly: x.quarterly, forwardEstimates: x.fwdEstimates,
-      holders: x.holders?.top, institutionalPct: x.holders?.instPct, insiderPct: x.holders?.insiderPct,
-      analytics: x.analytics,
-      priceStats: x.priceHistory?.close.length ? {
-        closes: x.priceHistory.close.length,
-        last: x.priceHistory.close.at(-1),
-        low: Math.min(...x.priceHistory.close), high: Math.max(...x.priceHistory.close),
-      } : null,
-      yourHistoryOnThisSymbol: userSymbolContext(x.symbol),
-    };
-    const user = (window as unknown as { __compassUser?: { userId?: string } }).__compassUser;
-    try {
-      const r = await fetch(endpoint, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ symbol: x.symbol, question: q, facts, userId: user?.userId }),
-      });
-      const data = await r.json();
-      if (data?.ok && data.text) {
-        setMsgs(m => [...m, { role: 'assistant', text: data.text, sources: data.sources, steps: stepsFor(q, x.symbol, x) }]);
-      } else {
-        // model unconfigured or errored - fall back to the on-device analyst
-        const a = answer(q, x);
-        setMsgs(m => [...m, { role: 'assistant', text: a.text, sources: a.sources, steps: stepsFor(q, x.symbol, x) }]);
-      }
-    } catch {
-      const a = answer(q, x);
-      setMsgs(m => [...m, { role: 'assistant', text: a.text, sources: a.sources, steps: stepsFor(q, x.symbol, x) }]);
-    } finally { setBusy(false); }
-  };
-
-  const chips = ['Revenue trend?', 'EPS beats?', 'Who owns it?', 'Price targets?', 'How volatile is it?'];
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: T.panel, height: '100%', minHeight: 0 }}>
-      {pinned ? (
-        <div style={{ padding: '12px 14px', borderBottom: `1px solid ${T.borderSoft}`, background: T.panelAlt }}>
-          <div style={{ ...mono(11, T.ink, 700), letterSpacing: '0.04em', lineHeight: 1.5 }}>{pinned}</div>
-        </div>
-      ) : (
-        <div style={{ padding: '12px 14px', borderBottom: `1px solid ${T.borderSoft}` }}>
-          <div style={mono(11, T.ink, 700)}>ASK YOUR ANALYST</div>
-          <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 11.5, color: T.faint, marginTop: 3 }}>
-            Grounded in this page&rsquo;s live data and your own trades on this stock from your upload.
-          </div>
-        </div>
-      )}
-
-      <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {msgs.map((m, i) => (
-          <div key={i} style={{ alignSelf: m.role === 'user' ? 'flex-end' : 'stretch', maxWidth: m.role === 'user' ? '90%' : '100%' }}>
-            {m.role === 'assistant' && m.steps && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>
-                {m.steps.map((st, j) => (
-                  <details key={j} style={{ border: `1px solid ${T.borderSoft}`, background: T.panelAlt }}>
-                    <summary style={{ ...mono(10, T.muted), padding: '6px 10px', cursor: 'pointer', listStyle: 'none' }}>› {st.label}</summary>
-                    <div style={{ ...mono(10, T.faint), padding: '0 10px 8px', lineHeight: 1.5 }}>{st.body}</div>
-                  </details>
-                ))}
-              </div>
-            )}
-            <div style={{
-              background: m.role === 'user' ? T.ink : 'transparent',
-              color: m.role === 'user' ? T.inverse : T.body,
-              padding: m.role === 'user' ? '9px 12px' : 0,
-              fontFamily: m.role === 'user' ? T.mono : T.serif,
-              fontSize: m.role === 'user' ? 12 : 14,
-              lineHeight: 1.6,
-            }}>{m.text}</div>
-            {m.sources && m.sources.length > 0 && (
-              <div style={{ marginTop: 8, borderLeft: `2px solid ${T.border}`, paddingLeft: 10 }}>
-                {m.sources.map((sc, j) => (
-                  <div key={j} style={{ ...mono(9.5, T.muted), padding: '2px 0' }}>◦ {sc}</div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-        {busy && <div style={mono(11, T.muted)}>› Thought…</div>}
-      </div>
-
-      <div style={{ padding: '10px 14px', borderTop: `1px solid ${T.borderSoft}` }}>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-          {chips.map(cc => (
-            <button key={cc} onClick={() => ask(cc)} style={{
-              background: 'transparent', border: `1px solid ${T.border}`,
-              ...mono(9.5, T.muted), padding: '4px 8px', cursor: 'pointer',
-            }}>{cc}</button>
-          ))}
-        </div>
-        <form onSubmit={e => { e.preventDefault(); ask(input); }} style={{ display: 'flex' }}>
-          <input
-            value={input} onChange={e => setInput(e.target.value)}
-            placeholder="Ask your analyst…"
-            style={{ flex: 1, background: '#fff', border: `1px solid ${T.border}`, borderRight: 'none', padding: '9px 11px', ...mono(12, T.ink), outline: 'none' }}
-          />
-          <button type="submit" style={{ background: T.ink, color: T.inverse, border: 'none', padding: '9px 14px', ...mono(11, T.inverse, 700), cursor: 'pointer' }}>↑</button>
-        </form>
-        <div style={{ ...mono(9, T.faint), marginTop: 6 }}>Compass Analyst · grounded in this page&rsquo;s live data</div>
-      </div>
-    </div>
-  );
-}

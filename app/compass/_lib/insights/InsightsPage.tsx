@@ -8,6 +8,7 @@ import { computeInsights, pairTrades, Insights, RoundTrip } from './engine';
 import { parseTradeCsv, ParseReport, MAX_BYTES } from './csv';
 import RealGhostTrade from '../components/RealGhostTrade';
 import { Hero, DnaSection } from '../components/Sections';
+import { usePublishChat } from '../chatContext';
 
 const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
   ({ fontFamily: T.mono, fontSize: size, color, fontWeight: weight });
@@ -305,6 +306,25 @@ function buildDNA(x: Insights): { headline: string; facts: [string, string][]; r
 function InsightsView({ x, trips }: { x: Insights; trips: RoundTrip[] }) {
   const gap = x.ghost.gap;
   const dna = buildDNA(x);
+
+  // publish this analysis to the shared analyst chat (Insights context)
+  usePublishChat({
+    scope: `insights:${x.roundTrips}:${Math.round(x.totalPnl)}`,
+    title: 'ASK ABOUT YOUR TRADING',
+    subtitle: 'Grounded in your uploaded trades - behaviour, discipline, and the ghost gap.',
+    greeting: `I have analyzed your ${x.roundTrips} round-trips. Ask about your win rate, discipline, worst hours, revenge trades, or what your rule-following self would have made.`,
+    chips: ['Where do I leak money?', 'What are my worst hours?', 'How disciplined am I?', 'What should I fix first?'],
+    facts: {
+      profile: x.profile,
+      roundTrips: x.roundTrips, winRate: x.winRate, totalPnl: x.totalPnl,
+      avgWin: x.avgWin, avgLoss: x.avgLoss, profitFactor: x.profitFactor,
+      disciplineScore: x.disciplineScore, scoreParts: x.scoreParts,
+      holdAsymmetry: x.holdAsymmetry, revenge: x.revenge, dangerHours: x.dangerHours, bestHours: x.bestHours,
+      edge: x.edge, leak: x.leak, byWeekday: x.byWeekday,
+      ghost: x.ghost, compounding: x.compounding, debrief: x.debrief,
+      currency: x.profile.currency,
+    },
+  });
   const heroHeadline = (
     <>Your rule-following self made{' '}
       <em style={{ fontStyle: 'italic', color: gap >= 0 ? T.green : T.red }}>{inr(Math.abs(gap))} {gap >= 0 ? 'more' : 'less'}</em>{' '}
