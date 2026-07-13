@@ -1,14 +1,23 @@
 'use client';
 // Portfolio - a teaser for the full NevUp trading terminal. Shows a preview of
 // the terminal behind a translucent glass overlay, with an invite to opt in.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { T } from './theme';
 
 export default function Portfolio() {
   const [choice, setChoice] = useState<'yes' | 'no' | null>(null);
 
+  // remember the choice across reloads so we do not ask again
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('compass_portfolio_choice');
+      if (saved === 'yes' || saved === 'no') setChoice(saved);
+    } catch { /* ignore */ }
+  }, []);
+
   const pick = (c: 'yes' | 'no') => {
     setChoice(c);
+    try { localStorage.setItem('compass_portfolio_choice', c); } catch { /* ignore */ }
     const u = (window as unknown as { __compassUser?: { userId?: string; email?: string } }).__compassUser;
     try {
       void fetch('/api/waitlist', {
