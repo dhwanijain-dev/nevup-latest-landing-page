@@ -19,6 +19,19 @@ const locale = () => (CUR === '₹' ? 'en-IN' : 'en-US');
 const inr = (v: number) => `${v < 0 ? '−' : ''}${CUR}${Math.abs(v).toLocaleString(locale(), { maximumFractionDigits: 0 })}`;
 const pctF = (v: number) => `${Math.round(v * 100)}%`;
 
+// Trader's first name for personalization: prefer the Google profile name,
+// else derive from the email local-part. Empty string if we truly have nothing.
+function traderFirstName(): string {
+  try {
+    const u = (window as unknown as { __compassUser?: { name?: string; email?: string } }).__compassUser;
+    const fromName = (u?.name ?? '').trim().split(/\s+/)[0];
+    if (fromName) return fromName;
+    const local = (u?.email ?? '').split('@')[0];
+    const token = local.split(/[.\-_0-9]+/).filter(Boolean)[0] ?? '';
+    return token ? token.charAt(0).toUpperCase() + token.slice(1) : '';
+  } catch { return ''; }
+}
+
 const EXPORT_GUIDES: { broker: string; path: string }[] = [
   { broker: 'Zerodha', path: 'Console → Reports → Tradebook → download CSV' },
   { broker: 'Groww', path: 'Stocks → Orders → download order history' },
@@ -293,11 +306,14 @@ function InsightsView({ x, trips }: { x: Insights; trips: RoundTrip[] }) {
   const dna = buildDNA(x);
 
   // publish this analysis to the shared analyst chat (Insights context)
+  const firstName = traderFirstName();
   usePublishChat({
     scope: `insights:${x.roundTrips}:${Math.round(x.totalPnl)}`,
-    title: 'ASK ABOUT YOUR TRADING',
-    subtitle: 'Grounded in your uploaded trades - behaviour, discipline, and the ghost gap.',
-    greeting: `I have analyzed your ${x.roundTrips} round-trips. Ask about your win rate, discipline, worst hours, revenge trades, or what your rule-following self would have made.`,
+    title: 'NevUp AI',
+    subtitle: 'Ask about your trading behaviour, psychology, and process execution. NevUp has analyzed everything for you.',
+    greeting: firstName
+      ? `Hey ${firstName}, I have been through all ${x.roundTrips} of your round-trips. What do you want to look at first?`
+      : `I have been through all ${x.roundTrips} of your round-trips. What do you want to look at first?`,
     chips: ['Where do I leak money?', 'What are my worst hours?', 'How disciplined am I?', 'What should I fix first?'],
     facts: {
       profile: x.profile,
@@ -311,7 +327,7 @@ function InsightsView({ x, trips }: { x: Insights; trips: RoundTrip[] }) {
     },
   });
   const heroHeadline = (
-    <>Your rule-following self made{' '}
+    <>{firstName ? <>Hey {firstName}, your</> : 'Your'} rule-following self made{' '}
       <em style={{ fontStyle: 'italic', color: gap >= 0 ? T.green : T.red }}>{inr(Math.abs(gap))} {gap >= 0 ? 'more' : 'less'}</em>{' '}
       than you did.</>
   );
