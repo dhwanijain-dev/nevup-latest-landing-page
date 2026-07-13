@@ -175,6 +175,23 @@ export function SearchBox({ onPick, placeholder = 'Search any instrument…', le
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [open, setOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+
+  // close the dropdown on any click/tap outside, or on Escape
+  useEffect(() => {
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('touchstart', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, []);
 
   const run = (text: string) => {
     setQ(text);
@@ -191,7 +208,7 @@ export function SearchBox({ onPick, placeholder = 'Search any instrument…', le
   };
 
   return (
-    <div style={{ position: 'relative', padding: '4px 12px' }}>
+    <div ref={boxRef} style={{ position: 'relative', padding: '4px 12px' }}>
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
         {leadingIcon && (
           <span style={{ position: 'absolute', left: 9, display: 'inline-flex', color: T.faint, pointerEvents: 'none' }} aria-hidden>
