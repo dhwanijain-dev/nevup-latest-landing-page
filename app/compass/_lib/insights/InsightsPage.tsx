@@ -6,7 +6,7 @@ import { T, statLabel } from '../theme';
 import type { NormTrade } from './types';
 import { computeInsights, pairTrades, Insights, RoundTrip } from './engine';
 import { parseTradeCsv, ParseReport, MAX_BYTES } from './csv';
-import RealGhostTrade from '../components/RealGhostTrade';
+import GhostRace from '../components/GhostRace';
 import { Hero, DnaSection } from '../components/Sections';
 import { usePublishChat } from '../chatContext';
 
@@ -478,7 +478,9 @@ function InsightsView({ x, trips }: { x: Insights; trips: RoundTrip[] }) {
         ))}
         <span style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 12, color: T.faint }}>{p.styleReason}</span>
       </div>
-      <RealGhostTrade x={x} cur={x.profile.currencySymbol} />
+      <section style={{ maxWidth: 1120, margin: '0 auto', padding: '30px 24px 0' }}>
+        <GhostRace trips={trips} x={x} />
+      </section>
       <DnaSection dna={dna} caption="Your Trading DNA - computed from this upload" />
       <Compounding x={x} />
     </>
@@ -503,12 +505,12 @@ function Compounding({ x }: { x: Insights }) {
       <div style={{ border: `1px solid ${T.border}`, marginTop: 14 }}>
         {rows.map(([label, v], i) => (
           <div key={label} style={{
-            display: 'grid', gridTemplateColumns: '220px 1fr', gap: 18, padding: '15px 20px', alignItems: 'center',
+            display: 'flex', alignItems: 'center', gap: 18, padding: '14px 20px',
             borderBottom: i < rows.length - 1 ? `1px solid ${T.borderSoft}` : 'none',
             background: i === rows.length - 1 ? T.panelAlt : 'transparent',
           }}>
             <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 700, color: i === rows.length - 1 ? T.ghost : T.ink }}>{label}</span>
-            <span style={{ fontFamily: T.mono, fontSize: 18, fontWeight: 700, color: T.red, textAlign: 'right' }}>{inr(-Math.abs(v))}</span>
+            <span style={{ marginLeft: 'auto', fontFamily: T.mono, fontSize: 18, fontWeight: 700, color: T.red, whiteSpace: 'nowrap' }}>{inr(-Math.abs(v))}</span>
           </div>
         ))}
       </div>

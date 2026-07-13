@@ -104,20 +104,21 @@ function Radar({ radar = DNA.radar }: { radar?: { axis: string; v: number }[] })
     return `${cx + R * f * Math.cos(a)},${cy + R * f * Math.sin(a)}`;
   }).join(' ');
   return (
-    <svg viewBox="-56 -30 372 320" width="100%" style={{ maxWidth: 300, height: 'auto', overflow: 'visible' }}
+    <svg viewBox="-80 -44 420 348" width="100%" style={{ maxWidth: 340, height: 'auto', overflow: 'visible' }}
       role="img" aria-label="Behavioral trait radar">
       {[0.33, 0.66, 1].map(f => (
         <polygon key={f} points={pts(f)} fill="none" stroke={T.border} strokeWidth={1} />
       ))}
-      <polygon points={poly} fill="rgba(122,90,245,0.14)" stroke={T.ghost} strokeWidth={1.5} />
+      <polygon points={poly} fill="rgba(122,90,245,0.16)" stroke={T.ghost} strokeWidth={2} />
       {radar.map((d, i) => {
         const a = step * i - Math.PI / 2;
-        const lx = cx + (R + 20) * Math.cos(a);
-        const anchor = Math.cos(a) > 0.2 ? 'start' : Math.cos(a) < -0.2 ? 'end' : 'middle';
+        const lx = cx + (R + 22) * Math.cos(a);
+        const ly = cy + (R + 18) * Math.sin(a);
+        const anchor = Math.cos(a) > 0.25 ? 'start' : Math.cos(a) < -0.25 ? 'end' : 'middle';
         return (
-          <text key={d.axis} x={lx} y={cy + (R + 16) * Math.sin(a)}
-            textAnchor={anchor} fontSize={9} fill={T.muted} fontFamily={T.mono}>
-            {d.axis} {d.v}
+          <text key={d.axis} x={lx} y={ly} textAnchor={anchor} fontFamily={T.mono}
+            fontSize={11} fill={T.ink} fontWeight={600}>
+            {d.axis} <tspan fill={T.ghost} fontWeight={700}>{d.v}</tspan>
           </text>
         );
       })}

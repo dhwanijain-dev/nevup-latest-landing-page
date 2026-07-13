@@ -11,10 +11,12 @@ import { T, statLabel } from '../theme';
 import type { RoundTrip, Insights } from '../insights/engine';
 
 const REVENGE_WINDOW_MIN = 30;
-const inr = (v: number) => `${v < 0 ? '−' : ''}₹${Math.abs(Math.round(v)).toLocaleString('en-IN')}`;
 const ms = (t: string) => { const v = Date.parse(t); return Number.isFinite(v) ? v : NaN; };
+const easeOut = (p: number) => 1 - Math.pow(1 - p, 3);
 
 export default function GhostRace({ trips, x }: { trips: RoundTrip[]; x: Insights }) {
+  const cur = x.profile.currencySymbol || '₹';
+  const inr = (v: number) => `${v < 0 ? '−' : ''}${cur}${Math.abs(Math.round(v)).toLocaleString(cur === '₹' ? 'en-IN' : 'en-US')}`;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sizeRef = useRef({ w: 0, h: 0 });
   const rafRef = useRef<number | null>(null);
@@ -85,59 +87,80 @@ export default function GhostRace({ trips, x }: { trips: RoundTrip[]; x: Insight
       ctx.strokeStyle = T.borderSoft; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(padL, Y(0)); ctx.lineTo(w - padR, Y(0)); ctx.stroke();
 
-      const upto = Math.max(1, Math.floor(p * n));
-      const line = (arr: number[], color: string, width: number, fill?: string) => {
+      // fractional reveal for a smooth sweep (not just whole points)
+      const frac = Math.max(0, p * (n - 1));
+      const upto = Math.floor(frac) + 1;
+      const line = (arr: number[], color: string, width: number, glow: boolean, fill?: string) => {
+        const pts: [number, number][] = [];
+        for (let i = 0; i < Math.min(upto, n); i++) pts.push([X(i), Y(arr[i])]);
+        // interpolate the head between the last two real points
+        if (upto < n) {
+          const t = frac - Math.floor(frac), i = Math.floor(frac);
+          pts.push([X(i) + (X(i + 1) - X(i)) * t, Y(arr[i]) + (Y(arr[i + 1]) - Y(arr[i])) * t]);
+        }
+        if (pts.length < 1) return;
         if (fill) {
           ctx.beginPath();
-          for (let i = 0; i < upto; i++) { const px = X(i), py = Y(arr[i]); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
-          ctx.lineTo(X(upto - 1), Y(0)); ctx.lineTo(X(0), Y(0)); ctx.closePath();
+          pts.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py)));
+          ctx.lineTo(pts[pts.length - 1][0], Y(0)); ctx.lineTo(pts[0][0], Y(0)); ctx.closePath();
           const gr = ctx.createLinearGradient(0, padT, 0, h - padB);
           gr.addColorStop(0, fill); gr.addColorStop(1, 'rgba(122,90,245,0)');
           ctx.fillStyle = gr; ctx.fill();
         }
         ctx.beginPath();
-        for (let i = 0; i < upto; i++) { const px = X(i), py = Y(arr[i]); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
-        ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineJoin = 'round'; ctx.stroke();
-        const hx = X(upto - 1), hy = Y(arr[upto - 1]);
-        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(hx, hy, width + 1.5, 0, Math.PI * 2); ctx.fill();
+        pts.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py)));
+        ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
+        const [hx, hy] = pts[pts.length - 1];
+        if (glow) { ctx.save(); ctx.shadowColor = color; ctx.shadowBlur = 12; }
+        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(hx, hy, width + 2, 0, Math.PI * 2); ctx.fill();
+        if (glow) ctx.restore();
       };
-      line(ghost, T.ghost, 2.5, 'rgba(122,90,245,0.14)');
-      line(you, T.ink, 2);
+      line(ghost, T.ghost, 2.5, true, 'rgba(122,90,245,0.16)');
+      line(you, T.ink, 2, false);
     };
 
     if (reduce) { setProgress(1); draw(1); ro.disconnect(); return; }
     let start = 0;
-    const DURATION = 2600;
+    const DURATION = 2400;
     const loop = (ts: number) => {
       if (!start) start = ts;
-      const p = Math.min(1, (ts - start) / DURATION);
+      const p = easeOut(Math.min(1, (ts - start) / DURATION));
       setProgress(p); draw(p);
       if (p < 1) rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); ro.disconnect(); };
-  }, [you, ghost, n]);
+  }, [you, ghost, n]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (n < 2) return null;
 
-  // Authoritative figures from the engine (curve endpoints equal these).
+  // Authoritative endpoints (the curve lands exactly on these). Numbers count
+  // up with the sweep so it reads like the mirror's ghost animation.
   const youTotal = x.ghost.actualPnl, ghostTotal = x.ghost.ghostPnl, gap = x.ghost.gap;
+  const youNow = youTotal * progress, ghostNow = ghostTotal * progress, gapNow = gap * progress;
 
   return (
-    <div style={{ border: `1px solid ${T.ghost}`, padding: '18px 20px', marginTop: 8 }}>
+    <div style={{ border: `1px solid ${T.ghost}`, borderRadius: 10, padding: '18px 20px', marginTop: 8 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
         <span style={{ ...statLabel, color: T.ghost }}>Ghost trade · your rule-following self</span>
         <span style={{ ...statLabel, marginLeft: 'auto', color: T.faint }}>reconstructed from your own trades · no future prices</span>
       </div>
-      <canvas ref={canvasRef} style={{ width: '100%', height: 220, display: 'block', marginTop: 12 }} />
+      <div style={{ display: 'flex', gap: 16, marginTop: 8, ...mono(10, T.muted) }}>
+        <span><span style={{ color: T.ink, fontWeight: 700 }}>—</span> You</span>
+        <span><span style={{ color: T.ghost, fontWeight: 700 }}>—</span> Rule-following self</span>
+      </div>
+      <canvas ref={canvasRef} style={{ width: '100%', height: 220, display: 'block', marginTop: 8 }} />
       <div style={{ display: 'flex', gap: 28, marginTop: 10, flexWrap: 'wrap' }}>
-        <Stat label="You made" value={inr(youTotal)} color={youTotal >= 0 ? T.green : T.red} />
-        <Stat label="The ghost made" value={inr(ghostTotal)} color={T.ghost} />
-        <Stat label="Left on the table" value={inr(gap)} color={gap >= 0 ? T.red : T.green} />
+        <Stat label="You made" value={inr(youNow)} color={youTotal >= 0 ? T.green : T.red} />
+        <Stat label="The ghost made" value={inr(ghostNow)} color={T.ghost} />
+        <Stat label="Left on the table" value={inr(gapNow)} color={gap >= 0 ? T.red : T.green} />
       </div>
     </div>
   );
 }
+
+const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
+  ({ fontFamily: T.mono, fontSize: size, color, fontWeight: weight });
 
 function Stat({ label, value, color }: { label: string; value: string; color: string }) {
   return (
