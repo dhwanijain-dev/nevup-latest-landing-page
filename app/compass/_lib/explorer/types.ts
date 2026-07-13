@@ -22,6 +22,9 @@ export interface XData {
   marketCap?: number; pe?: number; fwdPe?: number; divYield?: number; beta?: number;
   open?: number; dayLow?: number; dayHigh?: number; low52?: number; high52?: number;
   volume?: number; avgVolume?: number; epsTtm?: number;
+  // valuation ratios straight from Yahoo (fill without derivation; US + .NS)
+  priceToBook?: number; enterpriseValue?: number; evEbitda?: number; evRevenue?: number;
+  pegRatio?: number; sharesOut?: number; bookValue?: number;
 
   profile?: {
     ceo?: string; employees?: number; industry?: string; sector?: string;

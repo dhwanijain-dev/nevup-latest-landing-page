@@ -138,6 +138,14 @@ export async function loadInstrument(symbol: string): Promise<XData> {
     volume: n(price.regularMarketVolume),
     avgVolume: n(sd.averageVolume),
     epsTtm: n(ks.trailingEps),
+    // direct valuation ratios (Yahoo supplies these for US and Indian listings)
+    priceToBook: n(ks.priceToBook),
+    enterpriseValue: n(ks.enterpriseValue),
+    evEbitda: n(ks.enterpriseToEbitda),
+    evRevenue: n(ks.enterpriseToRevenue),
+    pegRatio: n(ks.pegRatio) ?? n(fin.pegRatio),
+    sharesOut: n(ks.sharesOutstanding) ?? n(price.sharesOutstanding),
+    bookValue: n(ks.bookValue),
   };
 
   // profile

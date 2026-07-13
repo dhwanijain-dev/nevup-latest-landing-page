@@ -14,7 +14,10 @@ export interface Valuation {
   pe: number | null;
   fwdPe: number | null;
   ps: number | null;
+  pb: number | null;
+  peg: number | null;
   evEbitda: number | null;
+  evRevenue: number | null;
   pFcf: number | null;
   fcfYield: number | null;       // %
   earningsYield: number | null;  // %
@@ -56,8 +59,12 @@ export function computeValuation(x: XData): Valuation {
   const pe = n(x.pe) ?? div(price, n(x.epsTtm));
   const fwdEps = x.fwdEstimates?.find(e => n(e.eps) != null)?.eps ?? null;
   const fwdPe = n(x.fwdPe) ?? div(price, n(fwdEps ?? null));
+  // prefer Yahoo's direct ratios (present for US + Indian), derive as fallback
   const ps = div(mc, rev);
-  const evEbitda = div(ev, ebitda);
+  const pb = n(x.priceToBook) ?? (n(x.bookValue) ? div(price, n(x.bookValue)) : null);
+  const peg = n(x.pegRatio);
+  const evEbitda = n(x.evEbitda) ?? div(ev, ebitda);
+  const evRevenue = n(x.evRevenue) ?? div(ev, rev);
   const pFcf = div(mc, fcf);
   const fcfYield = fcf != null && mc ? (fcf / mc) * 100 : null;
   const earningsYield = pe != null && pe !== 0 ? (1 / pe) * 100 : null;
@@ -113,7 +120,7 @@ export function computeValuation(x: XData): Valuation {
   }
 
   return {
-    pe, fwdPe, ps, evEbitda, pFcf, fcfYield, earningsYield, divYield: n(x.divYield),
+    pe, fwdPe, ps, pb, peg, evEbitda, evRevenue, pFcf, fcfYield, earningsYield, divYield: n(x.divYield),
     roe, roa, grossMargin, operatingMargin, netMargin, fcfConversion, netDebtEbitda,
     revenueCagr, fwdEpsGrowth, dcf, assumptions,
     note: 'All multiples computed from reported figures; blanks mean the input was not in the data.',
