@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { T } from './theme';
 import Explorer, { SearchBox } from './explorer/Explorer';
 import InsightsPage from './insights/InsightsPage';
@@ -27,6 +27,7 @@ export default function App() {
   const [unlocked, setUnlocked] = useState(false);
   const [email, setEmail] = useState('');
   const [userOpen, setUserOpen] = useState(false);
+  const seededKey = useRef('');
   const narrow = useNarrow();
 
   useEffect(() => {
@@ -34,17 +35,19 @@ export default function App() {
       setUnlocked(isUnlocked());
       const u = (window as unknown as { __compassUser?: { email?: string } }).__compassUser;
       setEmail(u?.email ?? '');
-      // auto-list the instruments from the uploaded CSV in Explorer
+      // Seed the Explorer list from the uploaded CSV ONCE per stored set, so a
+      // tab the user closes does not keep reopening. Reseeds only on a new upload
+      // (when the stored symbol set actually changes).
       try {
-        const raw = localStorage.getItem('compass_symbols');
-        if (raw) {
+        const raw = localStorage.getItem('compass_symbols') ?? '';
+        if (raw && raw !== seededKey.current) {
+          seededKey.current = raw;
           const csvSyms: string[] = JSON.parse(raw);
           if (Array.isArray(csvSyms) && csvSyms.length) {
-            setOpenSyms(list => {
-              const merged = Array.from(new Set([...csvSyms, ...list]));
-              return merged.length !== list.length ? merged : list;
-            });
+            setOpenSyms(list => Array.from(new Set([...csvSyms, ...list])));
           }
+        } else if (!raw) {
+          seededKey.current = '';
         }
       } catch { /* ignore */ }
     };
@@ -193,11 +196,14 @@ export default function App() {
           <div style={{ flex: 1, minWidth: 0 }}>{main}</div>
         </main>
 
-        <aside style={narrow
-          ? { order: 3, borderTop: `1px solid ${T.border}`, height: '78vh', overflow: 'hidden', overscrollBehavior: 'contain' }
-          : { order: 3, width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', overscrollBehavior: 'contain' }}>
-          <ChatDock />
-        </aside>
+        {/* analyst chat on every page except the Portfolio teaser */}
+        {!isPortfolio && (
+          <aside style={narrow
+            ? { order: 3, borderTop: `1px solid ${T.border}`, height: '78vh', overflow: 'hidden', overscrollBehavior: 'contain' }
+            : { order: 3, width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', overscrollBehavior: 'contain' }}>
+            <ChatDock />
+          </aside>
+        )}
       </div>
     </ChatProvider>
   );
