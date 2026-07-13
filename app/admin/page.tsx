@@ -148,16 +148,16 @@ export default async function AdminPage() {
 function fmt(s: string) { return s ? new Date(s).toISOString().slice(0, 16).replace('T', ' ') : '-'; }
 
 const h2: React.CSSProperties = { fontSize: 18, fontWeight: 600, margin: '36px 0 6px' };
-const metaP: React.CSSProperties = { fontFamily: 'Quicksand, system-ui, sans-serif', fontSize: 13.5, color: MUTED, lineHeight: 1.55, margin: '0 0 14px', maxWidth: 760 };
+const metaP: React.CSSProperties = { fontFamily: 'IBM Plex Sans, system-ui, sans-serif', fontSize: 13.5, color: MUTED, lineHeight: 1.55, margin: '0 0 14px', maxWidth: 760 };
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-      <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
       <main style={{
         minHeight: '100vh', background: '#fff', color: INK, padding: '40px 32px',
-        fontFamily: 'Quicksand, system-ui, sans-serif', maxWidth: 1100, margin: '0 auto',
+        fontFamily: 'IBM Plex Sans, system-ui, sans-serif', maxWidth: 1100, margin: '0 auto',
       }}>{children}</main>
     </>
   );
@@ -168,7 +168,7 @@ function Grid({ children }: { children: React.ReactNode }) {
 function Card({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: boolean }) {
   return (
     <div style={{ border: `1px solid ${LINE}`, borderRadius: 12, padding: '16px 18px', background: accent ? '#faf9ff' : '#fff' }}>
-      <div style={{ fontFamily: 'Quicksand, system-ui, sans-serif', fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: MUTED }}>{label}</div>
+      <div style={{ fontFamily: 'IBM Plex Mono, ui-monospace, monospace', fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: MUTED }}>{label}</div>
       <div style={{ fontSize: 28, fontWeight: 600, color: accent ? GHOST : INK, marginTop: 6 }}>{value}</div>
       {sub && <div style={{ fontSize: 13, color: MUTED, marginTop: 2 }}>{sub}</div>}
     </div>
@@ -177,7 +177,7 @@ function Card({ label, value, sub, accent }: { label: string; value: string; sub
 function Table({ cols, rows }: { cols: string[]; rows: string[][] }) {
   return (
     <div style={{ overflowX: 'auto', border: `1px solid ${LINE}`, borderRadius: 12 }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, fontFamily: 'Quicksand, system-ui, sans-serif' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, fontFamily: 'IBM Plex Mono, ui-monospace, monospace' }}>
         <thead>
           <tr>{cols.map(c => <th key={c} style={{ textAlign: 'left', padding: '10px 14px', borderBottom: `1px solid ${LINE}`, color: MUTED, fontWeight: 500, fontSize: 12 }}>{c}</th>)}</tr>
         </thead>

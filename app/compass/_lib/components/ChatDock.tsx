@@ -32,7 +32,7 @@ function Markdown({ text }: { text: string }) {
           ol: p => <ol style={{ margin: '0 0 9px', paddingLeft: 18 }} {...p} />,
           li: p => <li style={{ margin: '2px 0' }} {...p} />,
           a: p => <a style={{ color: T.ghost }} {...p} />,
-          code: p => <code style={{ fontFamily: 'Quicksand, monospace', background: T.panelAlt, padding: '1px 4px', borderRadius: 3, fontSize: 12.5 }} {...p} />,
+          code: p => <code style={{ fontFamily: 'IBM Plex Mono, monospace', background: T.panelAlt, padding: '1px 4px', borderRadius: 3, fontSize: 12.5 }} {...p} />,
           hr: () => <hr style={{ border: 'none', borderTop: `1px solid ${T.borderSoft}`, margin: '12px 0' }} />,
           table: p => (
             <div style={{ overflowX: 'auto', margin: '4px 0 12px' }}>

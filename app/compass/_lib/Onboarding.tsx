@@ -12,7 +12,7 @@ export default function Onboarding() {
     <main style={{
       minHeight: '100vh', background: '#ffffff', color: INK,
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
-      fontFamily: 'Quicksand, system-ui, sans-serif',
+      fontFamily: 'IBM Plex Sans, system-ui, sans-serif',
     }}>
       <div style={{ maxWidth: 560, width: '100%', textAlign: 'center' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -16,8 +16,8 @@ export const T = {
   green: '#1f9d6b',
   ghost: '#7a5af5',
   gold: '#E8B84B',
-  serif: "'Quicksand', system-ui, sans-serif",
-  mono: "'Quicksand', system-ui, sans-serif",
+  serif: "'IBM Plex Sans', system-ui, sans-serif",
+  mono: "'IBM Plex Mono', ui-monospace, monospace",
   inverse: '#ffffff',
 } as const;
 
