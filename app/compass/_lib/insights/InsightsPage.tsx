@@ -38,6 +38,8 @@ function storeTradedSymbols(r: ParseReport): void {
 
 function traderFirstName(): string {
   try {
+    const saved = (localStorage.getItem('compass_display_name') ?? '').trim().split(/\s+/)[0];
+    if (saved) return saved;
     const u = (window as unknown as { __compassUser?: { name?: string; email?: string } }).__compassUser;
     const fromName = (u?.name ?? '').trim().split(/\s+/)[0];
     if (fromName) return fromName;
@@ -159,6 +161,14 @@ export default function InsightsPage() {
     const on = () => reset();
     window.addEventListener('compass:reset', on);
     return () => window.removeEventListener('compass:reset', on);
+  }, []);
+
+  // re-render when the trader changes their display name (from the sidebar)
+  const [, setNameTick] = useState(0);
+  useEffect(() => {
+    const on = () => setNameTick(t => t + 1);
+    window.addEventListener('compass:namechange', on);
+    return () => window.removeEventListener('compass:namechange', on);
   }, []);
   const showUpload = !report?.ok;
 

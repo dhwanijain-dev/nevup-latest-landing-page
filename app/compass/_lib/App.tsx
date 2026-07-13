@@ -15,6 +15,9 @@ import { useNarrow } from './useViewport';
 // Explorer workspace (search + open instruments); the right panel is one
 // analyst chat that follows the active document.
 
+const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
+  ({ fontFamily: T.mono, fontSize: size, color, fontWeight: weight });
+
 const isUnlocked = () => { try { return localStorage.getItem('compass_unlocked') === '1'; } catch { return false; } };
 const ADMIN_EMAIL = 'vatsal2077@gmail.com';
 
@@ -27,8 +30,47 @@ export default function App() {
   const [unlocked, setUnlocked] = useState(false);
   const [email, setEmail] = useState('');
   const [userOpen, setUserOpen] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [displayName, setDisplayName] = useState('');
+  const [nameInput, setNameInput] = useState('');
+  const userRef = useRef<HTMLDivElement>(null);
   const seededKey = useRef('');
   const narrow = useNarrow();
+
+  // load any saved display name; keep window.__compassUser + Insights in sync
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('compass_display_name') ?? '';
+      if (saved) {
+        setDisplayName(saved);
+        const w = window as unknown as { __compassUser?: { name?: string } };
+        if (w.__compassUser) w.__compassUser.name = saved;
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  // close the user menu on any outside click
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (userRef.current && !userRef.current.contains(e.target as Node)) { setUserOpen(false); setEditingName(false); }
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, []);
+
+  const saveName = () => {
+    const n = nameInput.trim();
+    try {
+      if (n) localStorage.setItem('compass_display_name', n);
+      else localStorage.removeItem('compass_display_name');
+      const w = window as unknown as { __compassUser?: { name?: string } };
+      if (w.__compassUser) w.__compassUser.name = n;
+    } catch { /* ignore */ }
+    setDisplayName(n);
+    setEditingName(false); setUserOpen(false);
+    // nudge the Insights page to re-read the name
+    window.dispatchEvent(new Event('compass:namechange'));
+  };
 
   useEffect(() => {
     const sync = () => {
@@ -138,22 +180,48 @@ export default function App() {
         <RailItem icon="↺" label="Upload CSV" onClick={() => { setActive('insights'); window.dispatchEvent(new Event('compass:reset')); }} />
       )}
 
+      {/* reach-out line */}
+      {!narrow && (
+        <div style={{ ...mono(9.5, T.faint), padding: '4px 10px 6px', lineHeight: 1.5 }}>
+          Reach out to us at{' '}
+          <a href="mailto:connect@nevup.in" style={{ color: T.ghost, textDecoration: 'none' }}>connect@nevup.in</a>{' '}
+          for any feedback or help.
+        </div>
+      )}
+
       {/* user block, bottom */}
-      <div style={{ marginTop: narrow ? 0 : 8, marginLeft: narrow ? 'auto' : 0, position: 'relative' }}>
-        {userOpen && (isAdmin || email) && (
-          <div style={{ position: 'absolute', bottom: narrow ? 'auto' : '110%', top: narrow ? '110%' : 'auto', right: 0, left: narrow ? 'auto' : 0, background: '#fff', border: `1px solid ${T.border}`, boxShadow: '0 10px 30px rgba(20,23,29,0.12)', zIndex: 40 }}>
-            {isAdmin && <a href="/admin" style={{ display: 'block', padding: '9px 12px', ...linkStyle }}>Admin dashboard</a>}
-            <a href="/api/auth/signout" style={{ display: 'block', padding: '9px 12px', borderTop: isAdmin ? `1px solid ${T.borderSoft}` : 'none', ...linkStyle }}>Sign out</a>
+      <div ref={userRef} style={{ marginTop: narrow ? 0 : 4, marginLeft: narrow ? 'auto' : 0, position: 'relative' }}>
+        {userOpen && (
+          <div style={{ position: 'absolute', bottom: narrow ? 'auto' : '110%', top: narrow ? '110%' : 'auto', right: 0, left: narrow ? 'auto' : 0, minWidth: 180, background: '#fff', border: `1px solid ${T.border}`, borderRadius: 8, boxShadow: '0 10px 30px rgba(20,23,29,0.12)', zIndex: 40, overflow: 'hidden' }}>
+            {editingName ? (
+              <div style={{ padding: 10 }}>
+                <div style={{ ...mono(9.5, T.faint), marginBottom: 6 }}>Your display name</div>
+                <input value={nameInput} onChange={e => setNameInput(e.target.value)} autoFocus
+                  onKeyDown={e => { if (e.key === 'Enter') saveName(); }}
+                  placeholder="e.g. Vatsal"
+                  style={{ width: '100%', boxSizing: 'border-box', border: `1px solid ${T.border}`, borderRadius: 6, padding: '7px 9px', ...mono(12, T.ink), outline: 'none' }} />
+                <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                  <button onClick={saveName} style={{ flex: 1, background: T.ink, color: '#fff', border: 'none', borderRadius: 6, padding: '7px 0', ...mono(10.5, '#fff', 700), cursor: 'pointer' }}>Save</button>
+                  <button onClick={() => setEditingName(false)} style={{ background: 'transparent', border: `1px solid ${T.border}`, borderRadius: 6, padding: '7px 10px', ...mono(10.5, T.muted), cursor: 'pointer' }}>Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <button onClick={() => { setNameInput(displayName); setEditingName(true); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 12px', background: 'transparent', border: 'none', cursor: 'pointer', ...linkStyle }}>Change name</button>
+                {isAdmin && <a href="/admin" style={{ display: 'block', padding: '9px 12px', borderTop: `1px solid ${T.borderSoft}`, ...linkStyle }}>Admin dashboard</a>}
+                <a href="/api/auth/signout" style={{ display: 'block', padding: '9px 12px', borderTop: `1px solid ${T.borderSoft}`, ...linkStyle }}>Sign out</a>
+              </>
+            )}
           </div>
         )}
         <button onClick={() => setUserOpen(o => !o)} style={{
           display: 'flex', alignItems: 'center', gap: 8, width: narrow ? 'auto' : '100%', padding: '8px 10px',
           background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left',
         }}>
-          <span style={{ width: 22, height: 22, borderRadius: '50%', background: T.ghost, color: '#fff', display: 'grid', placeItems: 'center', fontFamily: T.mono, fontSize: 11, fontWeight: 700 }}>
-            {(email[0] ?? 'U').toUpperCase()}
+          <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#f15a24', color: '#fff', display: 'grid', placeItems: 'center', fontFamily: T.mono, fontSize: 11, fontWeight: 700 }}>
+            {((displayName || email)[0] ?? 'U').toUpperCase()}
           </span>
-          {!narrow && <span style={{ fontFamily: T.mono, fontSize: 10, color: T.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email || 'account'}</span>}
+          {!narrow && <span style={{ fontFamily: T.mono, fontSize: 10, color: T.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName || email || 'account'}</span>}
           {!narrow && <span style={{ marginLeft: 'auto', color: T.faint, fontSize: 10 }}>⌄</span>}
         </button>
       </div>
