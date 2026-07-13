@@ -177,8 +177,8 @@ export default function App() {
         </main>
 
         <aside style={narrow
-          ? { order: 3, borderTop: `1px solid ${T.border}`, height: '72vh' }
-          : { order: 3, width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, height: '100vh' }}>
+          ? { order: 3, borderTop: `1px solid ${T.border}`, height: '78vh', overflow: 'hidden', overscrollBehavior: 'contain' }
+          : { order: 3, width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', overscrollBehavior: 'contain' }}>
           <ChatDock />
         </aside>
       </div>
