@@ -17,6 +17,12 @@ import { useNarrow } from './useViewport';
 const isUnlocked = () => { try { return localStorage.getItem('compass_unlocked') === '1'; } catch { return false; } };
 const ADMIN_EMAIL = 'vatsal2077@gmail.com';
 
+const MagnifierIcon = (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+    <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.5" y2="16.5" />
+  </svg>
+);
+
 type Doc = 'insights' | { sym: string };
 const isSym = (d: Doc): d is { sym: string } => typeof d !== 'string';
 
@@ -72,26 +78,25 @@ export default function App() {
         Compass
       </div>
       <RailItem icon="◉" label="Insights" active={!isSym(active)} onClick={() => setActive('insights')} />
-      <RailItem icon="◈" label="Explorer" active={isSym(active)} disabled={!unlocked} onClick={openExplorer} />
+      {/* on phones there is no room for the full workspace - keep a compact Explorer entry */}
+      {narrow && <RailItem icon="◈" label="Explorer" active={isSym(active)} disabled={!unlocked} onClick={openExplorer} />}
 
       {!narrow && unlocked && (
         <>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '18px 10px 4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '18px 10px 6px' }}>
             <span style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: '0.14em', color: T.faint }}>EXPLORER</span>
+            <span style={{ marginLeft: 'auto', display: 'inline-flex', color: T.muted }} aria-hidden>{MagnifierIcon}</span>
+            <button onClick={openExplorer} title="Open an instrument" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: T.muted, fontFamily: T.mono, fontSize: 15, lineHeight: 1, padding: 0 }}>+</button>
           </div>
-          <SearchBox onPick={openSymbol} />
-          <div style={{ marginTop: 2 }}>
-            {openSyms.length === 0 && (
-              <div style={{ padding: '4px 12px', fontFamily: T.serif, fontStyle: 'italic', fontSize: 11, color: T.faint }}>
-                Search a ticker to open it.
-              </div>
-            )}
+          <SearchBox onPick={openSymbol} placeholder="Search companies…" leadingIcon />
+          <div style={{ marginTop: 4 }}>
             {openSyms.map(s => (
               <div key={s} onClick={() => setActive({ sym: s })} style={{
                 display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', cursor: 'pointer',
                 background: activeSym === s ? T.panelAlt : 'transparent',
                 borderLeft: activeSym === s ? `2px solid ${T.ghost}` : '2px solid transparent',
               }}>
+                <span style={{ color: activeSym === s ? T.ghost : T.faint, fontSize: 12 }} aria-hidden>🏛</span>
                 <span style={{ fontFamily: T.mono, fontSize: 11.5, fontWeight: activeSym === s ? 700 : 400, color: T.ink }}>{s}</span>
                 <span onClick={e => { e.stopPropagation(); closeSymbol(s); }} style={{ marginLeft: 'auto', fontFamily: T.mono, fontSize: 12, color: T.faint, cursor: 'pointer' }}>×</span>
               </div>

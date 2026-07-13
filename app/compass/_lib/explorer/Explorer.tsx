@@ -169,7 +169,8 @@ export default function Explorer({ symbol }: { symbol: string }) {
 }
 
 // Debounced instrument search, exported for the terminal shell's left rail.
-export function SearchBox({ onPick }: { onPick: (s: string) => void }) {
+export function SearchBox({ onPick, placeholder = 'Search any instrument…', leadingIcon = false }:
+  { onPick: (s: string) => void; placeholder?: string; leadingIcon?: boolean }) {
   const [q, setQ] = useState('');
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [open, setOpen] = useState(false);
@@ -181,6 +182,7 @@ export function SearchBox({ onPick }: { onPick: (s: string) => void }) {
     if (!text.trim()) { setHits([]); setOpen(false); return; }
     timer.current = setTimeout(async () => {
       try {
+        // matches company names AND tickers; results show the ticker + name
         const res = await searchInstruments(text);
         setHits(res);
         setOpen(true);
@@ -189,32 +191,45 @@ export function SearchBox({ onPick }: { onPick: (s: string) => void }) {
   };
 
   return (
-    <div style={{ position: 'relative', padding: '12px 12px 4px' }}>
-      <input
-        value={q}
-        onChange={e => run(e.target.value)}
-        onFocus={() => hits.length && setOpen(true)}
-        placeholder="Search any instrument…"
-        style={{
-          width: '100%', boxSizing: 'border-box', background: '#fff',
-          border: `1px solid ${T.border}`, padding: '9px 10px',
-          ...mono(11.5, T.ink), outline: 'none',
-        }}
-      />
+    <div style={{ position: 'relative', padding: '4px 12px' }}>
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        {leadingIcon && (
+          <span style={{ position: 'absolute', left: 9, display: 'inline-flex', color: T.faint, pointerEvents: 'none' }} aria-hidden>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+              <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.5" y2="16.5" />
+            </svg>
+          </span>
+        )}
+        <input
+          value={q}
+          onChange={e => run(e.target.value)}
+          onFocus={() => hits.length && setOpen(true)}
+          placeholder={placeholder}
+          style={{
+            width: '100%', boxSizing: 'border-box', background: '#fff',
+            border: `1px solid ${T.border}`, borderRadius: 6,
+            padding: leadingIcon ? '9px 10px 9px 28px' : '9px 10px',
+            ...mono(11.5, T.ink), outline: 'none',
+          }}
+        />
+      </div>
       {open && hits.length > 0 && (
         <div style={{
-          position: 'absolute', left: 12, right: 12, top: 46, zIndex: 30,
+          position: 'absolute', left: 12, right: 12, top: 44, zIndex: 30,
           background: '#fff', border: `1px solid ${T.ink}`, boxShadow: '0 10px 30px rgba(20,23,29,0.12)',
           maxHeight: 320, overflowY: 'auto',
         }}>
           {hits.map(h => (
             <button key={h.symbol} onClick={() => { onPick(h.symbol); setOpen(false); setQ(''); }} style={{
-              display: 'block', width: '100%', textAlign: 'left', padding: '8px 10px',
+              display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', padding: '8px 10px',
               background: 'transparent', border: 'none', borderBottom: `1px solid ${T.borderSoft}`, cursor: 'pointer',
             }}>
-              <span style={mono(11.5, T.ink, 700)}>{h.symbol}</span>
-              <span style={{ ...mono(9.5, T.faint), marginLeft: 8 }}>{h.exch}</span>
-              <div style={{ ...mono(10, T.muted), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.name}</div>
+              <span aria-hidden style={{ color: T.faint, fontSize: 12 }}>🏛</span>
+              <span style={{ minWidth: 0 }}>
+                <span style={mono(11.5, T.ink, 700)}>{h.symbol}</span>
+                <span style={{ ...mono(9.5, T.faint), marginLeft: 8 }}>{h.exch}</span>
+                <div style={{ ...mono(10, T.muted), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.name}</div>
+              </span>
             </button>
           ))}
         </div>
