@@ -54,6 +54,9 @@ export default function ChatDock() {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const [feedbackPending, setFeedbackPending] = useState(false);
+  const [fbHint, setFbHint] = useState('');
+  const askedRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
   const anchorRef = useRef<HTMLDivElement>(null);   // the latest user question
@@ -107,7 +110,46 @@ export default function ChatDock() {
       }
     } catch {
       setMsgs(m => [...m, { role: 'assistant', text: 'Analyst unreachable - try again.' }]);
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+      // after the user's first answered prompt (in any chat, once per browser),
+      // ask for one-time session feedback before they continue
+      let given = false;
+      try { given = localStorage.getItem('compass_feedback_given') === '1'; } catch { /* ignore */ }
+      if (!given && !askedRef.current) { askedRef.current = true; setFeedbackPending(true); }
+    }
+  };
+
+  const FB: { n: number; label: string; words: string[] }[] = [
+    { n: 1, label: 'Could be better', words: ['couldbebetter', 'better', 'bad'] },
+    { n: 2, label: 'Useful', words: ['useful'] },
+    { n: 3, label: 'Good', words: ['good'] },
+    { n: 4, label: "It's crazzzy", words: ['crazzzy', 'crazy', 'itscrazzzy'] },
+  ];
+
+  const sendFeedback = async (rating: number) => {
+    const user = (window as unknown as { __compassUser?: { userId?: string } }).__compassUser;
+    try {
+      await fetch('/api/feedback', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user?.userId, rating, scope: ctx?.scope }),
+      });
+    } catch { /* never block the user */ }
+    try { localStorage.setItem('compass_feedback_given', '1'); } catch { /* ignore */ }
+    setFeedbackPending(false); setFbHint(''); setInput('');
+  };
+
+  // Route the composer: while feedback is pending, only a 1-4 answer proceeds.
+  const handleSend = (text: string) => {
+    const t = text.trim();
+    if (feedbackPending) {
+      const norm = t.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const hit = FB.find(f => norm === String(f.n) || f.words.includes(norm));
+      if (hit) { void sendFeedback(hit.n); }
+      else setFbHint('Please answer 1, 2, 3 or 4 to continue.');
+      return;
+    }
+    void ask(t);
   };
 
   if (!ctx) {
@@ -152,15 +194,35 @@ export default function ChatDock() {
       </div>
 
       <div style={{ padding: '10px 14px', borderTop: `1px solid ${T.borderSoft}` }}>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-          {ctx.chips.map(cc => (
-            <button key={cc} onClick={() => ask(cc)} disabled={busy} style={{
-              background: 'transparent', border: `1px solid ${T.border}`, ...mono(9.5, T.muted),
-              padding: '4px 8px', cursor: busy ? 'default' : 'pointer',
-            }}>{cc}</button>
-          ))}
-        </div>
-        <form onSubmit={e => { e.preventDefault(); ask(input); }} style={{ display: 'flex', alignItems: 'flex-end', gap: 0 }}>
+        {feedbackPending ? (
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, ...mono(11, T.ink, 700) }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: T.ghost, display: 'inline-block' }} />
+              How is NevUp doing this session?
+            </div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
+              {FB.map(f => (
+                <button key={f.n} onClick={() => sendFeedback(f.n)} style={{
+                  background: T.panelAlt, border: `1px solid ${T.border}`, borderRadius: 6,
+                  padding: '5px 9px', cursor: 'pointer', ...mono(10.5, T.ink, 600),
+                }}><b style={{ color: T.ghost }}>{f.n}</b> {f.label}</button>
+              ))}
+            </div>
+            <div style={{ ...mono(9, fbHint ? T.red : T.faint), marginTop: 7 }}>
+              {fbHint || 'Answer with 1, 2, 3 or 4 (click above or type it) to continue.'}
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+            {ctx.chips.map(cc => (
+              <button key={cc} onClick={() => handleSend(cc)} disabled={busy} style={{
+                background: 'transparent', border: `1px solid ${T.border}`, ...mono(9.5, T.muted),
+                padding: '4px 8px', cursor: busy ? 'default' : 'pointer',
+              }}>{cc}</button>
+            ))}
+          </div>
+        )}
+        <form onSubmit={e => { e.preventDefault(); handleSend(input); }} style={{ display: 'flex', alignItems: 'flex-end', gap: 0 }}>
           <textarea
             ref={taRef}
             value={input}
@@ -169,8 +231,8 @@ export default function ChatDock() {
               e.target.style.height = 'auto';
               e.target.style.height = `${Math.min(e.target.scrollHeight, 140)}px`;
             }}
-            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(input); } }}
-            placeholder="Ask Anything!"
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(input); } }}
+            placeholder={feedbackPending ? 'Type 1, 2, 3 or 4 to continue…' : 'Ask Anything!'}
             rows={1}
             style={{
               flex: 1, minWidth: 0, resize: 'none', maxHeight: 140, overflowY: 'auto',
