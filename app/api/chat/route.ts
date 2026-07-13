@@ -54,6 +54,7 @@ interface ChatBody {
   symbol?: string;
   facts?: Record<string, unknown>;  // real computed figures from the client
   userId?: string;
+  history?: { role: string; content: string }[];  // prior turns (conversation memory)
 }
 
 const MAX_QUESTION = 600;
@@ -122,6 +123,12 @@ export async function POST(req: Request) {
     `<<<QUESTION>>>\n${question}\n<<<END QUESTION>>>\n\n` +
     `<<<DATA symbol="${(body.symbol ?? 'instrument').replace(/[^\w.\-]/g, '')}">>>\n${factsJson}\n<<<END DATA>>>`;
 
+  // conversation memory: prior turns (capped, sanitized) so follow-ups work
+  const history = (body.history ?? [])
+    .filter(m => (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
+    .slice(-8)
+    .map(m => ({ role: m.role as 'user' | 'assistant', content: m.content.slice(0, 4000) }));
+
   const url = `${endpoint.replace(/\/$/, '')}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
   let text = '', modelUsed = deployment;
   try {
@@ -131,6 +138,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         messages: [
           { role: 'system', content: SYSTEM },
+          ...history,
           { role: 'user', content: userContent },
         ],
         max_completion_tokens: 8000,

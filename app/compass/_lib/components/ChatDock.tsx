@@ -66,6 +66,9 @@ export default function ChatDock() {
 
   const ask = async (q: string) => {
     if (!q.trim() || busy || !ctx) return;
+    // prior turns become conversation memory so follow-ups ("yes", "why?",
+    // "compare to last year") work like a real conversation
+    const history = msgs.slice(-8).map(m => ({ role: m.role, content: m.text }));
     setMsgs(m => [...m, { role: 'user', text: q }]);
     setInput('');
     setBusy(true);
@@ -73,7 +76,7 @@ export default function ChatDock() {
     try {
       const r = await fetch(endpoint, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ symbol: ctx.symbol, question: q, facts: ctx.facts, userId: user?.userId }),
+        body: JSON.stringify({ symbol: ctx.symbol, question: q, facts: ctx.facts, userId: user?.userId, history }),
       });
       const data = await r.json();
       if (data?.ok && data.text) {

@@ -9,6 +9,7 @@ import type { NormTrade } from '../insights/types';
 import { pairTrades } from '../insights/engine';
 import { useNarrow } from '../useViewport';
 import { usePublishChat } from '../chatContext';
+import { computeValuation } from './valuation';
 
 // The trader's OWN executed trades on the viewed instrument, from the CSV they
 // uploaded (stashed in sessionStorage). Matched on the base symbol (ignoring
@@ -116,6 +117,8 @@ export default function Explorer({ symbol }: { symbol: string }) {
         closes: x.priceHistory.close.length, last: x.priceHistory.close.at(-1),
         low: Math.min(...x.priceHistory.close), high: Math.max(...x.priceHistory.close),
       } : null,
+      consensus: x.consensus, margins: x.margins, creditLatest: x.creditLatest, beta: x.beta,
+      valuation: computeValuation(x),   // real P/E, EV/EBITDA, FCF yield, DCF, quality, etc.
       yourHistoryOnThisSymbol: userSymbolContext(x.symbol),
     },
   } : null);
