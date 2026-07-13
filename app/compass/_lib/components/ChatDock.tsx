@@ -56,6 +56,7 @@ export default function ChatDock() {
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
+  const anchorRef = useRef<HTMLDivElement>(null);   // the latest user question
   const endpoint = (process.env.NEXT_PUBLIC_CHAT_ENDPOINT as string | undefined) ?? '/api/chat';
 
   // reset the conversation when the page/scope changes
@@ -63,7 +64,15 @@ export default function ChatDock() {
     if (ctx) setMsgs([{ role: 'assistant', text: ctx.greeting }]);
   }, [ctx?.scope]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }); }, [msgs, busy]);
+  // When a new turn arrives, pin the user's question to the TOP of the chat so
+  // the answer reads from its beginning downward - never jump to the bottom.
+  const lastUserIdx = msgs.map(m => m.role).lastIndexOf('user');
+  useEffect(() => {
+    const c = scrollRef.current, a = anchorRef.current;
+    if (!c || !a) return;
+    // scroll the chat container (not the window) so the question sits at the top
+    c.scrollTo({ top: Math.max(0, a.offsetTop - 12), behavior: 'smooth' });
+  }, [msgs, busy]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ask = async (q: string) => {
     if (!q.trim() || busy || !ctx) return;
@@ -110,12 +119,14 @@ export default function ChatDock() {
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
         {msgs.map((m, i) => (
           m.role === 'user' ? (
-            <div key={i} style={{ alignSelf: 'flex-end', maxWidth: '90%', background: T.ink, color: T.inverse, padding: '9px 12px', borderRadius: 8, ...mono(12, T.inverse) }}>{m.text}</div>
+            <div key={i} ref={i === lastUserIdx ? anchorRef : undefined} style={{ alignSelf: 'flex-end', maxWidth: '90%', background: T.ink, color: T.inverse, padding: '9px 12px', borderRadius: 8, ...mono(12, T.inverse), scrollMarginTop: 12 }}>{m.text}</div>
           ) : (
             <div key={i} style={{ alignSelf: 'stretch', maxWidth: '100%' }}><Markdown text={m.text} /></div>
           )
         ))}
         {busy && <div style={mono(11, T.muted)}>› thinking…</div>}
+        {/* tail spacer so a short answer can still scroll its question to the top */}
+        <div style={{ minHeight: '60vh', flexShrink: 0 }} aria-hidden />
       </div>
 
       <div style={{ padding: '10px 14px', borderTop: `1px solid ${T.borderSoft}` }}>
