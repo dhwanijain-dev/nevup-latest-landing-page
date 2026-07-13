@@ -16,8 +16,12 @@ export const T = {
   green: '#1f9d6b',
   ghost: '#7a5af5',
   gold: '#E8B84B',
+  // Both the prose ('serif') and the UI/label ('mono') tokens are IBM Plex Sans
+  // so the whole app reads like tryinvesti (clean sans), not a monospace
+  // terminal. `num` is IBM Plex Mono, reserved for tabular figures.
   serif: "'IBM Plex Sans', system-ui, sans-serif",
-  mono: "'IBM Plex Mono', ui-monospace, monospace",
+  mono: "'IBM Plex Sans', system-ui, sans-serif",
+  num: "'IBM Plex Mono', ui-monospace, monospace",
   inverse: '#ffffff',
 } as const;
 

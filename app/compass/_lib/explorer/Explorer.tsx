@@ -162,7 +162,7 @@ export default function Explorer({ symbol, onOpen }: { symbol: string; onOpen?: 
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '16px 22px 10px', flexWrap: 'wrap' }}>
             <span style={mono(20, T.ink, 700)}>{x.name}</span>
             <span style={mono(11, T.muted)}>{x.symbol} · {x.exchange}</span>
-            <span style={{ marginLeft: 'auto', ...mono(20, T.ink, 700) }}>{px(x.price, x.currency)}</span>
+            <span style={{ marginLeft: 'auto', ...mono(20, T.ink, 700), fontFamily: T.num }}>{px(x.price, x.currency)}</span>
             {x.changePct != null && <span style={mono(12, g(x.changePct), 700)}>{sgn(x.changePct, 2)} today</span>}
           </div>
           <div style={{ display: 'flex', borderBottom: `1px solid ${T.border}`, overflowX: 'auto', padding: '0 12px' }}>
@@ -307,7 +307,7 @@ function KV({ k, v }: { k: string; v: string }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, borderBottom: `1px solid ${T.borderSoft}`, padding: '6px 0' }}>
       <span style={mono(11, T.muted)}>{k}</span>
-      <b style={{ ...mono(11.5, T.ink, 700), textAlign: 'right' }}>{v}</b>
+      <b style={{ ...mono(11.5, T.ink, 700), fontFamily: T.num, textAlign: 'right' }}>{v}</b>
     </div>
   );
 }

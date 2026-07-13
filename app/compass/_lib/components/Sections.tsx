@@ -46,7 +46,7 @@ export function Hero({ embedded, headline, sub, stats }: HeroProps = {}) {
       <div style={{ display: 'flex', gap: 30, marginTop: 34, flexWrap: 'wrap' }}>
         {strip.map(([v, k]) => (
           <div key={k}>
-            <div style={{ fontFamily: T.mono, fontSize: 26, fontWeight: 700, color: T.ink }}>{v}</div>
+            <div style={{ fontFamily: T.num, fontSize: 26, fontWeight: 700, color: T.ink }}>{v}</div>
             <div style={{ ...statLabel, marginTop: 4 }}>{k}</div>
           </div>
         ))}
@@ -75,7 +75,7 @@ export function DnaSection({ dna, caption }: { dna?: DnaData; caption?: string }
             {d.facts.map(([k, v]) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, fontFamily: T.mono, fontSize: 12, borderBottom: `1px dashed ${T.border}`, paddingBottom: 7 }}>
                 <span style={{ color: T.muted }}>{k}</span>
-                <b style={{ color: T.ink, textAlign: 'right', whiteSpace: 'nowrap' }}>{v}</b>
+                <b style={{ fontFamily: T.num, color: T.ink, textAlign: 'right', whiteSpace: 'nowrap' }}>{v}</b>
               </div>
             ))}
           </div>

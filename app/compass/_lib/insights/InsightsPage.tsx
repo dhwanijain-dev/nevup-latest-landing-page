@@ -510,7 +510,7 @@ function Compounding({ x }: { x: Insights }) {
             background: i === rows.length - 1 ? T.panelAlt : 'transparent',
           }}>
             <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 700, color: i === rows.length - 1 ? T.ghost : T.ink }}>{label}</span>
-            <span style={{ marginLeft: 'auto', fontFamily: T.mono, fontSize: 18, fontWeight: 700, color: T.red, whiteSpace: 'nowrap' }}>{inr(-Math.abs(v))}</span>
+            <span style={{ marginLeft: 'auto', fontFamily: T.num, fontSize: 18, fontWeight: 700, color: T.red, whiteSpace: 'nowrap' }}>{inr(-Math.abs(v))}</span>
           </div>
         ))}
       </div>

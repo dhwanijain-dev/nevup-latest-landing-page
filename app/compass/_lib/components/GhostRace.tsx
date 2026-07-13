@@ -176,7 +176,7 @@ function Stat({ label, value, color }: { label: string; value: string; color: st
   return (
     <div>
       <div style={statLabel}>{label}</div>
-      <div style={{ fontFamily: T.mono, fontSize: 22, fontWeight: 700, color, marginTop: 2 }}>{value}</div>
+      <div style={{ fontFamily: T.num, fontSize: 22, fontWeight: 700, color, marginTop: 2 }}>{value}</div>
     </div>
   );
 }
