@@ -138,11 +138,13 @@ export default function App() {
       <RailItem
         icon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: T.ink, display: 'inline-block', animation: 'compassBlink 1.4s ease-in-out infinite' }} />}
         label="My Insights" active={isInsights} onClick={() => setActive('insights')} />
-      <RailItem
-        icon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: T.ink, display: 'inline-block', animation: 'compassBlink 1.4s ease-in-out infinite' }} />}
-        label="Portfolio" active={isPortfolio} onClick={() => setActive('portfolio')} />
-      {/* on phones there is no room for the full workspace - keep a compact Explorer entry */}
-      {narrow && <RailItem icon="◈" label="Explorer" active={isSym(active)} disabled={!unlocked} onClick={openExplorer} />}
+      {/* Portfolio + Explorer unlock only after a CSV is analyzed */}
+      {unlocked && (
+        <RailItem
+          icon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: T.ink, display: 'inline-block', animation: 'compassBlink 1.4s ease-in-out infinite' }} />}
+          label="Portfolio" active={isPortfolio} onClick={() => setActive('portfolio')} />
+      )}
+      {narrow && unlocked && <RailItem icon="◈" label="Explorer" active={isSym(active)} onClick={openExplorer} />}
 
       {!narrow && unlocked && (
         <>
@@ -167,27 +169,29 @@ export default function App() {
         </>
       )}
 
-      {/* upload-another sits just above the user block */}
-      {unlocked && !narrow && (
-        <div style={{ marginTop: 'auto', borderTop: `1px solid ${T.borderSoft}`, paddingTop: 6 }}>
-          <RailItem icon="↺" label="Upload another CSV" onClick={() => {
-            setActive('insights');
-            window.dispatchEvent(new Event('compass:reset'));
-          }} />
-        </div>
-      )}
-      {unlocked && narrow && (
-        <RailItem icon="↺" label="Upload CSV" onClick={() => { setActive('insights'); window.dispatchEvent(new Event('compass:reset')); }} />
-      )}
+      {/* everything below is pinned to the bottom of the rail */}
+      <div style={narrow ? { display: 'contents' } : { marginTop: 'auto' }}>
+        {unlocked && !narrow && (
+          <div style={{ borderTop: `1px solid ${T.borderSoft}`, paddingTop: 6 }}>
+            <RailItem icon="↺" label="Upload another CSV" onClick={() => {
+              setActive('insights');
+              window.dispatchEvent(new Event('compass:reset'));
+            }} />
+          </div>
+        )}
+        {unlocked && narrow && (
+          <RailItem icon="↺" label="Upload CSV" onClick={() => { setActive('insights'); window.dispatchEvent(new Event('compass:reset')); }} />
+        )}
 
-      {/* reach-out line */}
-      {!narrow && (
-        <div style={{ ...mono(11.5, T.ink), padding: '6px 10px 8px', lineHeight: 1.55 }}>
-          Reach out to us at{' '}
-          <a href="mailto:connect@nevup.in" style={{ color: '#f15a24', textDecoration: 'none', fontWeight: 700 }}>connect@nevup.in</a>{' '}
-          for any feedback or help.
-        </div>
-      )}
+        {/* reach-out line */}
+        {!narrow && (
+          <div style={{ ...mono(11.5, T.ink), padding: '6px 10px 8px', lineHeight: 1.55 }}>
+            Reach out to us at{' '}
+            <a href="mailto:connect@nevup.in" style={{ color: '#f15a24', textDecoration: 'none', fontWeight: 700 }}>connect@nevup.in</a>{' '}
+            for any feedback or help.
+          </div>
+        )}
+      </div>
 
       {/* user block, bottom */}
       <div ref={userRef} style={{ marginTop: narrow ? 0 : 4, marginLeft: narrow ? 'auto' : 0, position: 'relative' }}>
@@ -232,7 +236,7 @@ export default function App() {
   const docTabs = (
     <div style={{ display: 'flex', alignItems: 'stretch', gap: 1, background: T.panelAlt, borderBottom: `1px solid ${T.border}`, overflowX: 'auto' }}>
       <DocTab icon="◉" label="My Insights" active={isInsights} onClick={() => setActive('insights')} />
-      <DocTab icon="▦" label="Portfolio" active={isPortfolio} onClick={() => setActive('portfolio')} />
+      {unlocked && <DocTab icon="▦" label="Portfolio" active={isPortfolio} onClick={() => setActive('portfolio')} />}
       {openSyms.map(s => (
         <DocTab key={s} icon="▤" label={s} active={activeSym === s} onClick={() => setActive({ sym: s })} onClose={() => closeSymbol(s)} />
       ))}
@@ -266,8 +270,8 @@ export default function App() {
           <div style={{ flex: 1, minWidth: 0 }}>{main}</div>
         </main>
 
-        {/* analyst chat on every page except the Portfolio teaser */}
-        {!isPortfolio && (
+        {/* analyst chat: only once a CSV is analyzed, and not on the Portfolio teaser */}
+        {unlocked && !isPortfolio && (
           <aside style={narrow
             ? { order: 3, borderTop: `1px solid ${T.border}`, height: '78vh', overflow: 'hidden', overscrollBehavior: 'contain' }
             : { order: 3, width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, height: '100dvh', overflow: 'hidden', overscrollBehavior: 'contain' }}>
