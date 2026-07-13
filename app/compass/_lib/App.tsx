@@ -75,10 +75,10 @@ export default function App() {
   const rail = (
     <>
       <style>{`@keyframes compassBlink{0%,100%{opacity:1}50%{opacity:0.15}}`}</style>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: narrow ? 0 : '2px 10px 16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: narrow ? 0 : '2px 10px 16px' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/darknevuplogo.png" alt="NevUp" style={{ height: 20, width: 'auto', display: 'block' }} />
-        <span style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 700, letterSpacing: '0.06em', color: T.ink }}>Compass</span>
+        <img src="/nevup-emblem.png" alt="NevUp" style={{ height: 20, width: 'auto', display: 'block' }} />
+        <span style={{ fontFamily: T.mono, fontSize: 14.5, fontWeight: 700, letterSpacing: '0.04em', color: T.ink, whiteSpace: 'nowrap' }}>NevUp Compass</span>
       </div>
       <RailItem
         icon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: T.ink, display: 'inline-block', animation: 'compassBlink 1.4s ease-in-out infinite' }} />}

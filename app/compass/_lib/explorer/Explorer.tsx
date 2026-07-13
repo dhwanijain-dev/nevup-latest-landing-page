@@ -146,9 +146,9 @@ export default function Explorer({ symbol, onOpen }: { symbol: string; onOpen?: 
       {loading && <div style={{ padding: 60, textAlign: 'center', ...mono(12, T.muted) }}>Loading live data…</div>}
       {!loading && error && (
         <div style={{ padding: 40 }}>
-          <div style={{ ...mono(12, T.red, 700) }}>Data source unavailable</div>
-          <div style={{ fontFamily: T.serif, fontSize: 14, color: T.body, marginTop: 8, maxWidth: 480 }}>
-            {error}. Nothing is shown rather than showing stale or invented numbers - retry in a moment.
+          <div style={{ ...mono(12, T.ink, 700) }}>Our servers are a little busy</div>
+          <div style={{ fontFamily: T.serif, fontSize: 14, color: T.body, marginTop: 8, maxWidth: 480, lineHeight: 1.6 }}>
+            There is a heavy load right now and we are on it. Please wait a moment and open this again shortly.
           </div>
         </div>
       )}
