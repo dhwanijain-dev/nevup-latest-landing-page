@@ -109,16 +109,34 @@ export default function Explorer({ symbol }: { symbol: string }) {
     greeting: `Ask me anything about ${x.name} (${x.symbol}) - answers are computed from the live data on this page and your own history on it.`,
     chips: ['Revenue trend?', 'EPS beats?', 'Who owns it?', 'How did I do on this?', 'How volatile is it?'],
     facts: {
-      symbol: x.symbol, name: x.name, currency: x.currency, price: x.price, changePct: x.changePct,
+      symbol: x.symbol, name: x.name, exchange: x.exchange, currency: x.currency,
+      price: x.price, prevClose: x.prevClose, changePct: x.changePct,
+      marketCap: x.marketCap, dayRange: [x.dayLow, x.dayHigh], range52w: [x.low52, x.high52],
+      volume: x.volume, avgVolume: x.avgVolume, beta: x.beta, epsTtm: x.epsTtm, divYield: x.divYield,
+      // company (so the chat can answer "what does it do", sector, size, etc.)
+      company: x.profile ? {
+        sector: x.profile.sector, industry: x.profile.industry, employees: x.profile.employees,
+        country: x.profile.country, ceo: x.profile.ceo, website: x.profile.website,
+        description: x.profile.description?.slice(0, 900),
+      } : null,
+      // statements + estimates + quality (real)
       fiscalYears: x.fy, quarterly: x.quarterly, forwardEstimates: x.fwdEstimates,
+      margins: x.margins, creditLatest: x.creditLatest, quality: x.quality, capitalAllocation: x.capitalAllocation,
+      // ownership
       holders: x.holders?.top, institutionalPct: x.holders?.instPct, insiderPct: x.holders?.insiderPct,
+      // analysts + earnings
+      consensus: x.consensus, ratingsTrend: x.ratingsTrend, ratingActions: x.actions?.slice(0, 8),
+      epsHistory: x.epsHistory, nextEarnings: x.nextEarnings,
+      // technicals + news
       analytics: x.analytics,
       priceStats: x.priceHistory?.close.length ? {
         closes: x.priceHistory.close.length, last: x.priceHistory.close.at(-1),
         low: Math.min(...x.priceHistory.close), high: Math.max(...x.priceHistory.close),
       } : null,
-      consensus: x.consensus, margins: x.margins, creditLatest: x.creditLatest, beta: x.beta,
-      valuation: computeValuation(x),   // real P/E, EV/EBITDA, FCF yield, DCF, quality, etc.
+      news: x.news?.slice(0, 8).map(nw => ({ title: nw.title, publisher: nw.publisher, ago: nw.ago })),
+      peers: x.peers,
+      // precomputed valuation + the trader's own history on this symbol
+      valuation: computeValuation(x),
       yourHistoryOnThisSymbol: userSymbolContext(x.symbol),
     },
   } : null);

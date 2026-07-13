@@ -67,4 +67,5 @@ export interface XData {
   margins?: { gross?: number; operating?: number; profit?: number; fcfMargin?: number; roe?: number; roa?: number };
 
   news?: { title: string; publisher: string; link?: string; ago?: string }[];
+  peers?: string[];   // competitors (Finnhub, when configured)
 }

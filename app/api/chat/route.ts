@@ -58,7 +58,7 @@ interface ChatBody {
 }
 
 const MAX_QUESTION = 600;
-const MAX_FACTS = 24_000;
+const MAX_FACTS = 40_000;
 
 const SYSTEM = `You are Compass's personal equity + trading analyst. You produce sharp, well-structured, institutional-quality answers using only the figures in the DATA section.
 

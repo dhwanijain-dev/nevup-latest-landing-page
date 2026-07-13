@@ -211,6 +211,29 @@ export async function handle(
       return { ok: true, data, stale };
     }
 
+    // ── Finnhub: free second source (peers, analyst recommendation, metrics) ──
+    // Activates when FINNHUB_KEY is set. Complements Yahoo, especially peers/
+    // competitors which Yahoo does not provide. Only a small allowlist of
+    // read-only endpoints is proxied.
+    if (fn === 'finnhub') {
+      const fkey = process.env.FINNHUB_KEY;
+      if (!fkey) return { ok: false, error: 'Finnhub not configured' };
+      const symbol = params.symbol ?? '';
+      if (!SYM_RE.test(symbol)) return { ok: false, error: 'Invalid symbol' };
+      const EP: Record<string, string> = {
+        peers: 'stock/peers', recommendation: 'stock/recommendation',
+        metric: 'stock/metric?metric=all', profile: 'stock/profile2', quote: 'quote',
+      };
+      const epKey = params.ep ?? '';
+      if (!EP[epKey]) return { ok: false, error: 'Bad finnhub endpoint' };
+      const sep = EP[epKey].includes('?') ? '&' : '?';
+      const key = `fh:${epKey}:${symbol}`;
+      const { data, stale } = await cachedCall(key, 'summary', () => yget(
+        `https://finnhub.io/api/v1/${EP[epKey]}${sep}symbol=${encodeURIComponent(symbol)}&token=${fkey}`,
+        false));
+      return { ok: true, data, stale };
+    }
+
     if (fn === 'timeseries') {
       const symbol = params.symbol ?? '';
       if (!SYM_RE.test(symbol)) return { ok: false, error: 'Invalid symbol' };

@@ -100,11 +100,14 @@ function parseTimeseries(raw: any): Map<string, Record<string, number>> {
 }
 
 export async function loadInstrument(symbol: string): Promise<XData> {
-  const [sumRaw, chartRaw, newsRaw, tsRaw] = await Promise.all([
+  const [sumRaw, chartRaw, newsRaw, tsRaw, peersRaw, recRaw] = await Promise.all([
     proxy({ fn: 'summary', symbol, modules: MODULES }),
     proxy({ fn: 'chart', symbol, range: '1y', interval: '1d' }).catch(() => null),
     proxy({ fn: 'search', q: symbol }).catch(() => null),
     proxy({ fn: 'timeseries', symbol, types: TS_TYPES }).catch(() => null),
+    // second source (Finnhub) - dormant unless FINNHUB_KEY is set; never blocks
+    proxy({ fn: 'finnhub', ep: 'peers', symbol }).catch(() => null),
+    proxy({ fn: 'finnhub', ep: 'recommendation', symbol }).catch(() => null),
   ]);
   const ts = parseTimeseries(tsRaw);
   const r = sumRaw?.quoteSummary?.result?.[0];
@@ -415,8 +418,23 @@ export async function loadInstrument(symbol: string): Promise<XData> {
     })).filter(nn => nn.title);
   }
 
+  // second source (Finnhub): peers/competitors (Yahoo does not supply these)
+  if (Array.isArray(peersRaw) && peersRaw.length) {
+    x.peers = peersRaw.filter((p: unknown) => typeof p === 'string' && p !== symbol).slice(0, 10);
+  }
+  // if Yahoo had no analyst consensus, backfill counts from Finnhub's latest
+  if (!x.consensus && Array.isArray(recRaw) && recRaw.length) {
+    const l = recRaw[0] ?? {};
+    x.consensus = {
+      strongBuy: num(l.strongBuy), buy: num(l.buy), hold: num(l.hold),
+      sell: num(l.sell), strongSell: num(l.strongSell),
+      analysts: num(l.strongBuy) + num(l.buy) + num(l.hold) + num(l.sell) + num(l.strongSell),
+    };
+  }
+
   return x;
 }
+function num(v: unknown): number { return typeof v === 'number' && Number.isFinite(v) ? v : 0; }
 
 function relTime(ms: number): string {
   const h = Math.floor((Date.now() - ms) / 3_600_000);
