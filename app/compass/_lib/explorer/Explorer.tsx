@@ -146,9 +146,9 @@ export default function Explorer({ symbol, onOpen }: { symbol: string; onOpen?: 
       {loading && <div style={{ padding: 60, textAlign: 'center', ...mono(12, T.muted) }}>Loading live data…</div>}
       {!loading && error && (
         <div style={{ padding: 40 }}>
-          <div style={{ ...mono(12, T.ink, 700) }}>Our servers are a little busy</div>
+          <div style={{ ...mono(12, T.ink, 700) }}>High demand right now</div>
           <div style={{ fontFamily: T.serif, fontSize: 14, color: T.body, marginTop: 8, maxWidth: 480, lineHeight: 1.6 }}>
-            There is a heavy load right now and we are on it. Please wait a moment and open this again shortly.
+            A lot of traders are analyzing their trading on our OS right now. We are scaling up resources to keep up. Please give it a moment and try again.
           </div>
         </div>
       )}
