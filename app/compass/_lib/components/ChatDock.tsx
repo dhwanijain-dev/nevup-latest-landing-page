@@ -15,7 +15,7 @@ const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
 interface Msg { role: 'user' | 'assistant'; text: string; sources?: string[] }
 
 // Render the assistant's markdown (tables, headings, bold, lists) styled for
-// the white theme + Quicksand. This is what turns raw "**315.32**" and pipe
+// the white theme (IBM Plex Sans). This is what turns raw "**315.32**" and pipe
 // tables into the polished, tryinvesti-grade output.
 function Markdown({ text }: { text: string }) {
   return (
