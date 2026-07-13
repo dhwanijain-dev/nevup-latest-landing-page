@@ -260,7 +260,7 @@ export default function App() {
           gap: 8, flexWrap: 'wrap', position: 'sticky', top: 0, background: T.bg, zIndex: 20,
         } : {
           order: 1, width: 210, flexShrink: 0, borderRight: `1px solid ${T.border}`, padding: '18px 8px 12px',
-          position: 'sticky', top: 0, height: '100dvh', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto',
+          position: 'sticky', top: 0, alignSelf: 'flex-start', height: '100dvh', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto',
         }}>
           {rail}
         </aside>
@@ -274,7 +274,7 @@ export default function App() {
         {unlocked && !isPortfolio && (
           <aside style={narrow
             ? { order: 3, borderTop: `1px solid ${T.border}`, height: '78vh', overflow: 'hidden', overscrollBehavior: 'contain' }
-            : { order: 3, width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, height: '100dvh', overflow: 'hidden', overscrollBehavior: 'contain' }}>
+            : { order: 3, width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, alignSelf: 'flex-start', height: '100dvh', overflow: 'hidden', overscrollBehavior: 'contain' }}>
             <ChatDock />
           </aside>
         )}
