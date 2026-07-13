@@ -26,12 +26,14 @@ export default function CompassLayout({ children }: { children: ReactNode }) {
         .compass-root, .compass-root * { box-sizing: border-box; }
         .compass-root { -webkit-tap-highlight-color: transparent; }
       `}</style>
+      {/* No overflow on this wrapper: setting overflow here would make it a
+          scroll container and break position:sticky for the sidebar + chat.
+          Horizontal overflow is contained on html/body instead. */}
       <div
         className="compass-root"
         style={{
           minHeight: '100dvh',
           background: '#ffffff',
-          overflowX: 'hidden',
           paddingLeft: 'env(safe-area-inset-left)',
           paddingRight: 'env(safe-area-inset-right)',
         }}
