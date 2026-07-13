@@ -21,6 +21,21 @@ const pctF = (v: number) => `${Math.round(v * 100)}%`;
 
 // Trader's first name for personalization: prefer the Google profile name,
 // else derive from the email local-part. Empty string if we truly have nothing.
+// Unique tradeable symbols from the parsed trades (add .NS for Indian) - used
+// to auto-populate the Explorer workspace with the trader's own instruments.
+function storeTradedSymbols(r: ParseReport): void {
+  try {
+    const suffix = r.marketHint === 'INR' ? '.NS' : '';
+    const syms = Array.from(new Set(
+      (r.trades as NormTrade[]).map(t => {
+        const base = (t.symbol || '').toUpperCase();
+        return base.includes('.') ? base : (base ? base + suffix : '');
+      }).filter(Boolean),
+    )).slice(0, 20);
+    localStorage.setItem('compass_symbols', JSON.stringify(syms));
+  } catch { /* ignore */ }
+}
+
 function traderFirstName(): string {
   try {
     const u = (window as unknown as { __compassUser?: { name?: string; email?: string } }).__compassUser;
@@ -57,7 +72,7 @@ export default function InsightsPage() {
       const name = localStorage.getItem('compass_csv_name') ?? 'your upload';
       if (raw) {
         const r = parseTradeCsv(raw);
-        if (r.ok) { setReport(r); setFileName(name); }
+        if (r.ok) { setReport(r); setFileName(name); storeTradedSymbols(r); }
       }
     } catch { /* ignore */ }
   }, [report]);
@@ -114,16 +129,8 @@ export default function InsightsPage() {
             // symbol (skip if unusually large to stay within storage limits)
             const packed = JSON.stringify(r.trades);
             if (packed.length < 3_000_000) localStorage.setItem('compass_trades', packed);
-            // auto-open the instruments the trader actually traded in Explorer.
-            // Add the exchange suffix so Yahoo resolves Indian tickers (.NS).
-            const suffix = r.marketHint === 'INR' ? '.NS' : '';
-            const syms = Array.from(new Set(
-              (r.trades as NormTrade[]).map(t => {
-                const base = (t.symbol || '').toUpperCase();
-                return base.includes('.') ? base : (base ? base + suffix : '');
-              }).filter(Boolean),
-            )).slice(0, 20);
-            localStorage.setItem('compass_symbols', JSON.stringify(syms));
+            // auto-open the instruments the trader actually traded in Explorer
+            storeTradedSymbols(r);
             // stash the raw file so a reload keeps the analysis (persistence)
             if (text.length < 6_000_000) {
               localStorage.setItem('compass_csv', text);
