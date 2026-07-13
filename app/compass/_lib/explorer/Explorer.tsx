@@ -71,51 +71,35 @@ const COMPASS_SAMPLES: Record<string, string> = {
   MSFT: 'Sample: 9 trades, 78% win rate, process score 84 - your calmest ticker. The DNA report says size these up.',
 };
 
-export default function Explorer() {
+// Controlled single-instrument view. The terminal shell owns the tab bar, the
+// search, and the open-instrument list; this component just loads and renders
+// the stock view for whichever `symbol` it is handed, and publishes that
+// instrument's real figures to the shared analyst chat.
+export default function Explorer({ symbol }: { symbol: string }) {
   const [x, setX] = useState<XData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stale, setStale] = useState(false);
   const [tab, setTab] = useState<Tab>('Overview');
-  const [recent, setRecent] = useState<string[]>(['AAPL', 'RELIANCE.NS', 'NVDA', 'TCS.NS']);
-  const [openTabs, setOpenTabs] = useState<string[]>(['AAPL']);   // terminal tabs (open instruments)
-  const [active, setActive] = useState<string>('AAPL');           // active tab symbol
   const loadSeq = useRef(0);
-  const narrow = useNarrow();
 
-  const load = useCallback(async (symbol: string) => {
+  useEffect(() => {
     const seq = ++loadSeq.current;
-    setLoading(true);
-    setError(null);
-    resetStale();
-    try {
-      const data = await loadInstrument(symbol);
-      if (seq !== loadSeq.current) return; // superseded by a newer request
-      setX(data);
-      setStale(wasStale());
-      setTab('Overview');
-      setActive(data.symbol);
-      setOpenTabs(t => (t.includes(data.symbol) ? t : [...t, data.symbol]));
-      setRecent(r => [data.symbol, ...r.filter(s => s !== data.symbol)].slice(0, 8));
-    } catch (e) {
-      if (seq !== loadSeq.current) return;
-      setError(e instanceof Error ? e.message : 'Load failed');
-    } finally {
-      if (seq === loadSeq.current) setLoading(false);
-    }
-  }, []);
+    setLoading(true); setError(null); resetStale();
+    (async () => {
+      try {
+        const data = await loadInstrument(symbol);
+        if (seq !== loadSeq.current) return;
+        setX(data); setStale(wasStale()); setTab('Overview');
+      } catch (e) {
+        if (seq !== loadSeq.current) return;
+        setError(e instanceof Error ? e.message : 'Load failed');
+      } finally {
+        if (seq === loadSeq.current) setLoading(false);
+      }
+    })();
+  }, [symbol]);
 
-  const closeTab = useCallback((sym: string) => {
-    setOpenTabs(t => {
-      const next = t.filter(s => s !== sym);
-      if (sym === active && next.length) load(next[next.length - 1]);
-      return next.length ? next : t; // never close the last tab
-    });
-  }, [active, load]);
-
-  useEffect(() => { load('AAPL'); }, [load]);
-
-  // publish this instrument's real figures to the shared analyst chat
   usePublishChat(x ? {
     scope: `explorer:${x.symbol}`,
     title: `ASK ABOUT ${x.symbol}`,
@@ -137,107 +121,55 @@ export default function Explorer() {
   } : null);
 
   return (
-    <div style={{ maxWidth: 1560, margin: '0 auto', padding: '20px 20px 60px' }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, borderBottom: `2px solid ${T.ink}`, paddingBottom: 12, flexWrap: 'wrap' }}>
-        <a href="#/insights" style={{ ...mono(15, T.ink, 700), letterSpacing: '0.08em', textDecoration: 'none' }}>COMPASS</a>
-        <span style={statLabel}>Explorer - live</span>
-        <span style={{ ...statLabel, marginLeft: 'auto', color: T.faint }}>US · India (NSE/BSE) · data: Yahoo Finance, delayed</span>
-      </div>
-
-      {/* terminal tab strip: every open instrument is a tab */}
-      <div style={{ display: 'flex', alignItems: 'stretch', gap: 2, borderLeft: `1px solid ${T.border}`, borderRight: `1px solid ${T.border}`, background: T.panelAlt, overflowX: 'auto' }}>
-        {openTabs.map(sym => (
-          <div key={sym} onClick={() => sym !== active && load(sym)} style={{
-            display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', cursor: 'pointer',
-            background: sym === active ? T.bg : 'transparent',
-            borderTop: sym === active ? `2px solid ${T.ghost}` : '2px solid transparent',
-            ...mono(11, sym === active ? T.ink : T.muted, sym === active ? 700 : 400), whiteSpace: 'nowrap',
-          }}>
-            {sym}
-            {openTabs.length > 1 && (
-              <span onClick={e => { e.stopPropagation(); closeTab(sym); }}
-                style={{ ...mono(12, T.faint), lineHeight: 1, padding: '0 2px' }} aria-label={`Close ${sym}`}>×</span>
-            )}
-          </div>
-        ))}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '0 10px', ...mono(15, T.muted), cursor: 'default' }} title="Search on the left to open a new tab">+</div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '210px minmax(0,1fr)', border: `1px solid ${T.border}`, borderTop: 'none', minHeight: narrow ? 0 : 700 }}>
-        {/* rail: search + recents */}
-        <div style={{ borderRight: `1px solid ${T.border}`, background: T.panel, minWidth: 0 }}>
-          <SearchBox onPick={load} />
-          <div style={{ ...statLabel, padding: '12px 14px 4px' }}>Recent</div>
-          {recent.map(sym => (
-            <button key={sym} onClick={() => load(sym)} style={{
-              display: 'block', width: '100%', textAlign: 'left', padding: '8px 14px',
-              background: x?.symbol === sym ? T.panelAlt : 'transparent',
-              border: 'none', borderLeft: x?.symbol === sym ? `2px solid ${T.gold}` : '2px solid transparent',
-              cursor: 'pointer', ...mono(12, T.ink, x?.symbol === sym ? 700 : 400),
-            }}>{sym}</button>
-          ))}
-          <div style={{ padding: 14, fontFamily: T.serif, fontStyle: 'italic', fontSize: 11.5, color: T.faint, lineHeight: 1.5 }}>
-            Search any US or Indian listing - try RELIANCE.NS, HDFCBANK.NS, or any ticker.
+    <div style={{ minWidth: 0 }}>
+      {loading && <div style={{ padding: 60, textAlign: 'center', ...mono(12, T.muted) }}>Loading live data…</div>}
+      {!loading && error && (
+        <div style={{ padding: 40 }}>
+          <div style={{ ...mono(12, T.red, 700) }}>Data source unavailable</div>
+          <div style={{ fontFamily: T.serif, fontSize: 14, color: T.body, marginTop: 8, maxWidth: 480 }}>
+            {error}. Nothing is shown rather than showing stale or invented numbers - retry in a moment.
           </div>
         </div>
-
-        {/* center */}
-        <div style={{ minWidth: 0 }}>
-          {loading && (
-            <div style={{ padding: 60, textAlign: 'center', ...mono(12, T.muted) }}>Loading live data…</div>
-          )}
-          {!loading && error && (
-            <div style={{ padding: 40 }}>
-              <div style={{ ...mono(12, T.red, 700) }}>Data source unavailable</div>
-              <div style={{ fontFamily: T.serif, fontSize: 14, color: T.body, marginTop: 8, maxWidth: 480 }}>
-                {error}. Nothing is shown rather than showing stale or invented numbers - retry in a moment.
-              </div>
+      )}
+      {!loading && !error && x && (
+        <>
+          {stale && (
+            <div style={{ ...mono(10, T.gold, 700), background: 'rgba(232,184,75,0.1)', borderBottom: `1px solid ${T.gold}`, padding: '6px 22px' }}>
+              ⚠ Data source is throttling - showing the last good snapshot (may be up to a day old).
             </div>
           )}
-          {!loading && !error && x && (
-            <>
-              {stale && (
-                <div style={{ ...mono(10, T.gold, 700), background: 'rgba(232,184,75,0.1)', borderBottom: `1px solid ${T.gold}`, padding: '6px 22px' }}>
-                  ⚠ Data source is throttling - showing the last good snapshot (may be up to a day old).
-                </div>
-              )}
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '16px 22px 10px', flexWrap: 'wrap' }}>
-                <span style={mono(20, T.ink, 700)}>{x.name}</span>
-                <span style={mono(11, T.muted)}>{x.symbol} · {x.exchange}</span>
-                <span style={{ marginLeft: 'auto', ...mono(20, T.ink, 700) }}>{px(x.price, x.currency)}</span>
-                {x.changePct != null && (
-                  <span style={mono(12, g(x.changePct), 700)}>{sgn(x.changePct, 2)} today</span>
-                )}
-              </div>
-              <div style={{ display: 'flex', borderBottom: `1px solid ${T.border}`, overflowX: 'auto', padding: '0 12px' }}>
-                {TABS.map(t => (
-                  <button key={t} onClick={() => setTab(t)} style={{
-                    padding: '9px 14px', background: 'transparent', border: 'none',
-                    borderBottom: tab === t ? `2px solid ${T.gold}` : '2px solid transparent',
-                    ...mono(11, tab === t ? T.ink : T.muted, tab === t ? 700 : 400),
-                    letterSpacing: '0.06em', cursor: 'pointer', whiteSpace: 'nowrap',
-                  }}>{t}</button>
-                ))}
-              </div>
-              <div style={{ padding: '16px 22px' }}>
-                {tab === 'Overview' && <Overview x={x} />}
-                {tab === 'Financials' && <Financials x={x} />}
-                {tab === 'Earnings' && <Earnings x={x} />}
-                {tab === 'Holders' && <Holders x={x} />}
-                {tab === 'Analysis' && <Analysis x={x} />}
-                {tab === 'Analytics' && <Analytics x={x} />}
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '16px 22px 10px', flexWrap: 'wrap' }}>
+            <span style={mono(20, T.ink, 700)}>{x.name}</span>
+            <span style={mono(11, T.muted)}>{x.symbol} · {x.exchange}</span>
+            <span style={{ marginLeft: 'auto', ...mono(20, T.ink, 700) }}>{px(x.price, x.currency)}</span>
+            {x.changePct != null && <span style={mono(12, g(x.changePct), 700)}>{sgn(x.changePct, 2)} today</span>}
+          </div>
+          <div style={{ display: 'flex', borderBottom: `1px solid ${T.border}`, overflowX: 'auto', padding: '0 12px' }}>
+            {TABS.map(t => (
+              <button key={t} onClick={() => setTab(t)} style={{
+                padding: '9px 14px', background: 'transparent', border: 'none',
+                borderBottom: tab === t ? `2px solid ${T.gold}` : '2px solid transparent',
+                ...mono(11, tab === t ? T.ink : T.muted, tab === t ? 700 : 400),
+                letterSpacing: '0.06em', cursor: 'pointer', whiteSpace: 'nowrap',
+              }}>{t}</button>
+            ))}
+          </div>
+          <div style={{ padding: '16px 22px' }}>
+            {tab === 'Overview' && <Overview x={x} />}
+            {tab === 'Financials' && <Financials x={x} />}
+            {tab === 'Earnings' && <Earnings x={x} />}
+            {tab === 'Holders' && <Holders x={x} />}
+            {tab === 'Analysis' && <Analysis x={x} />}
+            {tab === 'Analytics' && <Analytics x={x} />}
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
-// ── search ──────────────────────────────────────────────────────────────────
-
-function SearchBox({ onPick }: { onPick: (s: string) => void }) {
+// Debounced instrument search, exported for the terminal shell's left rail.
+export function SearchBox({ onPick }: { onPick: (s: string) => void }) {
   const [q, setQ] = useState('');
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [open, setOpen] = useState(false);

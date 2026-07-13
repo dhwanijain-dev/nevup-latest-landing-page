@@ -1,94 +1,166 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { T } from './theme';
-import Explorer from './explorer/Explorer';
+import Explorer, { SearchBox } from './explorer/Explorer';
 import InsightsPage from './insights/InsightsPage';
 import ChatDock from './components/ChatDock';
 import { ChatProvider } from './chatContext';
 import { useNarrow } from './useViewport';
 
-// Terminal shell: a left nav (Insights, Explorer), the active page in the
-// centre, and one analyst chat on the right that follows whichever page is
-// open. Entry is always Insights (upload + real analysis); Explorer unlocks
-// once a CSV has been uploaded and processed.
+// Terminal shell, tryinvesti-style, on the white theme:
+//   [ left rail: nav + Explorer workspace + user ] [ top doc tabs + active view ] [ analyst chat ]
+// A "document" is either the Insights analysis or an open instrument. The top
+// tab bar holds every open document; the left rail hosts app nav plus the
+// Explorer workspace (search + open instruments); the right panel is one
+// analyst chat that follows the active document.
 
-function useRoute(): string {
-  const [route, setRoute] = useState(window.location.hash || '#/insights');
-  useEffect(() => {
-    const on = () => setRoute(window.location.hash || '#/insights');
-    window.addEventListener('hashchange', on);
-    return () => window.removeEventListener('hashchange', on);
-  }, []);
-  return route;
-}
-
-const isUnlocked = () => {
-  try { return localStorage.getItem('compass_unlocked') === '1'; }
-  catch { return false; }
-};
-
+const isUnlocked = () => { try { return localStorage.getItem('compass_unlocked') === '1'; } catch { return false; } };
 const ADMIN_EMAIL = 'vatsal2077@gmail.com';
 
+type Doc = 'insights' | { sym: string };
+const isSym = (d: Doc): d is { sym: string } => typeof d !== 'string';
+
 export default function App() {
-  const route = useRoute();
-  const wantsExplorer = route.startsWith('#/explorer');
+  const [active, setActive] = useState<Doc>('insights');
+  const [openSyms, setOpenSyms] = useState<string[]>([]);
   const [unlocked, setUnlocked] = useState(false);
   const [email, setEmail] = useState('');
+  const [userOpen, setUserOpen] = useState(false);
   const narrow = useNarrow();
 
   useEffect(() => {
-    setUnlocked(isUnlocked());
-    const u = (window as unknown as { __compassUser?: { email?: string } }).__compassUser;
-    setEmail(u?.email ?? '');
-    const iv = setInterval(() => setUnlocked(isUnlocked()), 800);
+    const sync = () => {
+      setUnlocked(isUnlocked());
+      const u = (window as unknown as { __compassUser?: { email?: string } }).__compassUser;
+      setEmail(u?.email ?? '');
+    };
+    sync();
+    const iv = setInterval(sync, 800);
     return () => clearInterval(iv);
-  }, [route]);
+  }, []);
 
-  const go = (hash: string) => { window.location.hash = hash; };
+  // keep the hash in sync so deep-links / reloads land on the right doc
+  useEffect(() => {
+    window.location.hash = isSym(active) ? '#/explorer' : '#/insights';
+  }, [active]);
+
+  const openSymbol = (sym: string) => {
+    const s = sym.toUpperCase();
+    setOpenSyms(list => (list.includes(s) ? list : [...list, s]));
+    setActive({ sym: s });
+  };
+  const closeSymbol = (sym: string) => {
+    setOpenSyms(list => {
+      const next = list.filter(s => s !== sym);
+      if (isSym(active) && active.sym === sym) setActive(next.length ? { sym: next[next.length - 1] } : 'insights');
+      return next;
+    });
+  };
+  const openExplorer = () => {
+    if (!unlocked) return;
+    if (openSyms.length) setActive({ sym: openSyms[openSyms.length - 1] });
+    else openSymbol('AAPL');
+  };
+
   const isAdmin = email.toLowerCase() === ADMIN_EMAIL;
+  const activeSym = isSym(active) ? active.sym : null;
 
-  const nav = (
+  // ── left rail ──────────────────────────────────────────────────────────────
+  const rail = (
     <>
-      <NavItem label="Insights" hint="your trades, analyzed" active={!wantsExplorer} onClick={() => go('#/insights')} narrow={narrow} />
-      <NavItem label="Explorer" hint="research + analyst" active={wantsExplorer} onClick={() => go('#/explorer')} narrow={narrow} />
+      <div style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 700, letterSpacing: '0.06em', color: T.ink, padding: narrow ? 0 : '2px 10px 16px' }}>
+        Compass
+      </div>
+      <RailItem icon="◉" label="Insights" active={!isSym(active)} onClick={() => setActive('insights')} />
+      <RailItem icon="◈" label="Explorer" active={isSym(active)} disabled={!unlocked} onClick={openExplorer} />
+
+      {!narrow && unlocked && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '18px 10px 4px' }}>
+            <span style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: '0.14em', color: T.faint }}>EXPLORER</span>
+          </div>
+          <SearchBox onPick={openSymbol} />
+          <div style={{ marginTop: 2 }}>
+            {openSyms.length === 0 && (
+              <div style={{ padding: '4px 12px', fontFamily: T.serif, fontStyle: 'italic', fontSize: 11, color: T.faint }}>
+                Search a ticker to open it.
+              </div>
+            )}
+            {openSyms.map(s => (
+              <div key={s} onClick={() => setActive({ sym: s })} style={{
+                display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', cursor: 'pointer',
+                background: activeSym === s ? T.panelAlt : 'transparent',
+                borderLeft: activeSym === s ? `2px solid ${T.ghost}` : '2px solid transparent',
+              }}>
+                <span style={{ fontFamily: T.mono, fontSize: 11.5, fontWeight: activeSym === s ? 700 : 400, color: T.ink }}>{s}</span>
+                <span onClick={e => { e.stopPropagation(); closeSymbol(s); }} style={{ marginLeft: 'auto', fontFamily: T.mono, fontSize: 12, color: T.faint, cursor: 'pointer' }}>×</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* user block, bottom */}
+      <div style={{ marginTop: narrow ? 0 : 'auto', marginLeft: narrow ? 'auto' : 0, position: 'relative' }}>
+        {userOpen && (isAdmin || email) && (
+          <div style={{ position: 'absolute', bottom: narrow ? 'auto' : '110%', top: narrow ? '110%' : 'auto', right: 0, left: narrow ? 'auto' : 0, background: '#fff', border: `1px solid ${T.border}`, boxShadow: '0 10px 30px rgba(20,23,29,0.12)', zIndex: 40 }}>
+            {isAdmin && <a href="/admin" style={{ display: 'block', padding: '9px 12px', ...linkStyle }}>Admin dashboard</a>}
+            <a href="/api/auth/signout" style={{ display: 'block', padding: '9px 12px', borderTop: isAdmin ? `1px solid ${T.borderSoft}` : 'none', ...linkStyle }}>Sign out</a>
+          </div>
+        )}
+        <button onClick={() => setUserOpen(o => !o)} style={{
+          display: 'flex', alignItems: 'center', gap: 8, width: narrow ? 'auto' : '100%', padding: '8px 10px',
+          background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left',
+        }}>
+          <span style={{ width: 22, height: 22, borderRadius: '50%', background: T.ghost, color: '#fff', display: 'grid', placeItems: 'center', fontFamily: T.mono, fontSize: 11, fontWeight: 700 }}>
+            {(email[0] ?? 'U').toUpperCase()}
+          </span>
+          {!narrow && <span style={{ fontFamily: T.mono, fontSize: 10, color: T.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email || 'account'}</span>}
+          {!narrow && <span style={{ marginLeft: 'auto', color: T.faint, fontSize: 10 }}>⌄</span>}
+        </button>
+      </div>
     </>
   );
 
-  const main = wantsExplorer
-    ? (unlocked ? <Explorer /> : <ExplorerGate onUpload={() => go('#/insights')} />)
+  // ── top document tabs ────────────────────────────────────────────────────────
+  const docTabs = (
+    <div style={{ display: 'flex', alignItems: 'stretch', gap: 1, background: T.panelAlt, borderBottom: `1px solid ${T.border}`, overflowX: 'auto' }}>
+      <DocTab icon="◉" label="Insights" active={!isSym(active)} onClick={() => setActive('insights')} />
+      {openSyms.map(s => (
+        <DocTab key={s} icon="▤" label={s} active={activeSym === s} onClick={() => setActive({ sym: s })} onClose={() => closeSymbol(s)} />
+      ))}
+      {unlocked && (
+        <button onClick={openExplorer} title="Open an instrument" style={{ padding: '0 12px', background: 'transparent', border: 'none', color: T.muted, fontFamily: T.mono, fontSize: 15, cursor: 'pointer' }}>+</button>
+      )}
+    </div>
+  );
+
+  // ── main content ─────────────────────────────────────────────────────────────
+  const main = activeSym
+    ? (unlocked ? <Explorer symbol={activeSym} /> : <Gate onUpload={() => setActive('insights')} />)
     : <InsightsPage />;
 
   return (
     <ChatProvider>
       <div style={{ display: 'flex', flexDirection: narrow ? 'column' : 'row', minHeight: '100vh', background: T.bg, color: T.ink }}>
-        {/* left nav */}
         <aside style={narrow ? {
-          borderBottom: `1px solid ${T.border}`, padding: '10px 14px', display: 'flex',
-          alignItems: 'center', gap: 10, flexWrap: 'wrap', position: 'sticky', top: 0, background: T.bg, zIndex: 20,
+          borderBottom: `1px solid ${T.border}`, padding: '8px 12px', display: 'flex', alignItems: 'center',
+          gap: 8, flexWrap: 'wrap', position: 'sticky', top: 0, background: T.bg, zIndex: 20,
         } : {
-          width: 184, flexShrink: 0, borderRight: `1px solid ${T.border}`, padding: '20px 14px',
-          position: 'sticky', top: 0, height: '100vh', display: 'flex', flexDirection: 'column', gap: 4,
+          width: 210, flexShrink: 0, borderRight: `1px solid ${T.border}`, padding: '18px 8px 12px',
+          position: 'sticky', top: 0, height: '100vh', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto',
         }}>
-          <div style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 700, letterSpacing: '0.08em', color: T.ink, marginBottom: narrow ? 0 : 20, marginRight: narrow ? 6 : 0 }}>
-            COMPASS
-          </div>
-          {nav}
-          <div style={narrow
-            ? { marginLeft: 'auto', fontFamily: T.mono, fontSize: 10, color: T.faint }
-            : { marginTop: 'auto', fontFamily: T.mono, fontSize: 10, color: T.faint, lineHeight: 1.7 }}>
-            {email && !narrow && <div style={{ wordBreak: 'break-all' }}>{email}</div>}
-            {isAdmin && <a href="/admin" style={{ color: T.ghost, textDecoration: 'none', display: 'block', marginTop: narrow ? 0 : 6 }}>Admin →</a>}
-            {!unlocked && !narrow && <div style={{ marginTop: 8 }}>Upload a CSV to unlock Explorer.</div>}
-          </div>
+          {rail}
         </aside>
 
-        {/* main */}
-        <main style={{ flex: 1, minWidth: 0, order: narrow ? 2 : 1 }}>{main}</main>
+        <main style={{ flex: 1, minWidth: 0, order: narrow ? 2 : 1, display: 'flex', flexDirection: 'column' }}>
+          {docTabs}
+          <div style={{ flex: 1, minWidth: 0 }}>{main}</div>
+        </main>
 
-        {/* right analyst chat - present on both pages */}
         <aside style={narrow
           ? { order: 3, borderTop: `1px solid ${T.border}`, height: '72vh' }
-          : { width: 360, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, height: '100vh' }}>
+          : { width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, height: '100vh' }}>
           <ChatDock />
         </aside>
       </div>
@@ -96,7 +168,42 @@ export default function App() {
   );
 }
 
-function ExplorerGate({ onUpload }: { onUpload: () => void }) {
+const linkStyle: React.CSSProperties = { fontFamily: 'Spline Sans Mono, monospace', fontSize: 11, color: '#14171d', textDecoration: 'none' };
+
+function RailItem({ icon, label, active, disabled, onClick }:
+  { icon: string; label: string; active?: boolean; disabled?: boolean; onClick: () => void }) {
+  return (
+    <button onClick={onClick} disabled={disabled} style={{
+      display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', width: '100%', textAlign: 'left',
+      background: active ? T.panelAlt : 'transparent', border: 'none',
+      borderLeft: `2px solid ${active ? T.ghost : 'transparent'}`,
+      cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.45 : 1,
+      fontFamily: T.mono, fontSize: 12.5, color: active ? T.ink : T.muted, fontWeight: active ? 700 : 500,
+    }}>
+      <span style={{ fontSize: 12, color: active ? T.ghost : T.faint }}>{icon}</span>
+      {label}
+    </button>
+  );
+}
+
+function DocTab({ icon, label, active, onClick, onClose }:
+  { icon: string; label: string; active?: boolean; onClick: () => void; onClose?: () => void }) {
+  return (
+    <div onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', gap: 7, padding: '9px 13px', cursor: 'pointer',
+      background: active ? T.bg : 'transparent',
+      borderTop: `2px solid ${active ? T.ghost : 'transparent'}`,
+      borderRight: `1px solid ${T.border}`,
+      fontFamily: T.mono, fontSize: 11, color: active ? T.ink : T.muted, fontWeight: active ? 700 : 400, whiteSpace: 'nowrap',
+    }}>
+      <span style={{ fontSize: 11, color: active ? T.ghost : T.faint }}>{icon}</span>
+      {label}
+      {onClose && <span onClick={e => { e.stopPropagation(); onClose(); }} style={{ marginLeft: 4, color: T.faint, fontSize: 12 }}>×</span>}
+    </div>
+  );
+}
+
+function Gate({ onUpload }: { onUpload: () => void }) {
   return (
     <div style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div style={{ maxWidth: 440, textAlign: 'center', border: `1px solid ${T.border}`, borderRadius: 4, padding: '34px 30px', background: T.panel }}>
@@ -105,28 +212,8 @@ function ExplorerGate({ onUpload }: { onUpload: () => void }) {
         <p style={{ fontFamily: T.serif, fontSize: 15, color: T.mutedStrong, lineHeight: 1.6, margin: '0 0 22px' }}>
           The Explorer opens once Compass has processed your trade book. Upload your broker CSV as proof of trading to unlock it.
         </p>
-        <button onClick={onUpload} style={{ background: T.ink, color: '#fff', border: 'none', borderRadius: 8, padding: '12px 22px', fontFamily: T.mono, fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>
-          Upload trade CSV
-        </button>
+        <button onClick={onUpload} style={{ background: T.ink, color: '#fff', border: 'none', borderRadius: 8, padding: '12px 22px', fontFamily: T.mono, fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>Upload trade CSV</button>
       </div>
     </div>
-  );
-}
-
-function NavItem({ label, hint, active, onClick, narrow }:
-  { label: string; hint: string; active?: boolean; onClick: () => void; narrow: boolean }) {
-  return (
-    <button onClick={onClick} style={{
-      textAlign: 'left', background: active ? T.panelAlt : 'transparent', border: 'none',
-      borderLeft: narrow ? 'none' : `2px solid ${active ? T.ghost : 'transparent'}`,
-      borderBottom: narrow && active ? `2px solid ${T.ghost}` : 'none',
-      padding: narrow ? '6px 10px' : '9px 12px', cursor: 'pointer',
-      fontFamily: T.mono, fontSize: 12, letterSpacing: '0.04em',
-      color: active ? T.ink : T.muted, fontWeight: active ? 700 : 500,
-      display: 'flex', flexDirection: 'column', gap: 2,
-    }}>
-      <span>{label}</span>
-      {!narrow && <span style={{ fontSize: 9, color: T.faint, fontWeight: 400 }}>{hint}</span>}
-    </button>
   );
 }
