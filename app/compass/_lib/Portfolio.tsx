@@ -57,10 +57,10 @@ export default function Portfolio() {
               Coming soon
             </div>
             <h2 style={{ fontFamily: T.serif, fontSize: 'clamp(22px, 3vw, 30px)', fontWeight: 600, color: T.ink, lineHeight: 1.25, margin: '12px 0 10px' }}>
-              We are building the next-gen trading terminal.
+              We&rsquo;re building the trading terminal we always wished existed.
             </h2>
             <p style={{ fontFamily: T.serif, fontSize: 15.5, color: T.mutedStrong, lineHeight: 1.6, margin: 0 }}>
-              Built around you and your trading, with no one in between. Are you willing to be one of the top traders who gets access to it first?
+              Built around the trader, not just the trade. Where intelligence meets execution and every decision becomes more intentional. Want to be among the first to try it?
             </p>
 
             {choice === null ? (
