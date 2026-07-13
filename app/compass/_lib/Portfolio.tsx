@@ -22,15 +22,15 @@ export default function Portfolio() {
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
       }}>
         <div style={{
-          maxWidth: 780, width: '100%', background: '#fff',
-          border: `1px solid ${T.border}`, borderRadius: 14,
+          maxWidth: 1120, width: '100%', background: '#fff',
+          border: `1px solid ${T.border}`, borderRadius: 16,
           boxShadow: '0 24px 60px rgba(20,23,29,0.18)',
           display: 'flex', flexWrap: 'wrap', overflow: 'hidden',
         }}>
-          {/* deck image beside the text (shown in full) */}
+          {/* deck image beside the text (shown in full, large) */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/deckcards.jpeg" alt="NevUp"
-            style={{ flex: '1 1 240px', minWidth: 220, width: 260, objectFit: 'contain', alignSelf: 'center', padding: 16 }} />
+            style={{ flex: '1 1 440px', minWidth: 320, width: '100%', objectFit: 'contain', alignSelf: 'center', padding: 24 }} />
 
           <div style={{ flex: '2 1 320px', padding: '30px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: '0.16em', color: '#f97316', textTransform: 'uppercase' }}>
