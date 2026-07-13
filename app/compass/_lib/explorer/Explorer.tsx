@@ -103,8 +103,8 @@ export default function Explorer({ symbol, onOpen }: { symbol: string; onOpen?: 
 
   usePublishChat(x ? {
     scope: `explorer:${x.symbol}`,
-    title: `ASK ABOUT ${x.symbol}`,
-    subtitle: 'Grounded in this page’s live data and your own trades on this stock.',
+    title: 'NevUp AI',
+    subtitle: `Ask anything about ${x.name} (${x.symbol}). NevUp has the live data and your own history on it.`,
     symbol: x.symbol,
     greeting: `Ask me anything about ${x.name} (${x.symbol}) - answers are computed from the live data on this page and your own history on it.`,
     chips: ['Revenue trend?', 'EPS beats?', 'Who owns it?', 'How did I do on this?', 'How volatile is it?'],

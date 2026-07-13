@@ -114,6 +114,16 @@ export default function InsightsPage() {
             // symbol (skip if unusually large to stay within storage limits)
             const packed = JSON.stringify(r.trades);
             if (packed.length < 3_000_000) localStorage.setItem('compass_trades', packed);
+            // auto-open the instruments the trader actually traded in Explorer.
+            // Add the exchange suffix so Yahoo resolves Indian tickers (.NS).
+            const suffix = r.marketHint === 'INR' ? '.NS' : '';
+            const syms = Array.from(new Set(
+              (r.trades as NormTrade[]).map(t => {
+                const base = (t.symbol || '').toUpperCase();
+                return base.includes('.') ? base : (base ? base + suffix : '');
+              }).filter(Boolean),
+            )).slice(0, 20);
+            localStorage.setItem('compass_symbols', JSON.stringify(syms));
             // stash the raw file so a reload keeps the analysis (persistence)
             if (text.length < 6_000_000) {
               localStorage.setItem('compass_csv', text);
@@ -133,7 +143,7 @@ export default function InsightsPage() {
     setReport(null); setFileName(''); setError('');
     if (inputRef.current) inputRef.current.value = '';
     try {
-      ['compass_csv', 'compass_csv_name', 'compass_trades', 'compass_unlocked'].forEach(k => localStorage.removeItem(k));
+      ['compass_csv', 'compass_csv_name', 'compass_trades', 'compass_unlocked', 'compass_symbols'].forEach(k => localStorage.removeItem(k));
     } catch { /* ignore */ }
   };
 

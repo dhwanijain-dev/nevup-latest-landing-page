@@ -17,12 +17,6 @@ import { useNarrow } from './useViewport';
 const isUnlocked = () => { try { return localStorage.getItem('compass_unlocked') === '1'; } catch { return false; } };
 const ADMIN_EMAIL = 'vatsal2077@gmail.com';
 
-const MagnifierIcon = (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-    <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.5" y2="16.5" />
-  </svg>
-);
-
 type Doc = 'insights' | { sym: string };
 const isSym = (d: Doc): d is { sym: string } => typeof d !== 'string';
 
@@ -39,6 +33,19 @@ export default function App() {
       setUnlocked(isUnlocked());
       const u = (window as unknown as { __compassUser?: { email?: string } }).__compassUser;
       setEmail(u?.email ?? '');
+      // auto-list the instruments from the uploaded CSV in Explorer
+      try {
+        const raw = localStorage.getItem('compass_symbols');
+        if (raw) {
+          const csvSyms: string[] = JSON.parse(raw);
+          if (Array.isArray(csvSyms) && csvSyms.length) {
+            setOpenSyms(list => {
+              const merged = Array.from(new Set([...csvSyms, ...list]));
+              return merged.length !== list.length ? merged : list;
+            });
+          }
+        }
+      } catch { /* ignore */ }
     };
     sync();
     const iv = setInterval(sync, 800);
@@ -90,8 +97,7 @@ export default function App() {
         <>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '18px 10px 6px' }}>
             <span style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: '0.14em', color: T.faint }}>EXPLORER</span>
-            <span style={{ marginLeft: 'auto', display: 'inline-flex', color: T.muted }} aria-hidden>{MagnifierIcon}</span>
-            <button onClick={openExplorer} title="Open an instrument" style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: T.muted, fontFamily: T.mono, fontSize: 15, lineHeight: 1, padding: 0 }}>+</button>
+            <button onClick={openExplorer} title="Open an instrument" style={{ marginLeft: 'auto', background: 'transparent', border: 'none', cursor: 'pointer', color: T.muted, fontFamily: T.mono, fontSize: 15, lineHeight: 1, padding: 0 }}>+</button>
           </div>
           <SearchBox onPick={openSymbol} placeholder="Search companies…" leadingIcon />
           <div style={{ marginTop: 4 }}>
