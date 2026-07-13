@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { T } from './theme';
 import Explorer, { SearchBox } from './explorer/Explorer';
 import InsightsPage from './insights/InsightsPage';
+import Portfolio from './Portfolio';
 import ChatDock from './components/ChatDock';
 import { ChatProvider } from './chatContext';
 import { useNarrow } from './useViewport';
@@ -17,7 +18,7 @@ import { useNarrow } from './useViewport';
 const isUnlocked = () => { try { return localStorage.getItem('compass_unlocked') === '1'; } catch { return false; } };
 const ADMIN_EMAIL = 'vatsal2077@gmail.com';
 
-type Doc = 'insights' | { sym: string };
+type Doc = 'insights' | 'portfolio' | { sym: string };
 const isSym = (d: Doc): d is { sym: string } => typeof d !== 'string';
 
 export default function App() {
@@ -54,7 +55,7 @@ export default function App() {
 
   // keep the hash in sync so deep-links / reloads land on the right doc
   useEffect(() => {
-    window.location.hash = isSym(active) ? '#/explorer' : '#/insights';
+    window.location.hash = isSym(active) ? '#/explorer' : active === 'portfolio' ? '#/portfolio' : '#/insights';
   }, [active]);
 
   const openSymbol = (sym: string) => {
@@ -77,6 +78,8 @@ export default function App() {
 
   const isAdmin = email.toLowerCase() === ADMIN_EMAIL;
   const activeSym = isSym(active) ? active.sym : null;
+  const isInsights = active === 'insights';
+  const isPortfolio = active === 'portfolio';
 
   // ── left rail ──────────────────────────────────────────────────────────────
   const rail = (
@@ -89,7 +92,8 @@ export default function App() {
       </div>
       <RailItem
         icon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: T.ink, display: 'inline-block', animation: 'compassBlink 1.4s ease-in-out infinite' }} />}
-        label="Insights" active={!isSym(active)} onClick={() => setActive('insights')} />
+        label="My Insights" active={isInsights} onClick={() => setActive('insights')} />
+      <RailItem icon="▦" label="Portfolio" active={isPortfolio} onClick={() => setActive('portfolio')} />
       {/* on phones there is no room for the full workspace - keep a compact Explorer entry */}
       {narrow && <RailItem icon="◈" label="Explorer" active={isSym(active)} disabled={!unlocked} onClick={openExplorer} />}
 
@@ -154,7 +158,8 @@ export default function App() {
   // ── top document tabs ────────────────────────────────────────────────────────
   const docTabs = (
     <div style={{ display: 'flex', alignItems: 'stretch', gap: 1, background: T.panelAlt, borderBottom: `1px solid ${T.border}`, overflowX: 'auto' }}>
-      <DocTab icon="◉" label="Insights" active={!isSym(active)} onClick={() => setActive('insights')} />
+      <DocTab icon="◉" label="My Insights" active={isInsights} onClick={() => setActive('insights')} />
+      <DocTab icon="▦" label="Portfolio" active={isPortfolio} onClick={() => setActive('portfolio')} />
       {openSyms.map(s => (
         <DocTab key={s} icon="▤" label={s} active={activeSym === s} onClick={() => setActive({ sym: s })} onClose={() => closeSymbol(s)} />
       ))}
@@ -167,6 +172,7 @@ export default function App() {
   // ── main content ─────────────────────────────────────────────────────────────
   const main = activeSym
     ? (unlocked ? <Explorer symbol={activeSym} onOpen={openSymbol} /> : <Gate onUpload={() => setActive('insights')} />)
+    : isPortfolio ? <Portfolio />
     : <InsightsPage />;
 
   return (
