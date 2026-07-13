@@ -27,20 +27,20 @@ export default function Portfolio() {
           boxShadow: '0 24px 60px rgba(20,23,29,0.18)',
           display: 'flex', flexWrap: 'wrap', overflow: 'hidden',
         }}>
-          {/* deck image beside the text */}
+          {/* deck image beside the text (shown in full) */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/deckcards.jpeg" alt="NevUp"
-            style={{ width: 240, flex: '1 1 220px', minWidth: 200, objectFit: 'cover', maxHeight: 360 }} />
+            style={{ flex: '1 1 240px', minWidth: 220, width: 260, objectFit: 'contain', alignSelf: 'center', padding: 16 }} />
 
           <div style={{ flex: '2 1 320px', padding: '30px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: '0.16em', color: T.ghost, textTransform: 'uppercase' }}>
+            <div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: '0.16em', color: '#f97316', textTransform: 'uppercase' }}>
               Coming soon
             </div>
             <h2 style={{ fontFamily: T.serif, fontSize: 'clamp(22px, 3vw, 30px)', fontWeight: 600, color: T.ink, lineHeight: 1.25, margin: '12px 0 10px' }}>
               We are building the next-gen trading terminal.
             </h2>
             <p style={{ fontFamily: T.serif, fontSize: 15.5, color: T.mutedStrong, lineHeight: 1.6, margin: 0 }}>
-              Built around you and your trading. No one comes in between. Would you like to use it?
+              Built around you and your trading, with no one in between. Are you willing to be one of the top traders who gets access to it first?
             </p>
 
             {choice === null ? (
