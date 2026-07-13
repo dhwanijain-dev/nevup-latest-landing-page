@@ -76,7 +76,7 @@ const COMPASS_SAMPLES: Record<string, string> = {
 // search, and the open-instrument list; this component just loads and renders
 // the stock view for whichever `symbol` it is handed, and publishes that
 // instrument's real figures to the shared analyst chat.
-export default function Explorer({ symbol }: { symbol: string }) {
+export default function Explorer({ symbol, onOpen }: { symbol: string; onOpen?: (s: string) => void }) {
   const [x, setX] = useState<XData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -175,6 +175,17 @@ export default function Explorer({ symbol }: { symbol: string }) {
               }}>{t}</button>
             ))}
           </div>
+          {x.peers && x.peers.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', padding: '10px 22px 0' }}>
+              <span style={statLabel}>Peers</span>
+              {x.peers.slice(0, 8).map(p => (
+                <button key={p} onClick={() => onOpen?.(p)} style={{
+                  background: T.panelAlt, border: `1px solid ${T.border}`, borderRadius: 6,
+                  padding: '3px 9px', cursor: 'pointer', ...mono(11, T.ink, 600),
+                }}>{p}</button>
+              ))}
+            </div>
+          )}
           <div style={{ padding: '16px 22px' }}>
             {tab === 'Overview' && <Overview x={x} />}
             {tab === 'Financials' && <Financials x={x} />}

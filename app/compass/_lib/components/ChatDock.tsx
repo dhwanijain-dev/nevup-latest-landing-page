@@ -70,9 +70,18 @@ export default function ChatDock() {
   useEffect(() => {
     const c = scrollRef.current, a = anchorRef.current;
     if (!c || !a) return;
-    // scroll the chat container (not the window) so the question sits at the top
     c.scrollTo({ top: Math.max(0, a.offsetTop - 12), behavior: 'smooth' });
   }, [msgs, busy]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Non-passive wheel handler so the cursor-in-chat wheel ALWAYS scrolls the
+  // chat and never the page (React's onWheel is passive and cannot do this).
+  useEffect(() => {
+    const c = scrollRef.current;
+    if (!c) return;
+    const onWheel = (e: WheelEvent) => { c.scrollTop += e.deltaY; e.preventDefault(); };
+    c.addEventListener('wheel', onWheel, { passive: false });
+    return () => c.removeEventListener('wheel', onWheel);
+  }, [ctx?.scope]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ask = async (q: string) => {
     if (!q.trim() || busy || !ctx) return;
@@ -116,7 +125,20 @@ export default function ChatDock() {
         <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 11.5, color: T.faint, marginTop: 3 }}>{ctx.subtitle}</div>
       </div>
 
-      <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <style>{`.compass-chat-scroll::-webkit-scrollbar{width:0;height:0;display:none}`}</style>
+      <div
+        ref={scrollRef}
+        className="compass-chat-scroll"
+        tabIndex={0}
+        onKeyDown={e => {
+          const c = scrollRef.current; if (!c) return;
+          if (e.key === 'ArrowDown') { c.scrollTop += 60; e.preventDefault(); }
+          else if (e.key === 'ArrowUp') { c.scrollTop -= 60; e.preventDefault(); }
+          else if (e.key === 'PageDown') { c.scrollTop += c.clientHeight * 0.9; e.preventDefault(); }
+          else if (e.key === 'PageUp') { c.scrollTop -= c.clientHeight * 0.9; e.preventDefault(); }
+        }}
+        style={{ flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', scrollbarWidth: 'none', msOverflowStyle: 'none', outline: 'none', padding: 14, display: 'flex', flexDirection: 'column', gap: 12 } as React.CSSProperties}
+      >
         {msgs.map((m, i) => (
           m.role === 'user' ? (
             <div key={i} ref={i === lastUserIdx ? anchorRef : undefined} style={{ alignSelf: 'flex-end', maxWidth: '90%', background: T.ink, color: T.inverse, padding: '9px 12px', borderRadius: 8, ...mono(12, T.inverse), scrollMarginTop: 12 }}>{m.text}</div>

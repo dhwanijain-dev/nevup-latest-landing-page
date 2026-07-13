@@ -155,7 +155,7 @@ export default function App() {
 
   // ── main content ─────────────────────────────────────────────────────────────
   const main = activeSym
-    ? (unlocked ? <Explorer symbol={activeSym} /> : <Gate onUpload={() => setActive('insights')} />)
+    ? (unlocked ? <Explorer symbol={activeSym} onOpen={openSymbol} /> : <Gate onUpload={() => setActive('insights')} />)
     : <InsightsPage />;
 
   return (
