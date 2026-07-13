@@ -254,27 +254,35 @@ export default function App() {
 
   return (
     <ChatProvider>
-      <div style={{ display: 'flex', flexDirection: narrow ? 'column' : 'row', minHeight: '100dvh', background: T.bg, color: T.ink }}>
+      {/* Desktop: a fixed-height app shell where ONLY the centre pane scrolls,
+          so the sidebar and chat never move with the page. Mobile: normal
+          document flow (stacked). */}
+      <div style={narrow
+        ? { display: 'flex', flexDirection: 'column', minHeight: '100dvh', background: T.bg, color: T.ink }
+        : { display: 'flex', flexDirection: 'row', height: '100dvh', overflow: 'hidden', background: T.bg, color: T.ink }}>
         <aside style={narrow ? {
           order: 1, borderBottom: `1px solid ${T.border}`, padding: '8px 12px', display: 'flex', alignItems: 'center',
           gap: 8, flexWrap: 'wrap', position: 'sticky', top: 0, background: T.bg, zIndex: 20,
         } : {
           order: 1, width: 210, flexShrink: 0, borderRight: `1px solid ${T.border}`, padding: '18px 8px 12px',
-          position: 'sticky', top: 0, alignSelf: 'flex-start', height: '100dvh', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto',
+          height: '100%', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto',
         }}>
           {rail}
         </aside>
 
-        <main style={{ order: 2, flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        <main style={narrow
+          ? { order: 2, flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }
+          : { order: 2, flex: 1, minWidth: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>
           {docTabs}
-          <div style={{ flex: 1, minWidth: 0 }}>{main}</div>
+          {/* the ONLY scroll region on desktop */}
+          <div style={narrow ? { flex: 1, minWidth: 0 } : { flex: 1, minWidth: 0, overflowY: 'auto' }}>{main}</div>
         </main>
 
         {/* analyst chat: only once a CSV is analyzed, and not on the Portfolio teaser */}
         {unlocked && !isPortfolio && (
           <aside style={narrow
             ? { order: 3, borderTop: `1px solid ${T.border}`, height: '78vh', overflow: 'hidden', overscrollBehavior: 'contain' }
-            : { order: 3, width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, position: 'sticky', top: 0, alignSelf: 'flex-start', height: '100dvh', overflow: 'hidden', overscrollBehavior: 'contain' }}>
+            : { order: 3, width: 372, flexShrink: 0, borderLeft: `1px solid ${T.border}`, height: '100%', overflow: 'hidden', overscrollBehavior: 'contain' }}>
             <ChatDock />
           </aside>
         )}
