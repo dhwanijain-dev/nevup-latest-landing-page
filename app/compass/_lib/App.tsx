@@ -182,9 +182,9 @@ export default function App() {
 
       {/* reach-out line */}
       {!narrow && (
-        <div style={{ ...mono(9.5, T.faint), padding: '4px 10px 6px', lineHeight: 1.5 }}>
+        <div style={{ ...mono(11.5, T.ink), padding: '6px 10px 8px', lineHeight: 1.55 }}>
           Reach out to us at{' '}
-          <a href="mailto:connect@nevup.in" style={{ color: T.ghost, textDecoration: 'none' }}>connect@nevup.in</a>{' '}
+          <a href="mailto:connect@nevup.in" style={{ color: '#f15a24', textDecoration: 'none', fontWeight: 700 }}>connect@nevup.in</a>{' '}
           for any feedback or help.
         </div>
       )}
