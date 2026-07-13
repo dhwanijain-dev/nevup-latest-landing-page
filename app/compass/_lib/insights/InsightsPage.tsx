@@ -162,64 +162,156 @@ export default function InsightsPage() {
   }, []);
   const showUpload = !report?.ok;
 
+  if (showUpload) {
+    return (
+      <UploadScreen
+        onChoose={() => inputRef.current?.click()}
+        dragging={dragging} setDragging={setDragging}
+        onDrop={f => ingest(f)} inputRef={inputRef} onInput={ingest} error={error}
+      />
+    );
+  }
+
   return (
     <div style={{ maxWidth: 1120, margin: '0 auto', padding: '24px 20px 80px' }}>
-      {showUpload && (
-        <div style={{ maxWidth: 620, margin: '40px auto 0' }}>
-          <h1 style={{ fontFamily: T.serif, fontWeight: 500, fontSize: 'clamp(24px, 4vw, 36px)', color: T.ink, lineHeight: 1.2, margin: 0 }}>
-            Upload your trade book. See what your trading <em style={{ fontStyle: 'italic', color: T.red }}>actually looks like.</em>
+      <ResultView report={report!} insights={insights} />
+    </div>
+  );
+}
+
+// ── upload screen (matches the marketing mockup) ─────────────────────────────
+const ORANGE = '#f15a24';
+const ORANGE_SOFT = '#fff5ef';
+
+const FEATURES: [React.ReactNode, string, string][] = [
+  ['🛡', 'Parsed locally', 'on your device'],
+  ['🔒', 'Never leaves', 'your browser'],
+  ['🗄', 'No API access', 'or logins'],
+  ['⚡', 'Takes ~10', 'seconds'],
+];
+
+const UNLOCK: { title: string; body: React.ReactNode; tag?: string }[] = [
+  { title: 'Execution Score', tag: 'Good', body: <><b style={{ fontSize: 30, color: T.ink }}>72</b><span style={{ ...mono(11, T.faint) }}>/100</span><div style={{ ...mono(10, T.muted), marginTop: 8 }}>Your overall execution discipline score.</div></> },
+  { title: 'Disciplined You', body: <><div style={{ ...mono(10, T.muted) }}>You left</div><div style={{ fontFamily: T.serif, fontSize: 26, fontWeight: 700, color: ORANGE }}>₹1.4L</div><div style={{ ...mono(10, T.muted) }}>on the table.</div></> },
+  { title: 'Biggest Money Leak', body: <><div style={{ fontFamily: T.serif, fontSize: 22, fontWeight: 700, color: ORANGE }}>2-3 PM</div><div style={{ ...mono(10, T.muted), marginTop: 4 }}>is your worst hour. 42% of losses happen here.</div></> },
+  { title: 'Trader Profile', body: <><div style={{ fontFamily: T.serif, fontSize: 22, fontWeight: 700, color: ORANGE }}>Swing Trader</div><div style={{ ...mono(10, T.muted), marginTop: 4 }}>89% confidence</div></> },
+  { title: 'Your Costliest Mistake', body: <><div style={{ ...mono(11, T.ink, 700) }}>BANKNIFTY</div><div style={{ ...mono(10, T.muted), marginTop: 4 }}>Cost you</div><div style={{ fontFamily: T.serif, fontSize: 22, fontWeight: 700, color: ORANGE }}>₹23,600</div><div style={{ ...mono(10, T.muted) }}>vs disciplined exit</div></> },
+];
+
+const BROKERS: { name: string; path: string; color: string }[] = [
+  { name: 'Zerodha', path: 'Console → Reports → Tradebook → CSV', color: '#387ed1' },
+  { name: 'Groww', path: 'Stocks → Orders → Download Order History', color: '#00b386' },
+  { name: 'Upstox', path: 'Reports → Trade Book → Export', color: '#6f42c1' },
+  { name: 'Dhan', path: 'Reports → Trade Book → CSV', color: '#1a9e6c' },
+  { name: 'Angel One', path: 'Reports → Trade Book → Download', color: '#e23744' },
+  { name: 'US Brokers', path: 'Any executed trades / transactions CSV export', color: '#5b6472' },
+];
+
+function UploadScreen({ onChoose, dragging, setDragging, onDrop, inputRef, onInput, error }: {
+  onChoose: () => void;
+  dragging: boolean; setDragging: (v: boolean) => void;
+  onDrop: (f: File) => void; inputRef: React.RefObject<HTMLInputElement | null>;
+  onInput: (f: File) => void; error: string;
+}) {
+  return (
+    <div style={{ maxWidth: 1320, margin: '0 auto', padding: '22px 28px 40px' }}>
+      {/* header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderBottom: `1px solid ${T.borderSoft}`, paddingBottom: 16, flexWrap: 'wrap' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/nevup-emblem.png" alt="NevUp" style={{ height: 22 }} />
+        <span style={{ ...mono(15, T.ink, 700), letterSpacing: '0.06em' }}>COMPASS</span>
+        <span style={{ ...statLabel }}>Your trading, analyzed</span>
+        <span style={{ marginLeft: 'auto', ...mono(11, T.muted) }}>
+          <span style={{ color: ORANGE }}>🛡</span> Your file never leaves this browser · Analyzed on your device
+        </span>
+      </div>
+
+      {/* hero + upload card */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))', gap: 40, marginTop: 34 }}>
+        <div>
+          <h1 style={{ fontFamily: T.serif, fontWeight: 600, fontSize: 'clamp(30px, 4.2vw, 52px)', color: T.ink, lineHeight: 1.12, margin: 0 }}>
+            Upload your trade book. See what your trading <em style={{ fontStyle: 'italic', color: ORANGE }}>actually looks like.</em>
           </h1>
-          <p style={{ fontFamily: T.serif, fontSize: 15, color: T.mutedStrong, lineHeight: 1.6 }}>
-            Export your executed trades from any broker and drop the CSV here. Compass pairs
-            every round-trip and shows the habits hiding in your numbers - hold-time asymmetry,
-            danger hours, revenge entries, and exactly where your edge is versus where the leak is.
-          </p>
-
-          <label
-            onDragOver={e => { e.preventDefault(); setDragging(true); }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={e => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) ingest(f); }}
-            style={{
-              display: 'block', marginTop: 22, padding: '44px 24px', textAlign: 'center',
-              border: `2px dashed ${dragging ? T.ink : T.border}`,
-              background: dragging ? T.panelAlt : T.panel, cursor: 'pointer',
-            }}>
-            <input ref={inputRef} type="file" accept=".csv,.tsv,.txt,text/csv"
-              onChange={e => { const f = e.target.files?.[0]; if (f) ingest(f); }}
-              style={{ display: 'none' }} />
-            <div style={mono(13, T.ink, 700)}>{fileName || 'Drop your trade CSV here, or click to choose'}</div>
-            <div style={{ ...mono(10, T.faint), marginTop: 6 }}>CSV / TSV · up to {(MAX_BYTES / 1e6).toFixed(0)} MB · parsed on your device</div>
-          </label>
-
-          {error && (
-            <div style={{ marginTop: 14, border: `1px solid ${T.red}`, background: 'rgba(229,72,77,0.06)', padding: '12px 14px' }}>
-              <div style={mono(11, T.red, 700)}>Couldn&rsquo;t use this file</div>
-              <div style={{ fontFamily: T.serif, fontSize: 13, color: T.body, marginTop: 5, lineHeight: 1.5 }}>{error}</div>
-            </div>
-          )}
-          {report && !report.ok && report.skipSamples.length > 0 && (
-            <div style={{ ...mono(10, T.faint), marginTop: 10 }}>
-              Sample skipped rows: {report.skipSamples.slice(0, 4).map(s => `row ${s.row} (${s.reason})`).join(', ')}
-            </div>
-          )}
-
-          <div style={{ marginTop: 26 }}>
-            <div style={statLabel}>Where to export your trade book</div>
-            <div style={{ marginTop: 8 }}>
-              {EXPORT_GUIDES.map(gd => (
-                <div key={gd.broker} style={{ display: 'flex', gap: 12, padding: '5px 0', borderBottom: `1px solid ${T.borderSoft}` }}>
-                  <span style={{ ...mono(11, T.ink, 700), width: 90 }}>{gd.broker}</span>
-                  <span style={{ fontFamily: T.serif, fontSize: 12.5, color: T.muted }}>{gd.path}</span>
+          <div style={{ display: 'flex', gap: 26, marginTop: 30, flexWrap: 'wrap' }}>
+            {FEATURES.map(([icon, a, b]) => (
+              <div key={a} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 15, color: ORANGE }}>{icon}</span>
+                <div>
+                  <div style={{ ...mono(11.5, T.ink, 700) }}>{a}</div>
+                  <div style={{ ...mono(10, T.muted) }}>{b}</div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
-      )}
 
-      {report?.ok && (
-        <ResultView report={report} insights={insights} />
-      )}
+        <label
+          onDragOver={e => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={e => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) onDrop(f); }}
+          style={{
+            display: 'block', textAlign: 'center', cursor: 'pointer',
+            border: `2px dashed ${dragging ? ORANGE : '#f3c9b3'}`, borderRadius: 18,
+            background: ORANGE_SOFT, padding: '34px 30px',
+          }}>
+          <input ref={inputRef} type="file" accept=".csv,.tsv,.txt,text/csv"
+            onChange={e => { const f = e.target.files?.[0]; if (f) onInput(f); }} style={{ display: 'none' }} />
+          <div style={{ width: 66, height: 66, borderRadius: '50%', background: '#fde6da', margin: '0 auto', display: 'grid', placeItems: 'center', fontSize: 24, color: ORANGE }}>⬆</div>
+          <div style={{ fontFamily: T.serif, fontSize: 22, fontWeight: 700, color: T.ink, marginTop: 14 }}>Upload your trade book</div>
+          <div style={{ ...mono(11, T.muted), marginTop: 6 }}>CSV / TSV · up to {(MAX_BYTES / 1e6).toFixed(0)} MB</div>
+          <button type="button" onClick={e => { e.preventDefault(); onChoose(); }} style={{
+            marginTop: 18, background: ORANGE, color: '#fff', border: 'none', borderRadius: 10,
+            padding: '13px 28px', ...mono(14, '#fff', 700), cursor: 'pointer',
+          }}>⬇ Choose CSV file</button>
+          <div style={{ ...mono(11, T.muted), margin: '16px 0', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ flex: 1, height: 1, background: '#f0d8c9' }} />or drag and drop your file here<span style={{ flex: 1, height: 1, background: '#f0d8c9' }} />
+          </div>
+          <div style={{ background: '#fff', border: `1px solid #f3ddd0`, borderRadius: 30, padding: '10px 14px', ...mono(11, T.mutedStrong) }}>
+            <span style={{ color: ORANGE }}>🛡</span> We support all major brokers and any CSV export
+          </div>
+          {error && (
+            <div style={{ marginTop: 14, ...mono(11, T.red, 700) }}>{error}</div>
+          )}
+        </label>
+      </div>
+
+      {/* what you'll unlock */}
+      <div style={{ marginTop: 44 }}>
+        <div style={{ fontFamily: T.serif, fontSize: 20, fontWeight: 700, color: T.ink }}>What you&rsquo;ll unlock</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 210px), 1fr))', gap: 16, marginTop: 14 }}>
+          {UNLOCK.map(c => (
+            <div key={c.title} style={{ border: `1px solid ${T.borderSoft}`, borderRadius: 12, background: '#fff', padding: '16px 16px 40px', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ ...mono(11, T.ink, 700) }}>{c.title}</span>
+                {c.tag && <span style={{ marginLeft: 'auto', ...mono(9, '#1f9d6b'), background: '#e8f6ef', borderRadius: 4, padding: '2px 6px' }}>{c.tag} ●</span>}
+              </div>
+              <div style={{ marginTop: 12 }}>{c.body}</div>
+              <div style={{ position: 'absolute', left: 0, right: 0, bottom: 10, textAlign: 'center', ...mono(10, ORANGE, 700) }}>🔒 Upload to reveal</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* supported brokers */}
+      <div style={{ marginTop: 40 }}>
+        <div style={{ fontFamily: T.serif, fontSize: 20, fontWeight: 700, color: T.ink }}>Supported brokers</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: 14, marginTop: 14 }}>
+          {BROKERS.map(b => (
+            <div key={b.name} style={{ border: `1px solid ${T.borderSoft}`, borderRadius: 12, padding: '14px 16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ width: 20, height: 20, borderRadius: 5, background: b.color, color: '#fff', display: 'grid', placeItems: 'center', ...mono(11, '#fff', 700) }}>{b.name[0]}</span>
+                <span style={{ ...mono(12.5, T.ink, 700) }}>{b.name}</span>
+              </div>
+              <div style={{ ...mono(10, T.muted), marginTop: 8, lineHeight: 1.5 }}>{b.path}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* footer */}
+      <div style={{ textAlign: 'center', marginTop: 40, ...mono(11, T.muted) }}>
+        <span style={{ color: ORANGE }}>🛡</span> Your privacy is our priority. Your data is <span style={{ color: ORANGE, fontWeight: 700 }}>never stored, shared, or uploaded.</span>
+      </div>
     </div>
   );
 }
