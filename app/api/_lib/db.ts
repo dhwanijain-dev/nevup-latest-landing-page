@@ -25,6 +25,24 @@ export function getPool(): Pool | null {
 
 export const dbEnabled = (): boolean => !!process.env.DATABASE_URL;
 
+/** Add a user to the single shared waitlist, deduped by email. The first
+ *  action wins (chat feedback OR portfolio); a later action never duplicates
+ *  them. Resolves the email from the users table when only a userId is known. */
+export async function addToWaitlist(userId?: string | null, email?: string | null, source?: string, choice?: string): Promise<void> {
+  if (!getPool()) return;
+  let mail = (email ?? '').trim().toLowerCase() || null;
+  if (!mail && userId) {
+    const rows = await q<{ email: string }>(`select email from users where id = $1`, [userId]);
+    mail = rows[0]?.email?.toLowerCase() ?? null;
+  }
+  if (!mail) return; // nothing to dedupe on; skip rather than create a blank row
+  await q(
+    `insert into waitlist (user_id, email, source, choice) values ($1,$2,$3,$4)
+       on conflict (email) do nothing`,
+    [userId ?? null, mail, source ?? null, choice ?? null],
+  );
+}
+
 /** Run a query; returns [] on any failure so persistence never breaks a
  *  user-facing response. Failures are logged to the server console only. */
 export async function q<T extends QueryResultRow = QueryResultRow>(

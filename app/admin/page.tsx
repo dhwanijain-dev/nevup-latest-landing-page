@@ -50,6 +50,7 @@ export default async function AdminPage() {
     `select count(*)::int n, count(*) filter (where (req->>'flaggedInjection')::boolean)::int inj from io_log`);
   const fb = await one<{ n: string; avg: number }>(
     `select count(*)::int n, avg(rating)::float avg from chat_feedback`);
+  const wl = await one<{ n: string }>(`select count(*)::int n from waitlist`);
 
   // Kronos model accuracy - real walk-forward backtest on held-out prices
   const kronos = await one<{ windows: string; directional_accuracy: number; mape: number; dir_calls: string; created_at: string }>(
@@ -88,6 +89,7 @@ export default async function AdminPage() {
         <Card label="Chat messages" value={num(Number(chats?.n))} sub={`${num(Number(io?.inj))} injection flags`} />
         <Card label="I/O log rows" value={num(Number(io?.n))} sub="all requests" />
         <Card label="Chat feedback" value={num(Number(fb?.n))} sub={fb?.avg != null ? `avg ${num(fb.avg, 2)} / 4` : 'ratings 1-4'} />
+        <Card label="Waitlist" value={num(Number(wl?.n))} sub="deduped by email" accent />
       </Grid>
 
       <h2 style={h2}>Kronos forecast model (real walk-forward backtest)</h2>

@@ -96,7 +96,9 @@ export default function App() {
       <RailItem
         icon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: T.ink, display: 'inline-block', animation: 'compassBlink 1.4s ease-in-out infinite' }} />}
         label="My Insights" active={isInsights} onClick={() => setActive('insights')} />
-      <RailItem icon="▦" label="Portfolio" active={isPortfolio} onClick={() => setActive('portfolio')} />
+      <RailItem
+        icon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: T.ink, display: 'inline-block', animation: 'compassBlink 1.4s ease-in-out infinite' }} />}
+        label="Portfolio" active={isPortfolio} onClick={() => setActive('portfolio')} />
       {/* on phones there is no room for the full workspace - keep a compact Explorer entry */}
       {narrow && <RailItem icon="◈" label="Explorer" active={isSym(active)} disabled={!unlocked} onClick={openExplorer} />}
 

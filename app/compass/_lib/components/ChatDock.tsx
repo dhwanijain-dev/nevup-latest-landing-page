@@ -128,11 +128,11 @@ export default function ChatDock() {
   ];
 
   const sendFeedback = async (rating: number) => {
-    const user = (window as unknown as { __compassUser?: { userId?: string } }).__compassUser;
+    const user = (window as unknown as { __compassUser?: { userId?: string; email?: string } }).__compassUser;
     try {
       await fetch('/api/feedback', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user?.userId, rating, scope: ctx?.scope }),
+        body: JSON.stringify({ userId: user?.userId, email: user?.email, rating, scope: ctx?.scope }),
       });
     } catch { /* never block the user */ }
     try { localStorage.setItem('compass_feedback_given', '1'); } catch { /* ignore */ }

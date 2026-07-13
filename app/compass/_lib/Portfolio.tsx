@@ -7,6 +7,17 @@ import { T } from './theme';
 export default function Portfolio() {
   const [choice, setChoice] = useState<'yes' | 'no' | null>(null);
 
+  const pick = (c: 'yes' | 'no') => {
+    setChoice(c);
+    const u = (window as unknown as { __compassUser?: { userId?: string; email?: string } }).__compassUser;
+    try {
+      void fetch('/api/waitlist', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: u?.userId, email: u?.email, choice: c }),
+      });
+    } catch { /* never block the UI */ }
+  };
+
   return (
     <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 42px)', overflow: 'hidden' }}>
       {/* full-bleed terminal preview */}
@@ -45,11 +56,11 @@ export default function Portfolio() {
 
             {choice === null ? (
               <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-                <button onClick={() => setChoice('yes')} style={{
+                <button onClick={() => pick('yes')} style={{
                   background: T.ink, color: '#fff', border: 'none', borderRadius: 9,
                   padding: '12px 26px', fontFamily: T.mono, fontSize: 14, fontWeight: 700, cursor: 'pointer',
                 }}>Yesss</button>
-                <button onClick={() => setChoice('no')} style={{
+                <button onClick={() => pick('no')} style={{
                   background: 'transparent', color: T.muted, border: `1px solid ${T.border}`, borderRadius: 9,
                   padding: '12px 26px', fontFamily: T.mono, fontSize: 14, fontWeight: 600, cursor: 'pointer',
                 }}>No</button>

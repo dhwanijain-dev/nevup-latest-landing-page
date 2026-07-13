@@ -1,5 +1,5 @@
 // Records one-time session feedback on the analyst chat (rating 1-4).
-import { q, dbEnabled } from '../_lib/db';
+import { q, dbEnabled, addToWaitlist } from '../_lib/db';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -9,7 +9,7 @@ const LABELS: Record<number, string> = {
 };
 
 export async function POST(req: Request) {
-  let body: { userId?: string; rating?: number; scope?: string } = {};
+  let body: { userId?: string; email?: string; rating?: number; scope?: string } = {};
   try { body = await req.json(); } catch { /* empty */ }
   const rating = Number(body.rating);
   if (!(rating >= 1 && rating <= 4)) {
@@ -20,6 +20,8 @@ export async function POST(req: Request) {
       `insert into chat_feedback (user_id, rating, label, scope) values ($1,$2,$3,$4)`,
       [body.userId ?? null, rating, LABELS[rating], body.scope ?? null],
     );
+    // giving feedback opts the user into the shared waitlist (deduped by email)
+    await addToWaitlist(body.userId, body.email, 'chat_feedback');
   }
   return Response.json({ ok: true }, { headers: { 'Cache-Control': 'no-store' } });
 }
