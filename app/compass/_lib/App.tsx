@@ -181,7 +181,7 @@ export default function App() {
   );
 }
 
-const linkStyle: React.CSSProperties = { fontFamily: 'Spline Sans Mono, monospace', fontSize: 11, color: '#14171d', textDecoration: 'none' };
+const linkStyle: React.CSSProperties = { fontFamily: 'Quicksand, system-ui, sans-serif', fontSize: 11, color: '#14171d', textDecoration: 'none' };
 
 function RailItem({ icon, label, active, disabled, onClick }:
   { icon: string; label: string; active?: boolean; disabled?: boolean; onClick: () => void }) {

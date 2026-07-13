@@ -16,8 +16,8 @@ export const T = {
   green: '#1f9d6b',
   ghost: '#7a5af5',
   gold: '#E8B84B',
-  serif: "'Newsreader', Georgia, serif",
-  mono: "'Spline Sans Mono', ui-monospace, monospace",
+  serif: "'Quicksand', system-ui, sans-serif",
+  mono: "'Quicksand', system-ui, sans-serif",
   inverse: '#ffffff',
 } as const;
 

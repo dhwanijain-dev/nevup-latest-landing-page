@@ -421,7 +421,7 @@ function label(ctx: CanvasRenderingContext2D, txt: string, xx: number, yy: numbe
 function marker(ctx: CanvasRenderingContext2D, xx: number, yy: number, color: string, txt: string) {
   ctx.fillStyle = color;
   ctx.beginPath(); ctx.arc(xx, yy, 3.5, 0, Math.PI * 2); ctx.fill();
-  ctx.font = `700 9px 'Spline Sans Mono'`;
+  ctx.font = `700 9px Quicksand`;
   const tw = ctx.measureText(txt).width;
   const tx = Math.min(xx + 8, ctx.canvas.clientWidth - tw - 70);
   ctx.fillText(txt, tx, yy - 7);

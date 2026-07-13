@@ -179,7 +179,7 @@ export default function RealGhostTrade({ x, cur }: { x: Insights; cur: string })
 function marker(ctx: CanvasRenderingContext2D, x: number, y: number, color: string, label: string) {
   ctx.fillStyle = color;
   ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
-  ctx.font = '9px "Spline Sans Mono", monospace';
+  ctx.font = '9px Quicksand, system-ui, sans-serif';
   ctx.fillStyle = color;
   ctx.fillText(label, x + 6, y - 6);
 }
