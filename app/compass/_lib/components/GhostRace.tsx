@@ -90,33 +90,43 @@ export default function GhostRace({ trips, x }: { trips: RoundTrip[]; x: Insight
       // fractional reveal for a smooth sweep (not just whole points)
       const frac = Math.max(0, p * (n - 1));
       const upto = Math.floor(frac) + 1;
-      const line = (arr: number[], color: string, width: number, glow: boolean, fill?: string) => {
+      const pointsFor = (arr: number[]): [number, number][] => {
         const pts: [number, number][] = [];
         for (let i = 0; i < Math.min(upto, n); i++) pts.push([X(i), Y(arr[i])]);
-        // interpolate the head between the last two real points
         if (upto < n) {
           const t = frac - Math.floor(frac), i = Math.floor(frac);
           pts.push([X(i) + (X(i + 1) - X(i)) * t, Y(arr[i]) + (Y(arr[i + 1]) - Y(arr[i])) * t]);
         }
-        if (pts.length < 1) return;
-        if (fill) {
-          ctx.beginPath();
-          pts.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py)));
-          ctx.lineTo(pts[pts.length - 1][0], Y(0)); ctx.lineTo(pts[0][0], Y(0)); ctx.closePath();
-          const gr = ctx.createLinearGradient(0, padT, 0, h - padB);
-          gr.addColorStop(0, fill); gr.addColorStop(1, 'rgba(122,90,245,0)');
-          ctx.fillStyle = gr; ctx.fill();
-        }
+        return pts;
+      };
+      const youPts = pointsFor(you), ghostPts = pointsFor(ghost);
+      if (youPts.length < 1) return;
+
+      // 1) the striking part: fill the BAND between the two curves (the gap =
+      //    what discipline is worth), a translucent purple that grows with the sweep
+      ctx.beginPath();
+      ghostPts.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py)));
+      for (let i = youPts.length - 1; i >= 0; i--) ctx.lineTo(youPts[i][0], youPts[i][1]);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(122,90,245,0.18)'; ctx.fill();
+
+      const stroke = (pts: [number, number][], color: string, width: number, glow: boolean, dots: boolean) => {
         ctx.beginPath();
         pts.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py)));
         ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
+        // 2) points at each revealed data node
+        if (dots) {
+          ctx.fillStyle = color;
+          for (let i = 0; i < Math.min(upto, n); i++) { ctx.beginPath(); ctx.arc(X(i), pts[i][1], 2.4, 0, Math.PI * 2); ctx.fill(); }
+        }
+        // 3) glowing pulsing head
         const [hx, hy] = pts[pts.length - 1];
-        if (glow) { ctx.save(); ctx.shadowColor = color; ctx.shadowBlur = 12; }
-        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(hx, hy, width + 2, 0, Math.PI * 2); ctx.fill();
+        if (glow) { ctx.save(); ctx.shadowColor = color; ctx.shadowBlur = 14; }
+        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(hx, hy, width + 2.5, 0, Math.PI * 2); ctx.fill();
         if (glow) ctx.restore();
       };
-      line(ghost, T.ghost, 2.5, true, 'rgba(122,90,245,0.16)');
-      line(you, T.ink, 2, false);
+      stroke(ghostPts, T.ghost, 2.5, true, true);
+      stroke(youPts, T.ink, 2, true, true);
     };
 
     if (reduce) { setProgress(1); draw(1); ro.disconnect(); return; }

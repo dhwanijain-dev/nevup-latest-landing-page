@@ -75,7 +75,7 @@ export function DnaSection({ dna, caption }: { dna?: DnaData; caption?: string }
             {d.facts.map(([k, v]) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, fontFamily: T.mono, fontSize: 12, borderBottom: `1px dashed ${T.border}`, paddingBottom: 7 }}>
                 <span style={{ color: T.muted }}>{k}</span>
-                <b style={{ color: T.ink, textAlign: 'right' }}>{v}</b>
+                <b style={{ color: T.ink, textAlign: 'right', whiteSpace: 'nowrap' }}>{v}</b>
               </div>
             ))}
           </div>
