@@ -123,18 +123,17 @@ export default function InsightsPage() {
       ['compass_csv', 'compass_csv_name', 'compass_trades', 'compass_unlocked'].forEach(k => localStorage.removeItem(k));
     } catch { /* ignore */ }
   };
+
+  // the left-nav "Upload another" fires this window event
+  useEffect(() => {
+    const on = () => reset();
+    window.addEventListener('compass:reset', on);
+    return () => window.removeEventListener('compass:reset', on);
+  }, []);
   const showUpload = !report?.ok;
 
   return (
-    <div style={{ maxWidth: 1120, margin: '0 auto', padding: '20px 20px 80px' }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, borderBottom: `2px solid ${T.ink}`, paddingBottom: 12, flexWrap: 'wrap' }}>
-        <a href="#/insights" style={{ ...mono(15, T.ink, 700), letterSpacing: '0.08em', textDecoration: 'none' }}>COMPASS</a>
-        <span style={statLabel}>Your trading, analyzed</span>
-        <span style={{ ...statLabel, marginLeft: 'auto', color: T.faint }}>
-          your file never leaves this browser · analyzed on your device
-        </span>
-      </div>
-
+    <div style={{ maxWidth: 1120, margin: '0 auto', padding: '24px 20px 80px' }}>
       {showUpload && (
         <div style={{ maxWidth: 620, margin: '40px auto 0' }}>
           <h1 style={{ fontFamily: T.serif, fontWeight: 500, fontSize: 'clamp(24px, 4vw, 36px)', color: T.ink, lineHeight: 1.2, margin: 0 }}>
@@ -189,7 +188,7 @@ export default function InsightsPage() {
       )}
 
       {report?.ok && (
-        <ResultView report={report} insights={insights} onReset={reset} fileName={fileName} />
+        <ResultView report={report} insights={insights} />
       )}
     </div>
   );
@@ -212,35 +211,21 @@ function Card({ title, right, children }: { title?: string; right?: React.ReactN
 }
 
 
-function ResultView({ report, insights, onReset, fileName }: {
+function ResultView({ report, insights }: {
   report: ParseReport;
   insights: Insights | { insufficient: string } | null;
-  onReset: () => void;
-  fileName: string;
 }) {
   const valid = insights && !('insufficient' in insights);
   return (
-    <div style={{ marginTop: 24 }}>
-      {/* upload meta + warnings (own spacing) */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-          <span style={mono(16, T.ink, 700)}>{fileName}</span>
-          <span style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 12.5, color: T.faint }}>
-            {report.parsed} trades parsed{report.skipped ? ` · ${report.skipped} rows skipped` : ''} · columns: {Object.entries(report.columns).map(([k, v]) => `${k}=${v}`).join(', ')}
-          </span>
-          <button onClick={onReset} style={{ marginLeft: 'auto', background: 'transparent', border: `1px solid ${T.border}`, ...mono(10, T.muted), padding: '5px 12px', cursor: 'pointer' }}>
-            ↺ UPLOAD ANOTHER
-          </button>
+    <div>
+      {/* warnings only when present - the hero is the visual starting point */}
+      {report.warnings.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 8 }}>
+          {report.warnings.map((w, i) => (
+            <div key={i} style={{ ...mono(10, T.gold), background: 'rgba(232,184,75,0.08)', border: `1px solid ${T.gold}`, padding: '7px 12px' }}>⚠ {w}</div>
+          ))}
         </div>
-        {report.warnings.map((w, i) => (
-          <div key={i} style={{ ...mono(10, T.gold), background: 'rgba(232,184,75,0.08)', border: `1px solid ${T.gold}`, padding: '7px 12px' }}>⚠ {w}</div>
-        ))}
-        {report.skipped > 0 && (
-          <div style={{ ...mono(10, T.faint) }}>
-            {report.skipped} row(s) skipped{report.skipSamples.length ? ` - e.g. ${report.skipSamples.slice(0, 3).map(s => `row ${s.row}: ${s.reason}`).join('; ')}` : ''}.
-          </div>
-        )}
-      </div>
+      )}
 
       {/* analysis - block flow so every section aligns to the same width */}
       {!insights ? (

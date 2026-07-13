@@ -73,6 +73,12 @@ export default function App() {
       </div>
       <RailItem icon="◉" label="Insights" active={!isSym(active)} onClick={() => setActive('insights')} />
       <RailItem icon="◈" label="Explorer" active={isSym(active)} disabled={!unlocked} onClick={openExplorer} />
+      {unlocked && (
+        <RailItem icon="↺" label="Upload another CSV" onClick={() => {
+          setActive('insights');
+          window.dispatchEvent(new Event('compass:reset'));
+        }} />
+      )}
 
       {!narrow && unlocked && (
         <>
