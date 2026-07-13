@@ -4,6 +4,8 @@
 // instrument + your history on it) and answers strictly from those real
 // figures via /api/chat. Every message is persisted server-side.
 import { useEffect, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { T, statLabel } from '../theme';
 import { useChat } from '../chatContext';
 
@@ -11,6 +13,41 @@ const mono = (size: number, color: string, weight = 400): React.CSSProperties =>
   ({ fontFamily: T.mono, fontSize: size, color, fontWeight: weight });
 
 interface Msg { role: 'user' | 'assistant'; text: string; sources?: string[] }
+
+// Render the assistant's markdown (tables, headings, bold, lists) styled for
+// the white theme + Quicksand. This is what turns raw "**315.32**" and pipe
+// tables into the polished, tryinvesti-grade output.
+function Markdown({ text }: { text: string }) {
+  return (
+    <div style={{ fontFamily: T.serif, fontSize: 13.5, color: T.body, lineHeight: 1.6 }}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          h1: p => <h3 style={{ fontSize: 16, fontWeight: 700, color: T.ink, margin: '14px 0 6px' }} {...p} />,
+          h2: p => <h3 style={{ fontSize: 15, fontWeight: 700, color: T.ink, margin: '14px 0 6px' }} {...p} />,
+          h3: p => <h4 style={{ fontSize: 13.5, fontWeight: 700, color: T.ink, margin: '12px 0 5px' }} {...p} />,
+          p: p => <p style={{ margin: '0 0 9px' }} {...p} />,
+          strong: p => <strong style={{ color: T.ink, fontWeight: 700 }} {...p} />,
+          ul: p => <ul style={{ margin: '0 0 9px', paddingLeft: 18 }} {...p} />,
+          ol: p => <ol style={{ margin: '0 0 9px', paddingLeft: 18 }} {...p} />,
+          li: p => <li style={{ margin: '2px 0' }} {...p} />,
+          a: p => <a style={{ color: T.ghost }} {...p} />,
+          code: p => <code style={{ fontFamily: 'Quicksand, monospace', background: T.panelAlt, padding: '1px 4px', borderRadius: 3, fontSize: 12.5 }} {...p} />,
+          hr: () => <hr style={{ border: 'none', borderTop: `1px solid ${T.borderSoft}`, margin: '12px 0' }} />,
+          table: p => (
+            <div style={{ overflowX: 'auto', margin: '4px 0 12px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }} {...p} />
+            </div>
+          ),
+          thead: p => <thead {...p} />,
+          th: p => <th style={{ textAlign: 'left', padding: '7px 9px', borderBottom: `1px solid ${T.border}`, background: T.panelAlt, fontWeight: 700, color: T.ink, whiteSpace: 'nowrap' }} {...p} />,
+          td: p => <td style={{ padding: '7px 9px', borderBottom: `1px solid ${T.borderSoft}`, color: T.body, verticalAlign: 'top' }} {...p} />,
+          blockquote: p => <blockquote style={{ borderLeft: `2px solid ${T.ghost}`, paddingLeft: 10, margin: '0 0 9px', color: T.mutedStrong }} {...p} />,
+        }}
+      >{text}</ReactMarkdown>
+    </div>
+  );
+}
 
 export default function ChatDock() {
   const { ctx } = useChat();
@@ -67,20 +104,11 @@ export default function ChatDock() {
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
         {msgs.map((m, i) => (
-          <div key={i} style={{ alignSelf: m.role === 'user' ? 'flex-end' : 'stretch', maxWidth: m.role === 'user' ? '90%' : '100%' }}>
-            <div style={{
-              background: m.role === 'user' ? T.ink : 'transparent',
-              color: m.role === 'user' ? T.inverse : T.body,
-              padding: m.role === 'user' ? '9px 12px' : 0,
-              fontFamily: m.role === 'user' ? T.mono : T.serif,
-              fontSize: m.role === 'user' ? 12 : 14, lineHeight: 1.6,
-            }}>{m.text}</div>
-            {m.sources && m.sources.length > 0 && (
-              <div style={{ marginTop: 8, borderLeft: `2px solid ${T.border}`, paddingLeft: 10 }}>
-                {m.sources.map((sc, j) => <div key={j} style={{ ...mono(9.5, T.muted), padding: '2px 0' }}>◦ {sc}</div>)}
-              </div>
-            )}
-          </div>
+          m.role === 'user' ? (
+            <div key={i} style={{ alignSelf: 'flex-end', maxWidth: '90%', background: T.ink, color: T.inverse, padding: '9px 12px', borderRadius: 8, ...mono(12, T.inverse) }}>{m.text}</div>
+          ) : (
+            <div key={i} style={{ alignSelf: 'stretch', maxWidth: '100%' }}><Markdown text={m.text} /></div>
+          )
         ))}
         {busy && <div style={mono(11, T.muted)}>› thinking…</div>}
       </div>
