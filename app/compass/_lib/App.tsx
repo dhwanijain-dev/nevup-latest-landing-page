@@ -73,12 +73,6 @@ export default function App() {
       </div>
       <RailItem icon="◉" label="Insights" active={!isSym(active)} onClick={() => setActive('insights')} />
       <RailItem icon="◈" label="Explorer" active={isSym(active)} disabled={!unlocked} onClick={openExplorer} />
-      {unlocked && (
-        <RailItem icon="↺" label="Upload another CSV" onClick={() => {
-          setActive('insights');
-          window.dispatchEvent(new Event('compass:reset'));
-        }} />
-      )}
 
       {!narrow && unlocked && (
         <>
@@ -106,8 +100,21 @@ export default function App() {
         </>
       )}
 
+      {/* upload-another sits just above the user block */}
+      {unlocked && !narrow && (
+        <div style={{ marginTop: 'auto', borderTop: `1px solid ${T.borderSoft}`, paddingTop: 6 }}>
+          <RailItem icon="↺" label="Upload another CSV" onClick={() => {
+            setActive('insights');
+            window.dispatchEvent(new Event('compass:reset'));
+          }} />
+        </div>
+      )}
+      {unlocked && narrow && (
+        <RailItem icon="↺" label="Upload CSV" onClick={() => { setActive('insights'); window.dispatchEvent(new Event('compass:reset')); }} />
+      )}
+
       {/* user block, bottom */}
-      <div style={{ marginTop: narrow ? 0 : 'auto', marginLeft: narrow ? 'auto' : 0, position: 'relative' }}>
+      <div style={{ marginTop: narrow ? 0 : 8, marginLeft: narrow ? 'auto' : 0, position: 'relative' }}>
         {userOpen && (isAdmin || email) && (
           <div style={{ position: 'absolute', bottom: narrow ? 'auto' : '110%', top: narrow ? '110%' : 'auto', right: 0, left: narrow ? 'auto' : 0, background: '#fff', border: `1px solid ${T.border}`, boxShadow: '0 10px 30px rgba(20,23,29,0.12)', zIndex: 40 }}>
             {isAdmin && <a href="/admin" style={{ display: 'block', padding: '9px 12px', ...linkStyle }}>Admin dashboard</a>}
