@@ -1,6 +1,15 @@
 // Isolated layout for /compass - loads Compass's fonts and a white canvas,
-// independent of the landing site's theme.
+// independent of the landing site's theme. Tuned to work on any device that
+// has a browser: phones, tablets, laptops, desktops, TVs.
 import type { ReactNode } from 'react';
+import type { Viewport } from 'next';
+
+// device-width scaling + notch-safe (iPhone) + no user-scale lock issues
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
 
 export default function CompassLayout({ children }: { children: ReactNode }) {
   return (
@@ -10,7 +19,25 @@ export default function CompassLayout({ children }: { children: ReactNode }) {
         href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
         rel="stylesheet"
       />
-      <div style={{ minHeight: '100vh', background: '#ffffff' }}>{children}</div>
+      {/* global guards: never scroll sideways, respect safe-area insets, and
+          give every element a sane box model + touch behaviour */}
+      <style>{`
+        html, body { max-width: 100%; overflow-x: hidden; -webkit-text-size-adjust: 100%; }
+        .compass-root, .compass-root * { box-sizing: border-box; }
+        .compass-root { -webkit-tap-highlight-color: transparent; }
+      `}</style>
+      <div
+        className="compass-root"
+        style={{
+          minHeight: '100dvh',
+          background: '#ffffff',
+          overflowX: 'hidden',
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight: 'env(safe-area-inset-right)',
+        }}
+      >
+        {children}
+      </div>
     </>
   );
 }

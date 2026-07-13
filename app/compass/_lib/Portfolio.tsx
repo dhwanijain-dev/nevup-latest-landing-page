@@ -28,7 +28,7 @@ export default function Portfolio() {
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 42px)', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: 'calc(100dvh - 44px)', overflow: 'hidden' }}>
       {/* full-bleed terminal preview */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/terminal-preview.png" alt="NevUp trading terminal preview"
@@ -42,10 +42,10 @@ export default function Portfolio() {
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
       }}>
         <div style={{
-          maxWidth: 1120, width: '100%', background: '#fff',
+          maxWidth: 1120, width: '100%', maxHeight: '88dvh', overflowY: 'auto', background: '#fff',
           border: `1px solid ${T.border}`, borderRadius: 16,
           boxShadow: '0 24px 60px rgba(20,23,29,0.18)',
-          display: 'flex', flexWrap: 'wrap', overflow: 'hidden',
+          display: 'flex', flexWrap: 'wrap',
         }}>
           {/* deck image beside the text (shown in full, large) */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
